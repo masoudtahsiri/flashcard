@@ -21,6 +21,20 @@
             </div>
         </div>
         
+        <div class="groups-section">
+            <h2>Manage Groups</h2>
+            <div class="groups-management">
+                <div class="form-group">
+                    <label for="groupNameInput">Group Name:</label>
+                    <input type="text" id="groupNameInput" placeholder="Enter group name" class="text-input">
+                </div>
+                <button id="addGroupBtn" class="add-group-btn">Add Group</button>
+                <div id="groupsList" class="groups-list">
+                    <!-- Groups will be rendered here -->
+                </div>
+            </div>
+        </div>
+
         <div class="add-card-section">
             <h2>Add New Flashcard</h2>
             <div class="add-card-form">
@@ -32,6 +46,12 @@
                 <div class="form-group">
                     <label for="wordInput">Word/Text:</label>
                     <input type="text" id="wordInput" placeholder="Enter word or text" class="text-input">
+                </div>
+                <div class="form-group">
+                    <label for="groupSelect">Group:</label>
+                    <select id="groupSelect" class="group-select">
+                        <option value="">Select a group</option>
+                    </select>
                 </div>
                 <button id="addCardBtn" class="add-card-btn">Add Flashcard</button>
             </div>

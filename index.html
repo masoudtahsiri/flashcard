@@ -8,17 +8,30 @@
 </head>
 <body>
     <div class="container">
-        <div class="flashcard-container">
-            <div class="flashcard" id="currentFlashcard">
-                <!-- Current flashcard will be displayed here -->
+        <div class="group-selection" id="groupSelection">
+            <h2>Select a Group</h2>
+            <div class="groups-grid" id="groupsGrid">
+                <!-- Groups will be rendered here -->
             </div>
         </div>
-        <div class="navigation">
-            <button id="prevBtn" class="nav-btn">← Previous</button>
-            <button id="nextBtn" class="nav-btn">Next →</button>
-        </div>
-        <div class="card-counter">
-            <span id="currentCard">1</span> / <span id="totalCards">6</span>
+        
+        <div class="flashcard-view" id="flashcardView" style="display: none;">
+            <div class="group-header">
+                <button id="backToGroupsBtn" class="back-btn">← Back to Groups</button>
+                <h2 id="currentGroupName">Group Name</h2>
+            </div>
+            <div class="flashcard-container">
+                <div class="flashcard" id="currentFlashcard">
+                    <!-- Current flashcard will be displayed here -->
+                </div>
+            </div>
+            <div class="navigation">
+                <button id="prevBtn" class="nav-btn">← Previous</button>
+                <button id="nextBtn" class="nav-btn">Next →</button>
+            </div>
+            <div class="card-counter">
+                <span id="currentCard">1</span> / <span id="totalCards">6</span>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>

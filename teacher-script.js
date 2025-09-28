@@ -4,39 +4,59 @@ let defaultFlashcards = [
         id: 1,
         word: "animals",
         image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
+        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+        groupId: 1
     },
     {
         id: 2,
         word: "elephant",
         image: "https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
+        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+        groupId: 1
     },
     {
         id: 3,
         word: "lion",
         image: "https://images.unsplash.com/photo-1552410260-0fd9b577afa6?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
+        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+        groupId: 1
     },
     {
         id: 4,
         word: "tiger",
         image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
+        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+        groupId: 1
     },
     {
         id: 5,
         word: "giraffe",
         image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
+        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+        groupId: 1
     },
     {
         id: 6,
         word: "panda",
         image: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
+        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
+        groupId: 1
     }
 ];
+
+// Default groups data
+let defaultGroups = [
+    {
+        id: 1,
+        name: "Animals",
+        color: "#4CAF50"
+    }
+];
+
+// Current flashcards and groups (starts with defaults, can be modified)
+let flashcards = [...defaultFlashcards];
+let groups = [...defaultGroups];
+let nextGroupId = 2;
 
 // Display mode functionality
 let currentViewMode = 'single'; // 'single' or 'grid'
@@ -148,10 +168,12 @@ function generateStudentHTML() {
         id: card.id,
         word: card.word,
         image: card.image, // This is already base64 data
-        audioUrl: card.audioUrl
+        audioUrl: card.audioUrl,
+        groupId: card.groupId
     }));
     
     const cardsData = JSON.stringify(embeddedCards);
+    const groupsData = JSON.stringify(groups);
     
     // Create ZIP file using JSZip
     if (typeof JSZip === 'undefined') {
@@ -1180,6 +1202,122 @@ function generateStudentHTML() {
             color: #aaa;
         }
 
+        /* Group Selection Styles */
+        .group-selection {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .group-selection h2 {
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            justify-items: center;
+            margin: 30px 0;
+            padding: 25px;
+        }
+
+        .group-card {
+            width: 250px;
+            height: 200px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .group-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .group-card:active {
+            transform: scale(0.98);
+        }
+
+        .group-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .group-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .group-count {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .flashcard-view {
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .back-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+        .group-header h2 {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+        }
+
         @media (max-width: 768px) {
             .flashcard {
                 width: 350px;
@@ -1203,28 +1341,98 @@ function generateStudentHTML() {
 </head>
 <body>
     <div class="container">
-        <h1>Interactive Flashcards</h1>
-        <div class="card-counter">
-            <span id="currentCard">1</span> / <span id="totalCards">${flashcards.length}</span>
-        </div>
-        
-        <div class="flashcard-container">
-            <div class="flashcard" id="currentFlashcard">
-                <!-- Current flashcard will be displayed here -->
+        <div class="group-selection" id="groupSelection">
+            <h2>Select a Group</h2>
+            <div class="groups-grid" id="groupsGrid">
+                <!-- Groups will be rendered here -->
             </div>
         </div>
-        <div class="navigation">
-            <button id="prevBtn" class="nav-btn">← Previous</button>
-            <button id="nextBtn" class="nav-btn">Next →</button>
+        
+        <div class="flashcard-view" id="flashcardView" style="display: none;">
+            <div class="group-header">
+                <button id="backToGroupsBtn" class="back-btn">← Back to Groups</button>
+                <h2 id="currentGroupName">Group Name</h2>
+            </div>
+            <div class="flashcard-container">
+                <div class="flashcard" id="currentFlashcard">
+                    <!-- Current flashcard will be displayed here -->
+                </div>
+            </div>
+            <div class="navigation">
+                <button id="prevBtn" class="nav-btn">← Previous</button>
+                <button id="nextBtn" class="nav-btn">Next →</button>
+            </div>
+            <div class="card-counter">
+                <span id="currentCard">1</span> / <span id="totalCards">6</span>
+            </div>
         </div>
     </div>
     
     <script>
         // Flashcard data embedded in the file
         const flashcards = ${cardsData};
+        const groups = ${groupsData};
+        let currentGroupId = null;
+        let currentGroupCards = [];
         let currentCardIndex = 0;
         let selectedVoice = null;
         let voices = [];
+
+        // Group management functions
+        function renderGroups() {
+            const groupsGrid = document.getElementById('groupsGrid');
+            groupsGrid.innerHTML = '';
+            
+            if (groups.length === 0) {
+                groupsGrid.innerHTML = \`
+                    <div class="empty-state">
+                        <h3>No groups available</h3>
+                        <p>Please ask your teacher to create groups</p>
+                    </div>
+                \`;
+                return;
+            }
+            
+            groups.forEach(group => {
+                const groupCards = flashcards.filter(card => card.groupId === group.id);
+                const groupCard = document.createElement('div');
+                groupCard.className = 'group-card';
+                groupCard.innerHTML = \`
+                    <div class="group-icon">📚</div>
+                    <div class="group-name">\${group.name}</div>
+                    <div class="group-count">\${groupCards.length} cards</div>
+                \`;
+                
+                groupCard.addEventListener('click', () => {
+                    selectGroup(group.id);
+                });
+                
+                groupsGrid.appendChild(groupCard);
+            });
+        }
+
+        function selectGroup(groupId) {
+            currentGroupId = groupId;
+            currentGroupCards = flashcards.filter(card => card.groupId === groupId);
+            currentCardIndex = 0;
+            
+            // Update UI
+            document.getElementById('groupSelection').style.display = 'none';
+            document.getElementById('flashcardView').style.display = 'block';
+            
+            const group = groups.find(g => g.id === groupId);
+            document.getElementById('currentGroupName').textContent = group.name;
+            
+            updateFlashcard();
+        }
+
+        function goBackToGroups() {
+            document.getElementById('groupSelection').style.display = 'block';
+            document.getElementById('flashcardView').style.display = 'none';
+            currentGroupId = null;
+            currentGroupCards = [];
+            currentCardIndex = 0;
+        }
 
         // Load available voices and set Google US English as default
         function loadVoices() {
@@ -1277,12 +1485,12 @@ function generateStudentHTML() {
 
         // Function to update the displayed flashcard
         function updateFlashcard() {
-            if (flashcards.length === 0) {
+            if (currentGroupCards.length === 0) {
                 const flashcardElement = document.getElementById('currentFlashcard');
                 flashcardElement.innerHTML = \`
                     <div class="empty-state">
-                        <h3>No flashcards available</h3>
-                        <p>Please ask your teacher to add flashcards</p>
+                        <h3>No flashcards in this group</h3>
+                        <p>Please ask your teacher to add flashcards to this group</p>
                     </div>
                 \`;
                 
@@ -1293,7 +1501,7 @@ function generateStudentHTML() {
                 return;
             }
             
-            const currentCard = flashcards[currentCardIndex];
+            const currentCard = currentGroupCards[currentCardIndex];
             const flashcardElement = document.getElementById('currentFlashcard');
             
             flashcardElement.innerHTML = \`
@@ -1302,13 +1510,13 @@ function generateStudentHTML() {
             \`;
             
             document.getElementById('currentCard').textContent = currentCardIndex + 1;
-            document.getElementById('totalCards').textContent = flashcards.length;
+            document.getElementById('totalCards').textContent = currentGroupCards.length;
             
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             
             prevBtn.disabled = currentCardIndex === 0;
-            nextBtn.disabled = currentCardIndex === flashcards.length - 1;
+            nextBtn.disabled = currentCardIndex === currentGroupCards.length - 1;
             
             // Add both click and touch events for mobile compatibility
             flashcardElement.onclick = () => {
@@ -1330,7 +1538,7 @@ function generateStudentHTML() {
         }
 
         function goToNext() {
-            if (currentCardIndex < flashcards.length - 1) {
+            if (currentCardIndex < currentGroupCards.length - 1) {
                 currentCardIndex++;
                 updateFlashcard();
             }
@@ -1344,23 +1552,17 @@ function generateStudentHTML() {
                 speechSynthesis.onvoiceschanged = loadVoices;
             }
             
-            // Add both click and touch events for mobile compatibility
+            // Set up navigation buttons
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
+            const backBtn = document.getElementById('backToGroupsBtn');
             
             prevBtn.addEventListener('click', goToPrevious);
-            prevBtn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                goToPrevious();
-            });
-            
             nextBtn.addEventListener('click', goToNext);
-            nextBtn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                goToNext();
-            });
+            backBtn.addEventListener('click', goBackToGroups);
             
-            updateFlashcard();
+            // Initialize with groups view
+            renderGroups();
             
             document.addEventListener('keydown', (event) => {
                 if (event.key === 'ArrowLeft') {
@@ -1454,7 +1656,7 @@ function compressImage(file, maxWidth = 300, maxHeight = 225, quality = 0.7) {
     });
 }
 
-// Function to save flashcards to API (shared storage)
+// Function to save flashcards and groups to API (shared storage)
 async function saveFlashcards() {
     try {
         const response = await fetch('/api/flashcards', {
@@ -1464,6 +1666,7 @@ async function saveFlashcards() {
             },
             body: JSON.stringify({
                 flashcards: flashcards,
+                groups: groups,
                 nextId: nextId
             })
         });
@@ -1477,14 +1680,14 @@ async function saveFlashcards() {
             throw new Error(result.error || 'Save failed');
         }
 
-        console.log('Flashcards saved to shared storage');
+        console.log('Flashcards and groups saved to shared storage');
     } catch (error) {
         console.error('Error saving flashcards:', error);
         alert('Error saving flashcards. Please try again.');
     }
 }
 
-// Function to load flashcards from API (shared storage)
+// Function to load flashcards and groups from API (shared storage)
 async function loadFlashcards() {
     try {
         const response = await fetch('/api/flashcards');
@@ -1502,16 +1705,116 @@ async function loadFlashcards() {
             flashcards = [];
             nextId = 1;
         }
+
+        if (result.success && result.groups) {
+            groups = result.groups;
+            nextGroupId = groups.length > 0 ? Math.max(...groups.map(group => group.id)) + 1 : 1;
+        } else {
+            groups = [];
+            nextGroupId = 1;
+        }
     } catch (error) {
         console.error('Error loading flashcards:', error);
-        // Fallback to empty array
+        // Fallback to empty arrays
         flashcards = [];
+        groups = [];
         nextId = 1;
+        nextGroupId = 1;
     }
 }
 
+// Group management functions
+function addGroup() {
+    const groupName = document.getElementById('groupNameInput').value.trim();
+    
+    if (!groupName) {
+        alert('Please enter a group name');
+        return;
+    }
+    
+    // Check if group name already exists
+    if (groups.some(group => group.name.toLowerCase() === groupName.toLowerCase())) {
+        alert('A group with this name already exists');
+        return;
+    }
+    
+    const newGroup = {
+        id: nextGroupId++,
+        name: groupName,
+        color: getRandomColor()
+    };
+    
+    groups.push(newGroup);
+    saveFlashcards();
+    renderGroupsList();
+    updateGroupSelect();
+    
+    // Clear input
+    document.getElementById('groupNameInput').value = '';
+    
+    alert('Group added successfully!');
+}
+
+function deleteGroup(groupId) {
+    if (confirm('Are you sure you want to delete this group? All flashcards in this group will be moved to "No Group".')) {
+        // Move flashcards from this group to no group
+        flashcards.forEach(card => {
+            if (card.groupId === groupId) {
+                card.groupId = null;
+            }
+        });
+        
+        // Remove the group
+        groups = groups.filter(group => group.id !== groupId);
+        
+        saveFlashcards();
+        renderGroupsList();
+        updateGroupSelect();
+        renderGridView();
+        
+        alert('Group deleted successfully!');
+    }
+}
+
+function renderGroupsList() {
+    const groupsList = document.getElementById('groupsList');
+    groupsList.innerHTML = '';
+    
+    if (groups.length === 0) {
+        groupsList.innerHTML = '<p style="color: #666; font-style: italic;">No groups created yet</p>';
+        return;
+    }
+    
+    groups.forEach(group => {
+        const groupItem = document.createElement('div');
+        groupItem.className = 'group-item';
+        groupItem.innerHTML = `
+            <span>${group.name}</span>
+            <button class="group-delete-btn" onclick="deleteGroup(${group.id})">×</button>
+        `;
+        groupsList.appendChild(groupItem);
+    });
+}
+
+function updateGroupSelect() {
+    const groupSelect = document.getElementById('groupSelect');
+    groupSelect.innerHTML = '<option value="">Select a group</option>';
+    
+    groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = group.name;
+        groupSelect.appendChild(option);
+    });
+}
+
+function getRandomColor() {
+    const colors = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336', '#00BCD4', '#795548', '#607D8B'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
 // Function to add a new flashcard
-function addFlashcard(word, imageFile) {
+function addFlashcard(word, imageFile, groupId) {
     if (!word.trim()) {
         alert('Please enter a word');
         return;
@@ -1534,7 +1837,8 @@ function addFlashcard(word, imageFile) {
             id: nextId++,
             word: word.trim(),
             image: compressedImage, // Store base64 data directly - no external dependencies
-            audioUrl: '' // Will use text-to-speech
+            audioUrl: '', // Will use text-to-speech
+            groupId: groupId || null
         };
         
         flashcards.push(newCard);
@@ -1750,6 +2054,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize with grid view only
     renderGridView();
     
+    // Initialize groups
+    renderGroupsList();
+    updateGroupSelect();
+    
     // Set up image preview
     document.getElementById('imageInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -1767,8 +2075,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addCardBtn').addEventListener('click', function() {
         const word = document.getElementById('wordInput').value;
         const imageFile = document.getElementById('imageInput').files[0];
-        addFlashcard(word, imageFile);
+        const groupId = document.getElementById('groupSelect').value;
+        addFlashcard(word, imageFile, groupId);
     });
+
+    // Set up add group button
+    document.getElementById('addGroupBtn').addEventListener('click', addGroup);
     
     // Set up navigation buttons (only if they exist)
     const prevBtn = document.getElementById('prevBtn');

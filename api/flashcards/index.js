@@ -3,6 +3,7 @@ import { MongoClient } from 'mongodb';
 const MONGODB_URI = process.env.MONGODB_URI || "MONGODB_URI_ENVIRONMENT_VARIABLE";
 const DB_NAME = 'flashcard';
 const COLLECTION_NAME = 'flashcards';
+const GROUPS_COLLECTION_NAME = 'groups';
 
 let client;
 let db;
@@ -35,23 +36,31 @@ export default async function handler(req, res) {
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection(COLLECTION_NAME);
+    const groupsCollection = db.collection(GROUPS_COLLECTION_NAME);
 
     switch (method) {
       case 'GET':
-        // Get all flashcards
+        // Get all flashcards and groups
         const flashcards = await collection.find({}).sort({ createdAt: -1 }).toArray();
-        res.status(200).json({ success: true, flashcards });
+        const groups = await groupsCollection.find({}).sort({ createdAt: -1 }).toArray();
+        res.status(200).json({ success: true, flashcards, groups });
         break;
 
       case 'POST':
-        // Save flashcards (replace all existing ones)
-        const { flashcards: newFlashcards } = req.body;
+        // Save flashcards and groups (replace all existing ones)
+        const { flashcards: newFlashcards, groups: newGroups } = req.body;
+        
         if (!newFlashcards || !Array.isArray(newFlashcards)) {
           return res.status(400).json({ error: 'Missing flashcards data' });
         }
 
-        // Clear existing flashcards and insert new ones
+        if (!newGroups || !Array.isArray(newGroups)) {
+          return res.status(400).json({ error: 'Missing groups data' });
+        }
+
+        // Clear existing flashcards and groups, then insert new ones
         await collection.deleteMany({});
+        await groupsCollection.deleteMany({});
         
         if (newFlashcards.length > 0) {
           // Add timestamps to each flashcard
@@ -64,20 +73,34 @@ export default async function handler(req, res) {
           await collection.insertMany(flashcardsWithTimestamps);
         }
 
+        if (newGroups.length > 0) {
+          // Add timestamps to each group
+          const groupsWithTimestamps = newGroups.map(group => ({
+            ...group,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }));
+          
+          await groupsCollection.insertMany(groupsWithTimestamps);
+        }
+
         res.status(200).json({ 
           success: true, 
-          message: 'Flashcards saved successfully',
-          count: newFlashcards.length 
+          message: 'Flashcards and groups saved successfully',
+          flashcardsCount: newFlashcards.length,
+          groupsCount: newGroups.length
         });
         break;
 
       case 'DELETE':
-        // Clear all flashcards
-        const deleteResult = await collection.deleteMany({});
+        // Clear all flashcards and groups
+        const deleteFlashcardsResult = await collection.deleteMany({});
+        const deleteGroupsResult = await groupsCollection.deleteMany({});
         res.status(200).json({ 
           success: true, 
-          message: 'All flashcards cleared',
-          deletedCount: deleteResult.deletedCount 
+          message: 'All flashcards and groups cleared',
+          deletedFlashcards: deleteFlashcardsResult.deletedCount,
+          deletedGroups: deleteGroupsResult.deletedCount
         });
         break;
 

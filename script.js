@@ -38,10 +38,11 @@ let defaultFlashcards = [
     }
 ];
 
-// Current flashcards (starts with defaults, can be modified)
+// Current flashcards and groups (starts with defaults, can be modified)
 let flashcards = [...defaultFlashcards];
-
-// Current card index
+let groups = [];
+let currentGroupId = null;
+let currentGroupCards = [];
 let currentCardIndex = 0;
 
 // Function to load flashcards from API (shared storage)
@@ -67,6 +68,12 @@ async function loadFlashcards() {
             // Only set empty if we're sure there are no flashcards
             flashcards = [];
         }
+
+        if (result.success && result.groups && result.groups.length > 0) {
+            groups = result.groups;
+        } else {
+            groups = [];
+        }
     } catch (error) {
         console.error('Error loading flashcards:', error);
         // Don't change flashcards array on error - keep existing data
@@ -87,15 +94,71 @@ function getImageUrl(imageData) {
     return `${cleanUrl}?t=${Date.now()}`;
 }
 
+// Group management functions
+function renderGroups() {
+    const groupsGrid = document.getElementById('groupsGrid');
+    groupsGrid.innerHTML = '';
+    
+    if (groups.length === 0) {
+        groupsGrid.innerHTML = `
+            <div class="empty-state">
+                <h3>No groups available</h3>
+                <p>Please ask your teacher to create groups</p>
+            </div>
+        `;
+        return;
+    }
+    
+    groups.forEach(group => {
+        const groupCards = flashcards.filter(card => card.groupId === group.id);
+        const groupCard = document.createElement('div');
+        groupCard.className = 'group-card';
+        groupCard.innerHTML = `
+            <div class="group-icon">📚</div>
+            <div class="group-name">${group.name}</div>
+            <div class="group-count">${groupCards.length} cards</div>
+        `;
+        
+        groupCard.addEventListener('click', () => {
+            selectGroup(group.id);
+        });
+        
+        groupsGrid.appendChild(groupCard);
+    });
+}
+
+function selectGroup(groupId) {
+    currentGroupId = groupId;
+    currentGroupCards = flashcards.filter(card => card.groupId === groupId);
+    currentCardIndex = 0;
+    
+    // Update UI
+    document.getElementById('groupSelection').style.display = 'none';
+    document.getElementById('flashcardView').style.display = 'block';
+    
+    const group = groups.find(g => g.id === groupId);
+    document.getElementById('currentGroupName').textContent = group.name;
+    
+    updateFlashcard();
+}
+
+function goBackToGroups() {
+    document.getElementById('groupSelection').style.display = 'block';
+    document.getElementById('flashcardView').style.display = 'none';
+    currentGroupId = null;
+    currentGroupCards = [];
+    currentCardIndex = 0;
+}
+
 // Function to update the displayed flashcard
 function updateFlashcard() {
-    if (flashcards.length === 0) {
+    if (currentGroupCards.length === 0) {
         // Handle empty state
         const flashcardElement = document.getElementById('currentFlashcard');
         flashcardElement.innerHTML = `
             <div class="empty-state">
-                <h3>No flashcards available</h3>
-                <p>Please ask your teacher to add flashcards</p>
+                <h3>No flashcards in this group</h3>
+                <p>Please ask your teacher to add flashcards to this group</p>
             </div>
         `;
         
@@ -110,7 +173,7 @@ function updateFlashcard() {
         return;
     }
     
-    const currentCard = flashcards[currentCardIndex];
+    const currentCard = currentGroupCards[currentCardIndex];
     const flashcardElement = document.getElementById('currentFlashcard');
     
     flashcardElement.innerHTML = `
@@ -120,14 +183,14 @@ function updateFlashcard() {
     
     // Update card counter
     document.getElementById('currentCard').textContent = currentCardIndex + 1;
-    document.getElementById('totalCards').textContent = flashcards.length;
+    document.getElementById('totalCards').textContent = currentGroupCards.length;
     
     // Update navigation buttons
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     
     prevBtn.disabled = currentCardIndex === 0;
-    nextBtn.disabled = currentCardIndex === flashcards.length - 1;
+    nextBtn.disabled = currentCardIndex === currentGroupCards.length - 1;
     
     // Add click event to play audio
     flashcardElement.onclick = () => {
@@ -223,7 +286,7 @@ function goToPrevious() {
 }
 
 function goToNext() {
-    if (currentCardIndex < flashcards.length - 1) {
+    if (currentCardIndex < currentGroupCards.length - 1) {
         currentCardIndex++;
         updateFlashcard();
     }
@@ -247,8 +310,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('prevBtn').addEventListener('click', goToPrevious);
     document.getElementById('nextBtn').addEventListener('click', goToNext);
     
-    // Initialize with first card
-    updateFlashcard();
+    // Set up back to groups button
+    document.getElementById('backToGroupsBtn').addEventListener('click', goBackToGroups);
+    
+    // Initialize with groups view
+    renderGroups();
     
     // Add keyboard navigation
     document.addEventListener('keydown', (event) => {
