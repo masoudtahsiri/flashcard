@@ -82,7 +82,7 @@ function renderGridView() {
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
         gridCard.innerHTML = `
-            <img src="${card.image}" alt="${card.word}" class="grid-flashcard-image">
+            <img src="${card.image}&t=${Date.now()}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
             <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${index})">×</button>
         `;
@@ -1807,13 +1807,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         addFlashcard(word, imageFile);
     });
     
-    // Set up navigation buttons
-    document.getElementById('prevBtn').addEventListener('click', goToPrevious);
-    document.getElementById('nextBtn').addEventListener('click', goToNext);
-    document.getElementById('deleteBtn').addEventListener('click', deleteCurrentCard);
+    // Set up navigation buttons (only if they exist)
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
     
-    // Initialize with first card
-    updateFlashcard();
+    if (prevBtn) prevBtn.addEventListener('click', goToPrevious);
+    if (nextBtn) nextBtn.addEventListener('click', goToNext);
+    if (deleteBtn) deleteBtn.addEventListener('click', deleteCurrentCard);
+    
+    // Initialize with grid view
+    renderGridView();
     
     // Add keyboard navigation
     document.addEventListener('keydown', (event) => {

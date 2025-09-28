@@ -6,6 +6,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Add cache control headers to prevent caching
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   try {
     const { imageData, filename } = req.body;
 
@@ -21,12 +26,15 @@ export default async function handler(req, res) {
     const blob = await put(filename, buffer, {
       access: 'public',
       contentType: 'image/jpeg',
+      cacheControlMaxAge: 60, // Cache for only 60 seconds
     });
 
-    // Return the public URL
+    // Return the public URL with a timestamp to prevent caching
+    const urlWithTimestamp = `${blob.url}?t=${Date.now()}`;
+    
     res.status(200).json({ 
       success: true, 
-      url: blob.url,
+      url: urlWithTimestamp,
       filename: filename 
     });
 

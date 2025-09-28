@@ -100,7 +100,7 @@ function updateFlashcard() {
     const flashcardElement = document.getElementById('currentFlashcard');
     
     flashcardElement.innerHTML = `
-        <img src="${currentCard.image}" alt="${currentCard.word}" class="flashcard-image">
+        <img src="${currentCard.image}&t=${Date.now()}" alt="${currentCard.word}" class="flashcard-image">
         <div class="flashcard-text">${currentCard.word}</div>
     `;
     
