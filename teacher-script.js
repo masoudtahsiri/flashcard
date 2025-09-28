@@ -99,15 +99,30 @@ function renderGridView() {
 }
 
 // Function to clear all storage (emergency cleanup)
-function clearAllStorage() {
+async function clearAllStorage() {
     if (confirm('This will delete ALL flashcards and cannot be undone. Are you sure?')) {
-        localStorage.removeItem('customFlashcards');
-        localStorage.removeItem('nextId');
-        flashcards = []; // Empty array, no default cards
-        nextId = 1; // Reset ID counter
-        saveFlashcards();
-        renderGridView();
-        alert('All flashcards cleared!');
+        try {
+            const response = await fetch('/api/flashcards', {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Clear failed: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            if (!result.success) {
+                throw new Error(result.error || 'Clear failed');
+            }
+
+            flashcards = []; // Empty array, no default cards
+            nextId = 1; // Reset ID counter
+            renderGridView();
+            alert('All flashcards cleared!');
+        } catch (error) {
+            console.error('Error clearing flashcards:', error);
+            alert('Error clearing flashcards. Please try again.');
+        }
     }
 }
 
@@ -1462,31 +1477,59 @@ function compressImage(file, maxWidth = 300, maxHeight = 225, quality = 0.7) {
     });
 }
 
-// Function to save flashcards to localStorage with compression
-function saveFlashcards() {
+// Function to save flashcards to API (shared storage)
+async function saveFlashcards() {
     try {
-        localStorage.setItem('customFlashcards', JSON.stringify(flashcards));
-        localStorage.setItem('nextId', nextId.toString());
-    } catch (error) {
-        if (error.name === 'QuotaExceededError') {
-            alert('Storage full! Please delete some cards to make space.');
-            console.error('localStorage quota exceeded:', error);
-        } else {
-            console.error('Error saving flashcards:', error);
+        const response = await fetch('/api/flashcards', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                flashcards: flashcards,
+                nextId: nextId
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Save failed: ${response.statusText}`);
         }
+
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || 'Save failed');
+        }
+
+        console.log('Flashcards saved to shared storage');
+    } catch (error) {
+        console.error('Error saving flashcards:', error);
+        alert('Error saving flashcards. Please try again.');
     }
 }
 
-// Function to load flashcards from localStorage
-function loadFlashcards() {
-    const saved = localStorage.getItem('customFlashcards');
-    const savedId = localStorage.getItem('nextId');
-    
-    if (saved) {
-        flashcards = JSON.parse(saved);
-        nextId = savedId ? parseInt(savedId) : flashcards.length + 1;
-    } else {
-        flashcards = []; // Start with empty array, no default cards
+// Function to load flashcards from API (shared storage)
+async function loadFlashcards() {
+    try {
+        const response = await fetch('/api/flashcards');
+        
+        if (!response.ok) {
+            throw new Error(`Load failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.success && result.flashcards) {
+            flashcards = result.flashcards;
+            nextId = flashcards.length > 0 ? Math.max(...flashcards.map(card => card.id)) + 1 : 1;
+            console.log('Flashcards loaded from shared storage:', flashcards.length);
+        } else {
+            flashcards = [];
+            nextId = 1;
+        }
+    } catch (error) {
+        console.error('Error loading flashcards:', error);
+        // Fallback to empty array
+        flashcards = [];
         nextId = 1;
     }
 }
@@ -1719,9 +1762,9 @@ function goToNext() {
 }
 
 // Initialize the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Load saved flashcards
-    loadFlashcards();
+    await loadFlashcards();
     
     // Load voices immediately
     loadVoices();

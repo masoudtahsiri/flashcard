@@ -44,14 +44,27 @@ let flashcards = [...defaultFlashcards];
 // Current card index
 let currentCardIndex = 0;
 
-// Function to load flashcards from localStorage (for cards added by teacher)
-function loadFlashcards() {
-    const saved = localStorage.getItem('customFlashcards');
-    
-    if (saved) {
-        flashcards = JSON.parse(saved);
-    } else {
-        flashcards = []; // Start with empty array, no default cards
+// Function to load flashcards from API (shared storage)
+async function loadFlashcards() {
+    try {
+        const response = await fetch('/api/flashcards');
+        
+        if (!response.ok) {
+            throw new Error(`Load failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.success && result.flashcards) {
+            flashcards = result.flashcards;
+            console.log('Flashcards loaded from shared storage:', flashcards.length);
+        } else {
+            flashcards = []; // Start with empty array, no default cards
+        }
+    } catch (error) {
+        console.error('Error loading flashcards:', error);
+        // Fallback to empty array
+        flashcards = [];
     }
 }
 
@@ -197,10 +210,10 @@ function goToNext() {
     }
 }
 
-// Function to refresh flashcards from localStorage
-function refreshFlashcards() {
+// Function to refresh flashcards from API
+async function refreshFlashcards() {
     const oldCount = flashcards.length;
-    loadFlashcards();
+    await loadFlashcards();
     
     // If new cards were added, update the display
     if (flashcards.length > oldCount) {
@@ -210,9 +223,9 @@ function refreshFlashcards() {
 }
 
 // Initialize the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Load saved flashcards
-    loadFlashcards();
+    await loadFlashcards();
     
     // Load voices immediately
     loadVoices();
