@@ -234,13 +234,16 @@ async function refreshFlashcards() {
     const oldCount = flashcards.length;
     await loadFlashcards();
     
-    // Always update display if flashcards exist, even if count is same
-    // This handles cases where the same flashcards are returned but display was lost
-    if (flashcards.length > 0) {
+    // Only update display if something actually changed
+    if (flashcards.length !== oldCount) {
         updateFlashcard();
-    } else if (oldCount > 0 && flashcards.length === 0) {
-        // If we had flashcards before but now we don't, update to show empty state
-        updateFlashcard();
+    } else if (flashcards.length > 0) {
+        // If count is same but we have cards, just ensure display is current
+        // Only update if we're on an invalid card index
+        if (currentCardIndex >= flashcards.length) {
+            currentCardIndex = 0;
+            updateFlashcard();
+        }
     }
 }
 
@@ -273,6 +276,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
     
-    // Check for new flashcards every 1 second (in case teacher adds cards)
-    setInterval(refreshFlashcards, 1000);
+    // Check for new flashcards every 5 seconds (much less frequent to avoid excessive requests)
+    setInterval(refreshFlashcards, 5000);
+    
+    // Also refresh when user returns to the tab (more efficient)
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            refreshFlashcards();
+        }
+    });
 });
