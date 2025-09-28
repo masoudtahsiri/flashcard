@@ -105,12 +105,8 @@ function clearAllStorage() {
         localStorage.removeItem('nextId');
         flashcards = []; // Empty array, no default cards
         nextId = 1; // Reset ID counter
-        currentCardIndex = 0;
         saveFlashcards();
-        updateFlashcard();
-        if (currentViewMode === 'grid') {
-            renderGridView();
-        }
+        renderGridView();
         alert('All flashcards cleared!');
     }
 }
@@ -1494,9 +1490,8 @@ function addFlashcard(word, imageFile) {
         flashcards.push(newCard);
         saveFlashcards();
         
-        // Move to the new card
-        currentCardIndex = flashcards.length - 1;
-        updateFlashcard();
+        // Refresh grid view
+        renderGridView();
         
         // Clear form
         document.getElementById('wordInput').value = '';
@@ -1691,9 +1686,8 @@ document.addEventListener('DOMContentLoaded', () => {
         speechSynthesis.onvoiceschanged = loadVoices;
     }
     
-    // Set up view mode buttons
-    document.getElementById('singleViewBtn').addEventListener('click', () => switchViewMode('single'));
-    document.getElementById('gridViewBtn').addEventListener('click', () => switchViewMode('grid'));
+    // Initialize with grid view only
+    renderGridView();
     
     // Set up image preview
     document.getElementById('imageInput').addEventListener('change', function(e) {

@@ -11,34 +11,11 @@
         <div class="header-controls">
             <h1>Interactive Flashcards - Teacher Mode</h1>
             <div class="display-controls">
-                <div class="display-mode-toggle">
-                    <button id="singleViewBtn" class="view-btn active">Single View</button>
-                    <button id="gridViewBtn" class="view-btn">Grid View</button>
-                </div>
                 <button id="clearStorageBtn" class="clear-storage-btn" onclick="clearAllStorage()">Clear All</button>
             </div>
         </div>
-        <div class="card-counter">
-            <span id="currentCard">1</span> / <span id="totalCards">0</span>
-        </div>
         
-        <div class="single-view" id="singleView">
-            <div class="flashcard-container">
-                <div class="flashcard" id="currentFlashcard">
-                    <div class="empty-state">
-                        <h3>No flashcards yet</h3>
-                        <p>Add your first flashcard below</p>
-                    </div>
-                </div>
-            </div>
-            <div class="navigation">
-                <button id="prevBtn" class="nav-btn">← Previous</button>
-                <button id="deleteBtn" class="nav-btn delete-btn">Delete Card</button>
-                <button id="nextBtn" class="nav-btn">Next →</button>
-            </div>
-        </div>
-        
-        <div class="grid-view" id="gridView" style="display: none;">
+        <div class="grid-view" id="gridView">
             <div class="flashcard-grid" id="flashcardGrid">
                 <!-- Grid cards will be rendered here -->
             </div>
