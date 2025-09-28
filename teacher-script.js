@@ -1396,6 +1396,37 @@ function deleteCardFromGrid(index) {
     }
 }
 
+// Function to upload image to Vercel Blob Storage
+async function uploadToBlob(imageData, filename) {
+    try {
+        const response = await fetch('/api/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                imageData: imageData,
+                filename: filename
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Upload failed');
+        }
+
+        return result.url;
+    } catch (error) {
+        console.error('Blob upload error:', error);
+        throw error;
+    }
+}
+
 // Function to compress image before storing
 function compressImage(file, maxWidth = 300, maxHeight = 225, quality = 0.7) {
     return new Promise((resolve) => {
@@ -1478,31 +1509,45 @@ function addFlashcard(word, imageFile) {
     addBtn.textContent = 'Compressing...';
     addBtn.disabled = true;
     
-    // Compress image before storing
+    // Compress image and upload to Vercel Blob
     compressImage(imageFile).then(compressedImage => {
-        const newCard = {
-            id: nextId++,
-            word: word.trim(),
-            image: compressedImage,
-            audioUrl: '' // Will use text-to-speech
-        };
+        // Generate unique filename
+        const filename = `flashcard-${nextId}-${Date.now()}.jpg`;
         
-        flashcards.push(newCard);
-        saveFlashcards();
-        
-        // Refresh grid view
-        renderGridView();
-        
-        // Clear form
-        document.getElementById('wordInput').value = '';
-        document.getElementById('imageInput').value = '';
-        document.getElementById('imagePreview').innerHTML = '';
-        
-        // Reset button
-        addBtn.textContent = originalText;
-        addBtn.disabled = false;
-        
-        alert('Card added successfully!');
+        // Upload to Vercel Blob
+        addBtn.textContent = 'Uploading...';
+        uploadToBlob(compressedImage, filename).then(blobUrl => {
+            const newCard = {
+                id: nextId++,
+                word: word.trim(),
+                image: blobUrl, // Store the Blob URL instead of base64
+                audioUrl: '' // Will use text-to-speech
+            };
+            
+            flashcards.push(newCard);
+            saveFlashcards();
+            
+            // Refresh grid view
+            renderGridView();
+            
+            // Clear form
+            document.getElementById('wordInput').value = '';
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            
+            // Reset button
+            addBtn.textContent = originalText;
+            addBtn.disabled = false;
+            
+            alert('Card added successfully!');
+        }).catch(uploadError => {
+            console.error('Error uploading to Blob:', uploadError);
+            alert('Error uploading image. Please try again.');
+            
+            // Reset button
+            addBtn.textContent = originalText;
+            addBtn.disabled = false;
+        });
     }).catch(error => {
         console.error('Error compressing image:', error);
         alert('Error processing image. Please try a different image.');
