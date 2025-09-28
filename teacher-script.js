@@ -250,6 +250,28 @@ function goBackToGroups() {
     }, 10);
 }
 
+// Function to handle tab switching
+function showTab(tabName) {
+    // Hide all tab panels
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab panel
+    if (tabName === 'addCard') {
+        document.getElementById('addCardContent').classList.add('active');
+        document.getElementById('addCardTab').classList.add('active');
+    } else if (tabName === 'manageGroups') {
+        document.getElementById('manageGroupsContent').classList.add('active');
+        document.getElementById('manageGroupsTab').classList.add('active');
+    }
+}
+
 // View control functions
 function showAllCards() {
     document.getElementById('allCardsView').style.display = 'block';
