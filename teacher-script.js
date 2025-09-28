@@ -138,105 +138,112 @@ function renderGridView() {
     });
 }
 
-// Function to render grouped cards view
+// Function to render grouped cards view (folder navigation)
 function renderGroupedCardsView() {
-    const container = document.getElementById('groupedCardsContainer');
-    container.innerHTML = '';
+    const groupsGrid = document.getElementById('groupsGrid');
+    groupsGrid.innerHTML = '';
     
-    if (flashcards.length === 0) {
-        container.innerHTML = `
+    if (groups.length === 0) {
+        groupsGrid.innerHTML = `
             <div class="empty-state">
-                <h3>No flashcards available</h3>
-                <p>Add a new flashcard using the form above</p>
+                <h3>No groups available</h3>
+                <p>Create groups using the form above</p>
             </div>
         `;
         return;
     }
     
-    // Render cards for each group
+    // Render each group as a folder
     groups.forEach(group => {
         const groupCards = flashcards.filter(card => card.groupId === group.id);
         
-        if (groupCards.length > 0) {
-            const groupSection = document.createElement('div');
-            groupSection.className = 'group-section';
-            
-            groupSection.innerHTML = `
-                <div class="group-header-section">
-                    <h3 class="group-title">${group.name}</h3>
-                    <span class="group-count">${groupCards.length} cards</span>
-                </div>
-                <div class="group-cards-grid" id="group-${group.id}">
-                    <!-- Cards for this group will be rendered here -->
-                </div>
-            `;
-            
-            const groupCardsGrid = groupSection.querySelector(`#group-${group.id}`);
-            
-            groupCards.forEach((card, index) => {
-                const originalIndex = flashcards.findIndex(c => c.id === card.id);
-                const gridCard = document.createElement('div');
-                gridCard.className = 'grid-flashcard';
-                gridCard.innerHTML = `
-                    <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
-                    <div class="grid-flashcard-text">${card.word}</div>
-                    <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
-                `;
-                
-                // Add click to play audio
-                gridCard.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('grid-flashcard-delete')) {
-                        playAudio(card.word, card.audioUrl);
-                    }
-                });
-                
-                groupCardsGrid.appendChild(gridCard);
-            });
-            
-            container.appendChild(groupSection);
-        }
-    });
-    
-    // Render cards without groups
-    const ungroupedCards = flashcards.filter(card => !card.groupId);
-    if (ungroupedCards.length > 0) {
-        const noGroupSection = document.createElement('div');
-        noGroupSection.className = 'group-section';
-        
-        noGroupSection.innerHTML = `
-            <div class="group-header-section" style="background: linear-gradient(135deg, #666 0%, #555 100%);">
-                <h3 class="group-title">No Group</h3>
-                <span class="group-count">${ungroupedCards.length} cards</span>
-            </div>
-            <div class="group-cards-grid" id="no-group">
-                <!-- Ungrouped cards will be rendered here -->
-            </div>
+        const groupFolder = document.createElement('div');
+        groupFolder.className = 'group-folder';
+        groupFolder.innerHTML = `
+            <div class="group-folder-icon">📁</div>
+            <div class="group-folder-name">${group.name}</div>
+            <div class="group-folder-count">${groupCards.length} cards</div>
         `;
         
-        const noGroupGrid = noGroupSection.querySelector('#no-group');
-        
-        ungroupedCards.forEach((card, index) => {
-            const originalIndex = flashcards.findIndex(c => c.id === card.id);
-            const gridCard = document.createElement('div');
-            gridCard.className = 'grid-flashcard';
-            gridCard.innerHTML = `
-                <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
-                <div class="grid-flashcard-text">${card.word}</div>
-                <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
-            `;
-            
-            // Add click to play audio
-            gridCard.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('grid-flashcard-delete')) {
-                    playAudio(card.word, card.audioUrl);
-                }
-            });
-            
-            noGroupGrid.appendChild(gridCard);
+        groupFolder.addEventListener('click', () => {
+            showGroupDetail(group.id, group.name);
         });
         
-        container.appendChild(noGroupSection);
+        groupsGrid.appendChild(groupFolder);
+    });
+    
+    // Add "No Group" folder if there are ungrouped cards
+    const ungroupedCards = flashcards.filter(card => !card.groupId);
+    if (ungroupedCards.length > 0) {
+        const noGroupFolder = document.createElement('div');
+        noGroupFolder.className = 'group-folder';
+        noGroupFolder.innerHTML = `
+            <div class="group-folder-icon">📂</div>
+            <div class="group-folder-name">No Group</div>
+            <div class="group-folder-count">${ungroupedCards.length} cards</div>
+        `;
+        
+        noGroupFolder.addEventListener('click', () => {
+            showGroupDetail(null, 'No Group');
+        });
+        
+        groupsGrid.appendChild(noGroupFolder);
     }
+}
+
+// Function to show group detail view
+function showGroupDetail(groupId, groupName) {
+    // Hide groups grid and show group detail
+    document.getElementById('groupsGrid').style.display = 'none';
+    document.getElementById('groupDetailView').style.display = 'block';
+    
+    // Update header
+    document.getElementById('selectedGroupName').textContent = groupName;
+    
+    // Filter cards for this group
+    const groupCards = groupId ? 
+        flashcards.filter(card => card.groupId === groupId) : 
+        flashcards.filter(card => !card.groupId);
+    
+    // Render cards
+    const container = document.getElementById('groupCardsContainer');
+    container.innerHTML = '';
+    
+    if (groupCards.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>No cards in this group</h3>
+                <p>Add cards to this group using the form above</p>
+            </div>
+        `;
+        return;
+    }
+    
+    groupCards.forEach((card, index) => {
+        const originalIndex = flashcards.findIndex(c => c.id === card.id);
+        const gridCard = document.createElement('div');
+        gridCard.className = 'grid-flashcard';
+        gridCard.innerHTML = `
+            <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
+            <div class="grid-flashcard-text">${card.word}</div>
+            <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
+        `;
+        
+        // Add click to play audio
+        gridCard.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('grid-flashcard-delete')) {
+                playAudio(card.word, card.audioUrl);
+            }
+        });
+        
+        container.appendChild(gridCard);
+    });
+}
+
+// Function to go back to groups view
+function goBackToGroups() {
+    document.getElementById('groupsGrid').style.display = 'block';
+    document.getElementById('groupDetailView').style.display = 'none';
 }
 
 // View control functions
@@ -1982,7 +1989,14 @@ function addFlashcard(word, imageFile, groupId) {
             // Refresh both views
             renderGridView();
             if (document.getElementById('groupedCardsView').style.display !== 'none') {
-                renderGroupedCardsView();
+                // If we're in group detail view, refresh it; otherwise refresh folders
+                if (document.getElementById('groupDetailView').style.display !== 'none') {
+                    const groupName = document.getElementById('selectedGroupName').textContent;
+                    const currentGroupId = groups.find(g => g.name === groupName)?.id || null;
+                    showGroupDetail(currentGroupId, groupName);
+                } else {
+                    renderGroupedCardsView();
+                }
             }
             
             // Clear form
@@ -2216,6 +2230,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set up add group button
     document.getElementById('addGroupBtn').addEventListener('click', addGroup);
+    
+    // Set up back to groups button
+    document.getElementById('backToGroupsBtn').addEventListener('click', goBackToGroups);
     
     // Set up navigation buttons (only if they exist)
     const prevBtn = document.getElementById('prevBtn');

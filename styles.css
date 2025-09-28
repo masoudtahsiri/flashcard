@@ -546,54 +546,92 @@ input:checked + .toggle-slider:before {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Grouped Cards View */
-.group-section {
-    margin-bottom: 40px;
+/* Groups Grid (Folder View) */
+.groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+    justify-items: center;
+    margin: 30px 0;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.group-folder {
+    width: 200px;
+    height: 180px;
     background: white;
     border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
     overflow: hidden;
-}
-
-.group-header-section {
-    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-    color: white;
-    padding: 20px;
+    border: 4px solid white;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
 }
 
-.group-title {
-    font-size: 1.5rem;
+.group-folder:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.group-folder:active {
+    transform: scale(0.98);
+}
+
+.group-folder-icon {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.group-folder-name {
+    font-size: 1.2rem;
     font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.group-folder-count {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Group Detail View */
+.group-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 20px 0;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.group-detail-header h2 {
+    color: #333;
+    font-size: 2rem;
+    font-weight: 300;
     margin: 0;
 }
 
-.group-count {
-    font-size: 1rem;
-    opacity: 0.9;
-}
-
-.group-cards-grid {
+.group-cards-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     padding: 25px;
-}
-
-.no-group-section {
     background: #f8f9fa;
-    border: 2px dashed #ddd;
     border-radius: 15px;
-    padding: 25px;
-    text-align: center;
-    color: #666;
-}
-
-.no-group-section h3 {
-    margin-bottom: 10px;
-    color: #999;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .grid-flashcard {

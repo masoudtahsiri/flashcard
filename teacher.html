@@ -28,8 +28,17 @@
             </div>
             
             <div id="groupedCardsView" style="display: none;">
-                <div id="groupedCardsContainer">
-                    <!-- Grouped cards will be rendered here -->
+                <div id="groupsGrid" class="groups-grid">
+                    <!-- Groups will be rendered as folders here -->
+                </div>
+                <div id="groupDetailView" style="display: none;">
+                    <div class="group-detail-header">
+                        <button id="backToGroupsBtn" class="back-btn">← Back to Groups</button>
+                        <h2 id="selectedGroupName">Group Name</h2>
+                    </div>
+                    <div id="groupCardsContainer" class="group-cards-container">
+                        <!-- Cards for selected group will be rendered here -->
+                    </div>
                 </div>
             </div>
         </div>
