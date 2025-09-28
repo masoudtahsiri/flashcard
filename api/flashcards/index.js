@@ -87,26 +87,6 @@ async function saveFlashcards(flashcards) {
       access: 'public',
       contentType: 'application/json',
     });
-
-    // Clean up old flashcards files (keep only the latest 5)
-    const allBlobs = await list({
-      prefix: 'flashcards-data/',
-      limit: 10
-    });
-
-    if (allBlobs.blobs.length > 5) {
-      // Sort by creation date and delete oldest ones
-      const sortedBlobs = allBlobs.blobs.sort((a, b) => 
-        new Date(a.uploadedAt) - new Date(b.uploadedAt)
-      );
-      
-      // Keep the newest 5 files, delete the oldest ones
-      const toDelete = sortedBlobs.slice(0, sortedBlobs.length - 5);
-      
-      for (const blob of toDelete) {
-        await del(blob.url);
-      }
-    }
   } catch (error) {
     console.error('Error saving flashcards:', error);
     throw error;
