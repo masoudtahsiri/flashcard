@@ -590,8 +590,8 @@ input:checked + .toggle-slider:before {
 /* Grid View Styles */
 .flashcard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
     justify-items: center;
     margin: 30px 0;
     padding: 25px;
@@ -689,8 +689,8 @@ input:checked + .toggle-slider:before {
 
 .group-cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
     padding: 20px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 15px;
@@ -699,8 +699,8 @@ input:checked + .toggle-slider:before {
 }
 
 .grid-flashcard {
-    width: 220px;
-    height: 180px;
+    width: 140px;
+    height: 120px;
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     border-radius: 15px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
@@ -730,7 +730,7 @@ input:checked + .toggle-slider:before {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #333;
     background: white;
@@ -738,13 +738,13 @@ input:checked + .toggle-slider:before {
 
 .grid-flashcard-group {
     position: absolute;
-    top: 8px;
-    left: 8px;
+    top: 4px;
+    left: 4px;
     background: rgba(76, 175, 80, 0.9);
     color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.6rem;
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -754,16 +754,16 @@ input:checked + .toggle-slider:before {
 
 .grid-flashcard-delete {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 4px;
+    right: 4px;
     background: #f44336;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.6rem;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -1115,14 +1115,14 @@ input:checked + .toggle-slider:before {
     }
     
     .group-cards-container {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
         padding: 15px;
     }
     
     .grid-flashcard {
         width: 100%;
-        height: 160px;
+        height: 100px;
     }
     
     /* Tab responsive styles */
