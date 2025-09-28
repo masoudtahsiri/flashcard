@@ -1637,7 +1637,7 @@ function generateStudentHTML() {
             if (groups.length === 0) {
                 groupsGrid.innerHTML = \`
                     <div class="empty-state">
-                        <h3>No groups available</h3>
+                        <h3>No units available</h3>
                     </div>
                 \`;
                 return;
