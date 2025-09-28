@@ -1414,14 +1414,6 @@ function deleteCardFromGrid(index) {
         flashcards.splice(index, 1);
         saveFlashcards();
         renderGridView();
-        
-        // Update single view if it's currently showing
-        if (currentViewMode === 'single') {
-            if (currentCardIndex >= flashcards.length) {
-                currentCardIndex = flashcards.length - 1;
-            }
-            updateFlashcard();
-        }
     }
 }
 
