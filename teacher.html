@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Flashcards - Teacher Mode</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-controls">
+            <h1>Interactive Flashcards - Teacher Mode</h1>
+            <div class="display-controls">
+                <div class="display-mode-toggle">
+                    <button id="singleViewBtn" class="view-btn active">Single View</button>
+                    <button id="gridViewBtn" class="view-btn">Grid View</button>
+                </div>
+                <button id="clearStorageBtn" class="clear-storage-btn" onclick="clearAllStorage()">Clear All</button>
+                <button id="pushToLiveBtn" class="push-to-live-btn" onclick="pushToLive()">🚀 Push to LIVE</button>
+            </div>
+        </div>
+        <div class="card-counter">
+            <span id="currentCard">1</span> / <span id="totalCards">6</span>
+        </div>
+        
+        <!-- Add New Card Section -->
+        <div class="add-card-section">
+            <h3>Add New Flashcard</h3>
+            <div class="add-card-form">
+                <div class="form-group">
+                    <label for="wordInput">Word:</label>
+                    <input type="text" id="wordInput" placeholder="Enter the word" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="imageInput">Image:</label>
+                    <input type="file" id="imageInput" accept="image/*">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                <button id="addCardBtn" class="add-btn">Add Card</button>
+            </div>
+        </div>
+        
+        <!-- Single View -->
+        <div class="single-view" id="singleView">
+            <div class="flashcard-container">
+                <div class="flashcard" id="currentFlashcard">
+                    <!-- Current flashcard will be displayed here -->
+                </div>
+            </div>
+            <div class="navigation">
+                <button id="prevBtn" class="nav-btn">← Previous</button>
+                <button id="nextBtn" class="nav-btn">Next →</button>
+                <button id="deleteBtn" class="nav-btn delete-btn">Delete Card</button>
+            </div>
+        </div>
+        
+        <!-- Grid View -->
+        <div class="grid-view" id="gridView" style="display: none;">
+            <div class="flashcard-grid" id="flashcardGrid">
+                <!-- All flashcards will be displayed here -->
+            </div>
+        </div>
+    </div>
+    <script src="teacher-script.js"></script>
+</body>
+</html>
