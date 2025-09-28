@@ -49,23 +49,19 @@ export default async function handler(req, res) {
 // Helper function to get flashcards from Blob storage
 async function getFlashcards() {
   try {
+    // Try to get the specific flashcards.json file
     const flashcardsBlob = await list({
-      prefix: 'flashcards-data/',
-      limit: 10
+      prefix: 'flashcards-data/flashcards.json',
+      limit: 1
     });
 
     if (flashcardsBlob.blobs.length === 0) {
       return [];
     }
 
-    // Sort by creation date to get the latest
-    const sortedBlobs = flashcardsBlob.blobs.sort((a, b) => 
-      new Date(b.uploadedAt) - new Date(a.uploadedAt)
-    );
-
-    // Get the latest flashcards data
-    const latestBlob = sortedBlobs[0];
-    const response = await fetch(latestBlob.url);
+    // Get the flashcards data
+    const blob = flashcardsBlob.blobs[0];
+    const response = await fetch(blob.url);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch flashcards data: ${response.statusText}`);
@@ -82,7 +78,7 @@ async function getFlashcards() {
 // Helper function to save flashcards to Blob storage
 async function saveFlashcards(flashcards) {
   try {
-    const filename = `flashcards-data/flashcards-${Date.now()}.json`;
+    const filename = 'flashcards-data/flashcards.json'; // Fixed filename - always update the same file
     const data = {
       flashcards: flashcards,
       timestamp: new Date().toISOString()
