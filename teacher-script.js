@@ -115,9 +115,15 @@ function renderGridView() {
     flashcards.forEach((card, index) => {
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
+        
+        // Find the group name for this card
+        const group = groups.find(g => g.id === card.groupId);
+        const groupName = group ? group.name : 'No Group';
+        
         gridCard.innerHTML = `
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
+            <div class="grid-flashcard-group">${groupName}</div>
             <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${index})">×</button>
         `;
         
@@ -130,6 +136,124 @@ function renderGridView() {
         
         grid.appendChild(gridCard);
     });
+}
+
+// Function to render grouped cards view
+function renderGroupedCardsView() {
+    const container = document.getElementById('groupedCardsContainer');
+    container.innerHTML = '';
+    
+    if (flashcards.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>No flashcards available</h3>
+                <p>Add a new flashcard using the form above</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Render cards for each group
+    groups.forEach(group => {
+        const groupCards = flashcards.filter(card => card.groupId === group.id);
+        
+        if (groupCards.length > 0) {
+            const groupSection = document.createElement('div');
+            groupSection.className = 'group-section';
+            
+            groupSection.innerHTML = `
+                <div class="group-header-section">
+                    <h3 class="group-title">${group.name}</h3>
+                    <span class="group-count">${groupCards.length} cards</span>
+                </div>
+                <div class="group-cards-grid" id="group-${group.id}">
+                    <!-- Cards for this group will be rendered here -->
+                </div>
+            `;
+            
+            const groupCardsGrid = groupSection.querySelector(`#group-${group.id}`);
+            
+            groupCards.forEach((card, index) => {
+                const originalIndex = flashcards.findIndex(c => c.id === card.id);
+                const gridCard = document.createElement('div');
+                gridCard.className = 'grid-flashcard';
+                gridCard.innerHTML = `
+                    <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
+                    <div class="grid-flashcard-text">${card.word}</div>
+                    <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
+                `;
+                
+                // Add click to play audio
+                gridCard.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('grid-flashcard-delete')) {
+                        playAudio(card.word, card.audioUrl);
+                    }
+                });
+                
+                groupCardsGrid.appendChild(gridCard);
+            });
+            
+            container.appendChild(groupSection);
+        }
+    });
+    
+    // Render cards without groups
+    const ungroupedCards = flashcards.filter(card => !card.groupId);
+    if (ungroupedCards.length > 0) {
+        const noGroupSection = document.createElement('div');
+        noGroupSection.className = 'group-section';
+        
+        noGroupSection.innerHTML = `
+            <div class="group-header-section" style="background: linear-gradient(135deg, #666 0%, #555 100%);">
+                <h3 class="group-title">No Group</h3>
+                <span class="group-count">${ungroupedCards.length} cards</span>
+            </div>
+            <div class="group-cards-grid" id="no-group">
+                <!-- Ungrouped cards will be rendered here -->
+            </div>
+        `;
+        
+        const noGroupGrid = noGroupSection.querySelector('#no-group');
+        
+        ungroupedCards.forEach((card, index) => {
+            const originalIndex = flashcards.findIndex(c => c.id === card.id);
+            const gridCard = document.createElement('div');
+            gridCard.className = 'grid-flashcard';
+            gridCard.innerHTML = `
+                <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
+                <div class="grid-flashcard-text">${card.word}</div>
+                <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
+            `;
+            
+            // Add click to play audio
+            gridCard.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('grid-flashcard-delete')) {
+                    playAudio(card.word, card.audioUrl);
+                }
+            });
+            
+            noGroupGrid.appendChild(gridCard);
+        });
+        
+        container.appendChild(noGroupSection);
+    }
+}
+
+// View control functions
+function showAllCards() {
+    document.getElementById('allCardsView').style.display = 'block';
+    document.getElementById('groupedCardsView').style.display = 'none';
+    document.getElementById('allCardsBtn').classList.add('active');
+    document.getElementById('groupedCardsBtn').classList.remove('active');
+    renderGridView();
+}
+
+function showGroupedCards() {
+    document.getElementById('allCardsView').style.display = 'none';
+    document.getElementById('groupedCardsView').style.display = 'block';
+    document.getElementById('allCardsBtn').classList.remove('active');
+    document.getElementById('groupedCardsBtn').classList.add('active');
+    renderGroupedCardsView();
 }
 
 // Function to clear all storage (emergency cleanup)
@@ -1616,6 +1740,9 @@ function deleteCardFromGrid(index) {
         flashcards.splice(index, 1);
         saveFlashcards();
         renderGridView();
+        if (document.getElementById('groupedCardsView').style.display !== 'none') {
+            renderGroupedCardsView();
+        }
     }
 }
 
@@ -1771,6 +1898,9 @@ function deleteGroup(groupId) {
         renderGroupsList();
         updateGroupSelect();
         renderGridView();
+        if (document.getElementById('groupedCardsView').style.display !== 'none') {
+            renderGroupedCardsView();
+        }
         
         alert('Group deleted successfully!');
     }
@@ -1849,8 +1979,11 @@ function addFlashcard(word, imageFile, groupId) {
         try {
             await saveFlashcards();
             
-            // Refresh grid view
+            // Refresh both views
             renderGridView();
+            if (document.getElementById('groupedCardsView').style.display !== 'none') {
+                renderGroupedCardsView();
+            }
             
             // Clear form
             document.getElementById('wordInput').value = '';

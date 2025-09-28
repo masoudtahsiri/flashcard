@@ -16,8 +16,21 @@
         </div>
         
         <div class="grid-view" id="gridView">
-            <div class="flashcard-grid" id="flashcardGrid">
-                <!-- Grid cards will be rendered here -->
+            <div class="view-controls">
+                <button id="allCardsBtn" class="view-control-btn active" onclick="showAllCards()">All Cards</button>
+                <button id="groupedCardsBtn" class="view-control-btn" onclick="showGroupedCards()">By Groups</button>
+            </div>
+            
+            <div id="allCardsView">
+                <div class="flashcard-grid" id="flashcardGrid">
+                    <!-- All cards will be rendered here -->
+                </div>
+            </div>
+            
+            <div id="groupedCardsView" style="display: none;">
+                <div id="groupedCardsContainer">
+                    <!-- Grouped cards will be rendered here -->
+                </div>
             </div>
         </div>
         
