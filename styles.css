@@ -1188,3 +1188,241 @@ input:checked + .toggle-slider:before {
     border-radius: 8px;
     border: 1px solid #e0e0e0;
 }
+
+/* Kid-Friendly Student Interface Styles */
+/* Override body background for student interface */
+body:has(.group-selection), body:has(.flashcard-view) {
+    background: linear-gradient(135deg, #FFE066 0%, #FF6B6B 25%, #4ECDC4 50%, #A8E6CF 75%, #FFB3BA 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.group-selection {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+}
+
+.group-selection h2 {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #FF6B6B;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.group-selection h2::before {
+    content: "🌟";
+    margin-right: 15px;
+    font-size: 2rem;
+}
+
+.group-selection h2::after {
+    content: "🌟";
+    margin-left: 15px;
+    font-size: 2rem;
+}
+
+/* Student interface group cards - make them more colorful and fun */
+.group-selection .group-card,
+.group-selection .group-folder {
+    background: linear-gradient(135deg, #FFE066 0%, #FF6B6B 50%, #4ECDC4 100%);
+    border: 4px solid white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: rotate(-2deg);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: 'Fredoka', 'Inter', sans-serif;
+}
+
+.group-selection .group-card:nth-child(even),
+.group-selection .group-folder:nth-child(even) {
+    transform: rotate(2deg);
+    background: linear-gradient(135deg, #A8E6CF 0%, #88D8C0 50%, #78C2AD 100%);
+}
+
+.group-selection .group-card:nth-child(3n),
+.group-selection .group-folder:nth-child(3n) {
+    transform: rotate(-1deg);
+    background: linear-gradient(135deg, #FFB3BA 0%, #FFDFBA 50%, #FFFFBA 100%);
+}
+
+.group-selection .group-card:hover,
+.group-selection .group-folder:hover {
+    transform: rotate(0deg) scale(1.1);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    z-index: 10;
+}
+
+.group-selection .group-folder-name,
+.group-selection .group-name {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.group-selection .group-folder-count,
+.group-selection .group-count {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 500;
+    color: white;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid white;
+    border-radius: 20px;
+    padding: 4px 12px;
+}
+
+.group-selection .group-folder-icon,
+.group-selection .group-icon {
+    font-size: 3rem;
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Flashcard view for kids */
+.flashcard-view {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+}
+
+.flashcard-view .group-header h2 {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-size: 2rem;
+    color: #FF6B6B;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.flashcard-view .back-btn {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    transition: all 0.3s ease;
+}
+
+.flashcard-view .back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.flashcard {
+    background: linear-gradient(135deg, #FFE066 0%, #FF6B6B 100%);
+    border: 6px solid white;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.flashcard::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+}
+
+.flashcard-text {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    padding: 20px;
+}
+
+.nav-btn {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+}
+
+.nav-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+.card-counter {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #FF6B6B;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 3px solid #FFE066;
+}
+
+/* Mobile responsiveness for kids - larger touch targets */
+@media (max-width: 768px) {
+    .group-selection h2 {
+        font-size: 2rem;
+    }
+    
+    .group-selection .group-card,
+    .group-selection .group-folder {
+        width: 160px;
+        height: 140px;
+        margin: 10px;
+    }
+    
+    .group-selection .group-folder-name,
+    .group-selection .group-name {
+        font-size: 1.1rem;
+    }
+    
+    .flashcard {
+        min-height: 300px;
+        margin: 20px;
+    }
+    
+    .flashcard-text {
+        font-size: 2rem;
+    }
+    
+    .nav-btn {
+        padding: 18px 35px;
+        font-size: 1.3rem;
+        margin: 10px;
+    }
+    
+    .card-counter {
+        font-size: 1.3rem;
+        padding: 12px 24px;
+    }
+}
