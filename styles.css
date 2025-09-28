@@ -550,14 +550,14 @@ input:checked + .toggle-slider:before {
 .groups-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 30px;
+    gap: 20px;
     justify-items: center;
-    margin: 30px 0;
-    padding: 30px;
+    margin: 20px 0;
+    padding: 25px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    min-height: 300px;
+    min-height: 250px;
 }
 
 .group-folder {
@@ -682,17 +682,20 @@ input:checked + .toggle-slider:before {
 }
 
 .grid-flashcard-group {
-    height: 15%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
     font-size: 0.8rem;
-    font-weight: 500;
-    color: #666;
-    background: #f8f9fa;
-    border-radius: 0 0 12px 12px;
-    padding: 2px 8px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
 }
+
 
 .grid-flashcard-delete {
     position: absolute;
@@ -1034,8 +1037,8 @@ input:checked + .toggle-slider:before {
     /* Enhanced responsive styles for new grid system */
     .groups-grid {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 20px;
-        padding: 20px;
+        gap: 15px;
+        padding: 15px;
     }
     
     .group-folder {
