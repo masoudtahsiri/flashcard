@@ -603,8 +603,8 @@ input:checked + .toggle-slider:before {
 /* Groups Grid (Folder View) */
 .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
     justify-items: center;
     margin: 15px 0;
     padding: 20px;
