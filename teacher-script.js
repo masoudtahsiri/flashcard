@@ -1521,7 +1521,6 @@ async function loadFlashcards() {
         if (result.success && result.flashcards) {
             flashcards = result.flashcards;
             nextId = flashcards.length > 0 ? Math.max(...flashcards.map(card => card.id)) + 1 : 1;
-            console.log('Flashcards loaded from shared storage:', flashcards.length);
         } else {
             flashcards = [];
             nextId = 1;
@@ -1572,7 +1571,6 @@ function addFlashcard(word, imageFile) {
             // Wait for save to complete before proceeding
             try {
                 await saveFlashcards();
-                console.log('Flashcard saved successfully to shared storage');
                 
                 // Refresh grid view
                 renderGridView();

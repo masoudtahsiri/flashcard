@@ -8,7 +8,6 @@ export default async function handler(req, res) {
       case 'GET':
         // Get all flashcards
         const flashcardsData = await getFlashcards();
-        console.log('API GET: Returning', flashcardsData.length, 'flashcards');
         res.status(200).json({ success: true, flashcards: flashcardsData });
         break;
 
@@ -19,15 +18,7 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'Missing flashcards data' });
         }
         
-        console.log('API POST: Saving', flashcards.length, 'flashcards');
-        console.log('First flashcard sample:', flashcards[0] ? {
-          id: flashcards[0].id,
-          word: flashcards[0].word,
-          imageUrl: flashcards[0].image ? flashcards[0].image.substring(0, 50) + '...' : 'No image'
-        } : 'No flashcards');
-        
         await saveFlashcards(flashcards);
-        console.log('API POST: Successfully saved', flashcards.length, 'flashcards');
         res.status(200).json({ success: true, message: 'Flashcards saved successfully' });
         break;
 
@@ -70,8 +61,12 @@ async function getFlashcards() {
     // Get the latest flashcards data
     const latestBlob = sortedBlobs[0];
     const response = await fetch(latestBlob.url);
-    const data = await response.json();
     
+    if (!response.ok) {
+      throw new Error(`Failed to fetch flashcards data: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
     return data.flashcards || [];
   } catch (error) {
     console.error('Error getting flashcards:', error);
@@ -88,15 +83,10 @@ async function saveFlashcards(flashcards) {
       timestamp: new Date().toISOString()
     };
 
-    console.log('Saving to filename:', filename);
-    console.log('Data contains', flashcards.length, 'flashcards');
-
     await put(filename, JSON.stringify(data), {
       access: 'public',
       contentType: 'application/json',
     });
-
-    console.log('Successfully saved flashcards to Blob storage');
 
     // Clean up old flashcards files (keep only the latest 5)
     const allBlobs = await list({
@@ -110,7 +100,9 @@ async function saveFlashcards(flashcards) {
         new Date(a.uploadedAt) - new Date(b.uploadedAt)
       );
       
-      const toDelete = sortedBlobs.slice(0, -5);
+      // Keep the newest 5 files, delete the oldest ones
+      const toDelete = sortedBlobs.slice(0, sortedBlobs.length - 5);
+      
       for (const blob of toDelete) {
         await del(blob.url);
       }

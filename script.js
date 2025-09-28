@@ -57,7 +57,6 @@ async function loadFlashcards() {
         
         if (result.success && result.flashcards) {
             flashcards = result.flashcards;
-            console.log('Flashcards loaded from shared storage:', flashcards.length);
         } else {
             flashcards = []; // Start with empty array, no default cards
         }
@@ -215,12 +214,9 @@ async function refreshFlashcards() {
     const oldCount = flashcards.length;
     await loadFlashcards();
     
-    console.log('Refresh: Old count:', oldCount, 'New count:', flashcards.length);
-    
     // If new cards were added, update the display
     if (flashcards.length > oldCount) {
         updateFlashcard();
-        console.log('New flashcards loaded from teacher!');
     }
 }
 
