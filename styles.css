@@ -344,6 +344,18 @@ input:checked + .toggle-slider:before {
     box-shadow: none;
 }
 
+.image-preview {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .add-btn {
     padding: 12px 24px;
     font-size: 1.1rem;
