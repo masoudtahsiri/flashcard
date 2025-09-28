@@ -16,7 +16,7 @@ body {
 
 .container {
     text-align: center;
-    max-width: 1200px;
+    max-width: 800px;
     width: 100%;
 }
 
@@ -603,28 +603,28 @@ input:checked + .toggle-slider:before {
 /* Groups Grid (Folder View) */
 .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
     justify-items: center;
-    margin: 20px 0;
-    padding: 25px;
+    margin: 15px 0;
+    padding: 20px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 20px;
+    border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    min-height: 250px;
+    min-height: 180px;
 }
 
 .group-folder {
-    width: 220px;
-    height: 200px;
+    width: 140px;
+    height: 120px;
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    border: 3px solid transparent;
+    border: 2px solid transparent;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -634,38 +634,39 @@ input:checked + .toggle-slider:before {
 }
 
 .group-folder:hover {
-    transform: translateY(-12px) scale(1.05);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
     border-color: #4CAF50;
 }
 
 .group-folder:active {
-    transform: translateY(-6px) scale(1.02);
+    transform: translateY(-3px) scale(1.01);
 }
 
 .group-folder-icon {
-    font-size: 5rem;
-    margin-bottom: 20px;
+    font-size: 2.5rem;
+    margin-bottom: 8px;
     opacity: 0.9;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .group-folder-name {
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: #333;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    line-height: 1.2;
 }
 
 .group-folder-count {
-    font-size: 1rem;
+    font-size: 0.7rem;
     color: #666;
-    font-weight: 600;
+    font-weight: 500;
     background: rgba(76, 175, 80, 0.1);
-    padding: 4px 12px;
-    border-radius: 15px;
+    padding: 2px 6px;
+    border-radius: 8px;
     border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
@@ -688,31 +689,31 @@ input:checked + .toggle-slider:before {
 
 .group-cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    padding: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    padding: 20px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 20px;
+    border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    min-height: 400px;
+    min-height: 300px;
 }
 
 .grid-flashcard {
-    width: 280px;
-    height: 220px;
+    width: 220px;
+    height: 180px;
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    border: 3px solid transparent;
+    border: 2px solid transparent;
 }
 
 .grid-flashcard:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
     border-color: #4CAF50;
 }
 
@@ -1090,33 +1091,38 @@ input:checked + .toggle-slider:before {
     
     /* Enhanced responsive styles for new grid system */
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
         padding: 15px;
     }
     
     .group-folder {
-        width: 180px;
-        height: 160px;
+        width: 120px;
+        height: 100px;
     }
     
     .group-folder-icon {
-        font-size: 3.5rem;
+        font-size: 2rem;
     }
     
     .group-folder-name {
-        font-size: 1.1rem;
+        font-size: 0.8rem;
+    }
+    
+    .group-folder-count {
+        font-size: 0.6rem;
+        padding: 1px 4px;
     }
     
     .group-cards-container {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        padding: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        padding: 15px;
     }
     
     .grid-flashcard {
         width: 100%;
-        height: 200px;
+        height: 160px;
     }
     
     /* Tab responsive styles */
