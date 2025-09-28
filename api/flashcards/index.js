@@ -3,6 +3,11 @@ import { put, list, del } from '@vercel/blob';
 export default async function handler(req, res) {
   const { method } = req;
 
+  // Add cache control headers to prevent caching
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   try {
     switch (method) {
       case 'GET':

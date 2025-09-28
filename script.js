@@ -47,7 +47,13 @@ let currentCardIndex = 0;
 // Function to load flashcards from API (shared storage)
 async function loadFlashcards() {
     try {
-        const response = await fetch('/api/flashcards');
+        // Add timestamp to prevent caching
+        const response = await fetch(`/api/flashcards?t=${Date.now()}`, {
+            cache: 'no-cache',
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        });
         
         if (!response.ok) {
             throw new Error(`Load failed: ${response.statusText}`);
@@ -55,15 +61,15 @@ async function loadFlashcards() {
 
         const result = await response.json();
         
-        if (result.success && result.flashcards) {
+        if (result.success && result.flashcards && result.flashcards.length > 0) {
             flashcards = result.flashcards;
         } else {
-            flashcards = []; // Start with empty array, no default cards
+            // Only set empty if we're sure there are no flashcards
+            flashcards = [];
         }
     } catch (error) {
         console.error('Error loading flashcards:', error);
-        // Fallback to empty array
-        flashcards = [];
+        // Don't change flashcards array on error - keep existing data
     }
 }
 
@@ -214,8 +220,12 @@ async function refreshFlashcards() {
     const oldCount = flashcards.length;
     await loadFlashcards();
     
-    // If new cards were added, update the display
-    if (flashcards.length > oldCount) {
+    // Always update display if flashcards exist, even if count is same
+    // This handles cases where the same flashcards are returned but display was lost
+    if (flashcards.length > 0) {
+        updateFlashcard();
+    } else if (oldCount > 0 && flashcards.length === 0) {
+        // If we had flashcards before but now we don't, update to show empty state
         updateFlashcard();
     }
 }
@@ -249,6 +259,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
     
-    // Check for new flashcards every 2 seconds (in case teacher adds cards)
-    setInterval(refreshFlashcards, 2000);
+    // Check for new flashcards every 1 second (in case teacher adds cards)
+    setInterval(refreshFlashcards, 1000);
 });
