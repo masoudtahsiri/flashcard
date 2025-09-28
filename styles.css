@@ -1203,8 +1203,8 @@ body:has(.group-selection), body:has(.flashcard-view) {
     font-family: 'Fredoka', 'Inter', sans-serif;
     font-size: 2.5rem;
     font-weight: 600;
-    color: #FF6B6B;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    color: #2C3E50;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
     margin-bottom: 30px;
     position: relative;
 }
