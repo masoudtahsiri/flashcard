@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/upload/index.js": {
+    "api/flashcards/index.js": {
       "maxDuration": 30
     }
   }
