@@ -229,23 +229,6 @@ function goToNext() {
     }
 }
 
-// Function to refresh flashcards from API
-async function refreshFlashcards() {
-    const oldCount = flashcards.length;
-    await loadFlashcards();
-    
-    // Only update display if something actually changed
-    if (flashcards.length !== oldCount) {
-        updateFlashcard();
-    } else if (flashcards.length > 0) {
-        // If count is same but we have cards, just ensure display is current
-        // Only update if we're on an invalid card index
-        if (currentCardIndex >= flashcards.length) {
-            currentCardIndex = 0;
-            updateFlashcard();
-        }
-    }
-}
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -276,13 +259,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
     
-    // Check for new flashcards every 5 seconds (much less frequent to avoid excessive requests)
-    setInterval(refreshFlashcards, 5000);
-    
-    // Also refresh when user returns to the tab (more efficient)
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-            refreshFlashcards();
-        }
-    });
+    // No auto-refresh needed - flashcards load once on page load
+    // Teachers can refresh the student page manually when they add new cards
 });
