@@ -785,7 +785,7 @@ input:checked + .toggle-slider:before {
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #666;
+    color: #000;
     text-align: center;
     padding: 40px;
 }
@@ -793,12 +793,12 @@ input:checked + .toggle-slider:before {
 .empty-state h3 {
     font-size: 1.5rem;
     margin-bottom: 10px;
-    color: #999;
+    color: #000;
 }
 
 .empty-state p {
     font-size: 1rem;
-    color: #aaa;
+    color: #333;
 }
 
 
