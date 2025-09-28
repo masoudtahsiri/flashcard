@@ -1638,7 +1638,6 @@ function generateStudentHTML() {
                 groupsGrid.innerHTML = \`
                     <div class="empty-state">
                         <h3>No groups available</h3>
-                        <p>Please ask your teacher to create groups</p>
                     </div>
                 \`;
                 return;
