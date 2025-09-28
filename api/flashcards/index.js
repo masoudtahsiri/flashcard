@@ -1,4 +1,28 @@
-import { put, list, del } from '@vercel/blob';
+import { MongoClient } from 'mongodb';
+
+const MONGODB_URI = process.env.MONGODB_URI || "MONGODB_URI_ENVIRONMENT_VARIABLE";
+const DB_NAME = 'flashcard';
+const COLLECTION_NAME = 'flashcards';
+
+let client;
+let db;
+
+async function connectToDatabase() {
+  if (client && db) {
+    return { client, db };
+  }
+
+  try {
+    client = new MongoClient(MONGODB_URI);
+    await client.connect();
+    db = client.db(DB_NAME);
+    console.log('Connected to MongoDB');
+    return { client, db };
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+}
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -9,28 +33,52 @@ export default async function handler(req, res) {
   res.setHeader('Expires', '0');
 
   try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection(COLLECTION_NAME);
+
     switch (method) {
       case 'GET':
         // Get all flashcards
-        const flashcardsData = await getFlashcards();
-        res.status(200).json({ success: true, flashcards: flashcardsData });
+        const flashcards = await collection.find({}).sort({ createdAt: -1 }).toArray();
+        res.status(200).json({ success: true, flashcards });
         break;
 
       case 'POST':
-        // Save flashcards
-        const { flashcards } = req.body;
-        if (!flashcards) {
+        // Save flashcards (replace all existing ones)
+        const { flashcards: newFlashcards } = req.body;
+        if (!newFlashcards || !Array.isArray(newFlashcards)) {
           return res.status(400).json({ error: 'Missing flashcards data' });
         }
+
+        // Clear existing flashcards and insert new ones
+        await collection.deleteMany({});
         
-        await saveFlashcards(flashcards);
-        res.status(200).json({ success: true, message: 'Flashcards saved successfully' });
+        if (newFlashcards.length > 0) {
+          // Add timestamps to each flashcard
+          const flashcardsWithTimestamps = newFlashcards.map(card => ({
+            ...card,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }));
+          
+          await collection.insertMany(flashcardsWithTimestamps);
+        }
+
+        res.status(200).json({ 
+          success: true, 
+          message: 'Flashcards saved successfully',
+          count: newFlashcards.length 
+        });
         break;
 
       case 'DELETE':
         // Clear all flashcards
-        await clearFlashcards();
-        res.status(200).json({ success: true, message: 'All flashcards cleared' });
+        const deleteResult = await collection.deleteMany({});
+        res.status(200).json({ 
+          success: true, 
+          message: 'All flashcards cleared',
+          deletedCount: deleteResult.deletedCount 
+        });
         break;
 
       default:
@@ -43,70 +91,5 @@ export default async function handler(req, res) {
       error: 'Internal server error',
       details: error.message 
     });
-  }
-}
-
-// Helper function to get flashcards from Blob storage
-async function getFlashcards() {
-  try {
-    // Try to get the specific flashcards.json file
-    const flashcardsBlob = await list({
-      prefix: 'flashcards-data/flashcards.json',
-      limit: 1
-    });
-
-    if (flashcardsBlob.blobs.length === 0) {
-      return [];
-    }
-
-    // Get the flashcards data
-    const blob = flashcardsBlob.blobs[0];
-    const response = await fetch(blob.url);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch flashcards data: ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    return data.flashcards || [];
-  } catch (error) {
-    console.error('Error getting flashcards:', error);
-    return [];
-  }
-}
-
-// Helper function to save flashcards to Blob storage
-async function saveFlashcards(flashcards) {
-  try {
-    const filename = 'flashcards-data/flashcards.json'; // Fixed filename - always update the same file
-    const data = {
-      flashcards: flashcards,
-      timestamp: new Date().toISOString()
-    };
-
-    await put(filename, JSON.stringify(data), {
-      access: 'public',
-      contentType: 'application/json',
-    });
-  } catch (error) {
-    console.error('Error saving flashcards:', error);
-    throw error;
-  }
-}
-
-// Helper function to clear all flashcards
-async function clearFlashcards() {
-  try {
-    const allBlobs = await list({
-      prefix: 'flashcards-data/',
-      limit: 100
-    });
-
-    for (const blob of allBlobs.blobs) {
-      await del(blob.url);
-    }
-  } catch (error) {
-    console.error('Error clearing flashcards:', error);
-    throw error;
   }
 }

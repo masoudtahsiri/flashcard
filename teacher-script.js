@@ -1417,36 +1417,7 @@ function deleteCardFromGrid(index) {
     }
 }
 
-// Function to upload image to Vercel Blob Storage
-async function uploadToBlob(imageData, filename) {
-    try {
-        const response = await fetch('/api/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                imageData: imageData,
-                filename: filename
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Upload failed: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        
-        if (!result.success) {
-            throw new Error(result.error || 'Upload failed');
-        }
-
-        return result.url;
-    } catch (error) {
-        console.error('Blob upload error:', error);
-        throw error;
-    }
-}
+// Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
 function compressImage(file, maxWidth = 300, maxHeight = 225, quality = 0.7) {

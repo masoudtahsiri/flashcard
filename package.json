@@ -18,6 +18,6 @@
   "homepage": "https://github.com/masoudtahsiri/flashcard#readme",
   "description": "",
   "dependencies": {
-    "@vercel/blob": "^2.0.0"
+    "mongodb": "^6.20.0"
   }
 }
