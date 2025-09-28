@@ -58,6 +58,12 @@ let flashcards = [...defaultFlashcards];
 let groups = [...defaultGroups];
 let nextGroupId = 2;
 
+// Pagination variables
+let currentPage = 1;
+let itemsPerPage = 12;
+let currentView = 'allCards'; // 'allCards', 'groupFolders', 'groupDetail'
+let currentGroupIdForDetail = null;
+
 // Display mode functionality
 let currentViewMode = 'single'; // 'single' or 'grid'
 
@@ -99,6 +105,7 @@ function getImageUrl(imageData) {
 
 // Function to render grid view
 function renderGridView() {
+    currentView = 'allCards';
     const grid = document.getElementById('flashcardGrid');
     grid.innerHTML = '';
     
@@ -112,7 +119,11 @@ function renderGridView() {
         return;
     }
     
-    flashcards.forEach((card, index) => {
+    // Get paginated flashcards
+    const paginatedCards = getPaginatedItems(flashcards);
+    
+    paginatedCards.forEach((card, paginatedIndex) => {
+        const originalIndex = flashcards.findIndex(c => c.id === card.id);
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
         
@@ -124,7 +135,7 @@ function renderGridView() {
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
             <div class="grid-flashcard-group">${groupName}</div>
-            <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${index})">×</button>
+            <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
         `;
         
         // Add click to play audio
@@ -136,14 +147,29 @@ function renderGridView() {
         
         grid.appendChild(gridCard);
     });
+    
+    // Add pagination controls
+    createPaginationControls('allCardsView', flashcards.length, renderGridView);
 }
 
 // Function to render grouped cards view (folder navigation)
 function renderGroupedCardsView() {
+    currentView = 'groupFolders';
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
     
-    if (groups.length === 0) {
+    // Create array of all folders (groups + ungrouped)
+    let allFolders = [...groups];
+    const ungroupedCards = flashcards.filter(card => !card.groupId);
+    if (ungroupedCards.length > 0) {
+        allFolders.push({
+            id: null,
+            name: 'No Group',
+            isNoGroup: true
+        });
+    }
+    
+    if (allFolders.length === 0) {
         groupsGrid.innerHTML = `
             <div class="empty-state">
                 <h3>No groups available</h3>
@@ -153,46 +179,40 @@ function renderGroupedCardsView() {
         return;
     }
     
-    // Render each group as a folder
-    groups.forEach(group => {
-        const groupCards = flashcards.filter(card => card.groupId === group.id);
+    // Get paginated folders
+    const paginatedFolders = getPaginatedItems(allFolders);
+    
+    // Render each folder
+    paginatedFolders.forEach(folder => {
+        const groupCards = folder.isNoGroup ? 
+            ungroupedCards : 
+            flashcards.filter(card => card.groupId === folder.id);
         
         const groupFolder = document.createElement('div');
         groupFolder.className = 'group-folder';
         groupFolder.innerHTML = `
-            <div class="group-folder-icon">📁</div>
-            <div class="group-folder-name">${group.name}</div>
+            <div class="group-folder-icon">${folder.isNoGroup ? '📂' : '📁'}</div>
+            <div class="group-folder-name">${folder.name}</div>
             <div class="group-folder-count">${groupCards.length} cards</div>
         `;
         
         groupFolder.addEventListener('click', () => {
-            showGroupDetail(group.id, group.name);
+            showGroupDetail(folder.id, folder.name);
         });
         
         groupsGrid.appendChild(groupFolder);
     });
     
-    // Add "No Group" folder if there are ungrouped cards
-    const ungroupedCards = flashcards.filter(card => !card.groupId);
-    if (ungroupedCards.length > 0) {
-        const noGroupFolder = document.createElement('div');
-        noGroupFolder.className = 'group-folder';
-        noGroupFolder.innerHTML = `
-            <div class="group-folder-icon">📂</div>
-            <div class="group-folder-name">No Group</div>
-            <div class="group-folder-count">${ungroupedCards.length} cards</div>
-        `;
-        
-        noGroupFolder.addEventListener('click', () => {
-            showGroupDetail(null, 'No Group');
-        });
-        
-        groupsGrid.appendChild(noGroupFolder);
-    }
+    // Add pagination controls
+    createPaginationControls('groupedCardsView', allFolders.length, renderGroupedCardsView);
 }
 
 // Function to show group detail view
 function showGroupDetail(groupId, groupName) {
+    currentView = 'groupDetail';
+    currentGroupIdForDetail = groupId;
+    currentPage = 1; // Reset to first page when opening group
+    
     // Hide groups grid and show group detail
     document.getElementById('groupsGrid').style.display = 'none';
     document.getElementById('groupDetailView').style.display = 'block';
@@ -200,9 +220,14 @@ function showGroupDetail(groupId, groupName) {
     // Update header
     document.getElementById('selectedGroupName').textContent = groupName;
     
+    renderGroupDetailCards();
+}
+
+// Function to render cards in group detail view with pagination
+function renderGroupDetailCards() {
     // Filter cards for this group
-    const groupCards = groupId ? 
-        flashcards.filter(card => card.groupId === groupId) : 
+    const groupCards = currentGroupIdForDetail ? 
+        flashcards.filter(card => card.groupId === currentGroupIdForDetail) : 
         flashcards.filter(card => !card.groupId);
     
     // Render cards
@@ -219,7 +244,10 @@ function showGroupDetail(groupId, groupName) {
         return;
     }
     
-    groupCards.forEach((card, index) => {
+    // Get paginated cards
+    const paginatedCards = getPaginatedItems(groupCards);
+    
+    paginatedCards.forEach((card, paginatedIndex) => {
         const originalIndex = flashcards.findIndex(c => c.id === card.id);
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
@@ -238,6 +266,9 @@ function showGroupDetail(groupId, groupName) {
         
         container.appendChild(gridCard);
     });
+    
+    // Add pagination controls
+    createPaginationControls('groupDetailView', groupCards.length, renderGroupDetailCards);
 }
 
 // Function to go back to groups view
@@ -272,8 +303,68 @@ function showTab(tabName) {
     }
 }
 
+// Pagination functions
+function createPaginationControls(containerId, totalItems, onPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Remove existing pagination
+    const existingPagination = container.querySelector('.pagination-controls');
+    if (existingPagination) {
+        existingPagination.remove();
+    }
+    
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    if (totalPages <= 1) return; // No pagination needed
+    
+    const paginationDiv = document.createElement('div');
+    paginationDiv.className = 'pagination-controls';
+    
+    // Previous button
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '← Previous';
+    prevBtn.className = 'pagination-btn';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            onPageChange();
+        }
+    };
+    
+    // Page info
+    const pageInfo = document.createElement('span');
+    pageInfo.className = 'pagination-info';
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next →';
+    nextBtn.className = 'pagination-btn';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            onPageChange();
+        }
+    };
+    
+    paginationDiv.appendChild(prevBtn);
+    paginationDiv.appendChild(pageInfo);
+    paginationDiv.appendChild(nextBtn);
+    
+    container.appendChild(paginationDiv);
+}
+
+function getPaginatedItems(items) {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return items.slice(startIndex, endIndex);
+}
+
 // View control functions
 function showAllCards() {
+    currentPage = 1; // Reset pagination
     document.getElementById('allCardsView').style.display = 'block';
     document.getElementById('groupedCardsView').style.display = 'none';
     document.getElementById('allCardsBtn').classList.add('active');
@@ -282,6 +373,7 @@ function showAllCards() {
 }
 
 function showGroupedCards() {
+    currentPage = 1; // Reset pagination
     document.getElementById('allCardsView').style.display = 'none';
     document.getElementById('groupedCardsView').style.display = 'block';
     document.getElementById('groupsGrid').style.display = 'grid';

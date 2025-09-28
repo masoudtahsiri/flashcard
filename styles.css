@@ -1139,3 +1139,49 @@ input:checked + .toggle-slider:before {
         padding: 20px;
     }
 }
+
+/* Pagination Styles */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.pagination-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.pagination-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    background: #f8f9fa;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
