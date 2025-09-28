@@ -549,27 +549,28 @@ input:checked + .toggle-slider:before {
 /* Groups Grid (Folder View) */
 .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
     justify-items: center;
     margin: 30px 0;
-    padding: 25px;
-    background: #f8f9fa;
-    border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    min-height: 300px;
 }
 
 .group-folder {
-    width: 200px;
-    height: 180px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    width: 220px;
+    height: 200px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    border: 4px solid white;
+    border: 3px solid transparent;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -579,32 +580,39 @@ input:checked + .toggle-slider:before {
 }
 
 .group-folder:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    transform: translateY(-12px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    border-color: #4CAF50;
 }
 
 .group-folder:active {
-    transform: scale(0.98);
+    transform: translateY(-6px) scale(1.02);
 }
 
 .group-folder-icon {
-    font-size: 4rem;
-    margin-bottom: 15px;
-    opacity: 0.8;
+    font-size: 5rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .group-folder-name {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: 700;
     color: #333;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .group-folder-count {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #666;
-    font-weight: 500;
+    font-weight: 600;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 4px 12px;
+    border-radius: 15px;
+    border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
 /* Group Detail View */
@@ -626,30 +634,32 @@ input:checked + .toggle-slider:before {
 
 .group-cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 25px;
-    background: #f8f9fa;
-    border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
 }
 
 .grid-flashcard {
     width: 280px;
-    height: 200px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    height: 220px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    border: 3px solid white;
+    border: 3px solid transparent;
 }
 
 .grid-flashcard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    border-color: #4CAF50;
 }
 
 .grid-flashcard-image {
@@ -1019,5 +1029,36 @@ input:checked + .toggle-slider:before {
     
     .group-header h2 {
         font-size: 1.5rem;
+    }
+    
+    /* Enhanced responsive styles for new grid system */
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .group-folder {
+        width: 180px;
+        height: 160px;
+    }
+    
+    .group-folder-icon {
+        font-size: 3.5rem;
+    }
+    
+    .group-folder-name {
+        font-size: 1.1rem;
+    }
+    
+    .group-cards-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .grid-flashcard {
+        width: 100%;
+        height: 200px;
     }
 }

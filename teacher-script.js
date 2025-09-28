@@ -242,8 +242,12 @@ function showGroupDetail(groupId, groupName) {
 
 // Function to go back to groups view
 function goBackToGroups() {
-    document.getElementById('groupsGrid').style.display = 'block';
+    document.getElementById('groupsGrid').style.display = 'grid';
     document.getElementById('groupDetailView').style.display = 'none';
+    // Force re-render to fix layout issues
+    setTimeout(() => {
+        renderGroupedCardsView();
+    }, 10);
 }
 
 // View control functions
@@ -258,6 +262,8 @@ function showAllCards() {
 function showGroupedCards() {
     document.getElementById('allCardsView').style.display = 'none';
     document.getElementById('groupedCardsView').style.display = 'block';
+    document.getElementById('groupsGrid').style.display = 'grid';
+    document.getElementById('groupDetailView').style.display = 'none';
     document.getElementById('allCardsBtn').classList.remove('active');
     document.getElementById('groupedCardsBtn').classList.add('active');
     renderGroupedCardsView();
