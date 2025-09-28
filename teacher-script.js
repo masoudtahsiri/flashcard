@@ -1559,7 +1559,7 @@ function addFlashcard(word, imageFile) {
         
         // Upload to Vercel Blob
         addBtn.textContent = 'Uploading...';
-        uploadToBlob(compressedImage, filename).then(blobUrl => {
+        uploadToBlob(compressedImage, filename).then(async (blobUrl) => {
             const newCard = {
                 id: nextId++,
                 word: word.trim(),
@@ -1568,21 +1568,33 @@ function addFlashcard(word, imageFile) {
             };
             
             flashcards.push(newCard);
-            saveFlashcards();
             
-            // Refresh grid view
-            renderGridView();
-            
-            // Clear form
-            document.getElementById('wordInput').value = '';
-            document.getElementById('imageInput').value = '';
-            document.getElementById('imagePreview').innerHTML = '';
-            
-            // Reset button
-            addBtn.textContent = originalText;
-            addBtn.disabled = false;
-            
-            alert('Card added successfully!');
+            // Wait for save to complete before proceeding
+            try {
+                await saveFlashcards();
+                console.log('Flashcard saved successfully to shared storage');
+                
+                // Refresh grid view
+                renderGridView();
+                
+                // Clear form
+                document.getElementById('wordInput').value = '';
+                document.getElementById('imageInput').value = '';
+                document.getElementById('imagePreview').innerHTML = '';
+                
+                // Reset button
+                addBtn.textContent = originalText;
+                addBtn.disabled = false;
+                
+                alert('Card added successfully!');
+            } catch (saveError) {
+                console.error('Error saving flashcard:', saveError);
+                alert('Card added but failed to save to shared storage. Please try again.');
+                
+                // Reset button
+                addBtn.textContent = originalText;
+                addBtn.disabled = false;
+            }
         }).catch(uploadError => {
             console.error('Error uploading to Blob:', uploadError);
             alert('Error uploading image. Please try again.');
