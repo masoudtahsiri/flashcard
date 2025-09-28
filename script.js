@@ -73,11 +73,17 @@ async function loadFlashcards() {
     }
 }
 
-// Function to get image URL with cache-busting
-function getImageUrl(baseUrl) {
-    if (!baseUrl) return '';
-    // Remove any existing timestamp and add a fresh one
-    const cleanUrl = baseUrl.split('?')[0];
+// Function to get image URL (handles both base64 and blob URLs)
+function getImageUrl(imageData) {
+    if (!imageData) return '';
+    
+    // If it's already a base64 data URL, return as is
+    if (imageData.startsWith('data:')) {
+        return imageData;
+    }
+    
+    // If it's a blob URL, add cache-busting timestamp
+    const cleanUrl = imageData.split('?')[0];
     return `${cleanUrl}?t=${Date.now()}`;
 }
 
@@ -108,8 +114,7 @@ function updateFlashcard() {
     const flashcardElement = document.getElementById('currentFlashcard');
     
     flashcardElement.innerHTML = `
-        <img src="${getImageUrl(currentCard.image)}" alt="${currentCard.word}" class="flashcard-image" 
-             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+Cjwvc3ZnPg==';">
+        <img src="${getImageUrl(currentCard.image)}" alt="${currentCard.word}" class="flashcard-image">
         <div class="flashcard-text">${currentCard.word}</div>
     `;
     

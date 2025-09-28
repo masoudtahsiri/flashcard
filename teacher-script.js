@@ -63,11 +63,17 @@ function switchViewMode(mode) {
     }
 }
 
-// Function to get image URL with cache-busting
-function getImageUrl(baseUrl) {
-    if (!baseUrl) return '';
-    // Remove any existing timestamp and add a fresh one
-    const cleanUrl = baseUrl.split('?')[0];
+// Function to get image URL (handles both base64 and blob URLs)
+function getImageUrl(imageData) {
+    if (!imageData) return '';
+    
+    // If it's already a base64 data URL, return as is
+    if (imageData.startsWith('data:')) {
+        return imageData;
+    }
+    
+    // If it's a blob URL, add cache-busting timestamp
+    const cleanUrl = imageData.split('?')[0];
     return `${cleanUrl}?t=${Date.now()}`;
 }
 
@@ -90,8 +96,7 @@ function renderGridView() {
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
         gridCard.innerHTML = `
-            <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image" 
-                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+Cjwvc3ZnPg==';">
+            <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
             <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${index})">×</button>
         `;
@@ -1560,56 +1565,42 @@ function addFlashcard(word, imageFile) {
     addBtn.textContent = 'Compressing...';
     addBtn.disabled = true;
     
-    // Compress image and upload to Vercel Blob
-    compressImage(imageFile).then(compressedImage => {
-        // Generate unique filename
-        const filename = `flashcard-${nextId}-${Date.now()}.jpg`;
+    // Compress image and store directly as base64
+    compressImage(imageFile).then(async (compressedImage) => {
+        const newCard = {
+            id: nextId++,
+            word: word.trim(),
+            image: compressedImage, // Store base64 data directly - no external dependencies
+            audioUrl: '' // Will use text-to-speech
+        };
         
-        // Upload to Vercel Blob
-        addBtn.textContent = 'Uploading...';
-        uploadToBlob(compressedImage, filename).then(async (blobUrl) => {
-            const newCard = {
-                id: nextId++,
-                word: word.trim(),
-                image: blobUrl, // Store the Blob URL instead of base64
-                audioUrl: '' // Will use text-to-speech
-            };
+        flashcards.push(newCard);
+        
+        // Wait for save to complete before proceeding
+        try {
+            await saveFlashcards();
             
-            flashcards.push(newCard);
+            // Refresh grid view
+            renderGridView();
             
-            // Wait for save to complete before proceeding
-            try {
-                await saveFlashcards();
-                
-                // Refresh grid view
-                renderGridView();
-                
-                // Clear form
-                document.getElementById('wordInput').value = '';
-                document.getElementById('imageInput').value = '';
-                document.getElementById('imagePreview').innerHTML = '';
-                
-                // Reset button
-                addBtn.textContent = originalText;
-                addBtn.disabled = false;
-                
-                alert('Card added successfully!');
-            } catch (saveError) {
-                console.error('Error saving flashcard:', saveError);
-                alert('Card added but failed to save to shared storage. Please try again.');
-                
-                // Reset button
-                addBtn.textContent = originalText;
-                addBtn.disabled = false;
-            }
-        }).catch(uploadError => {
-            console.error('Error uploading to Blob:', uploadError);
-            alert('Error uploading image. Please try again.');
+            // Clear form
+            document.getElementById('wordInput').value = '';
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
             
             // Reset button
             addBtn.textContent = originalText;
             addBtn.disabled = false;
-        });
+            
+            alert('Card added successfully!');
+        } catch (saveError) {
+            console.error('Error saving flashcard:', saveError);
+            alert('Card added but failed to save to shared storage. Please try again.');
+            
+            // Reset button
+            addBtn.textContent = originalText;
+            addBtn.disabled = false;
+        }
     }).catch(error => {
         console.error('Error compressing image:', error);
         alert('Error processing image. Please try a different image.');
