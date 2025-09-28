@@ -63,6 +63,14 @@ function switchViewMode(mode) {
     }
 }
 
+// Function to get image URL with cache-busting
+function getImageUrl(baseUrl) {
+    if (!baseUrl) return '';
+    // Remove any existing timestamp and add a fresh one
+    const cleanUrl = baseUrl.split('?')[0];
+    return `${cleanUrl}?t=${Date.now()}`;
+}
+
 // Function to render grid view
 function renderGridView() {
     const grid = document.getElementById('flashcardGrid');
@@ -82,7 +90,8 @@ function renderGridView() {
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
         gridCard.innerHTML = `
-            <img src="${card.image}&t=${Date.now()}" alt="${card.word}" class="grid-flashcard-image">
+            <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image" 
+                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+Cjwvc3ZnPg==';">
             <div class="grid-flashcard-text">${card.word}</div>
             <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${index})">×</button>
         `;

@@ -29,12 +29,10 @@ export default async function handler(req, res) {
       cacheControlMaxAge: 60, // Cache for only 60 seconds
     });
 
-    // Return the public URL with a timestamp to prevent caching
-    const urlWithTimestamp = `${blob.url}?t=${Date.now()}`;
-    
+    // Return the base URL without timestamp (timestamps added during display)
     res.status(200).json({ 
       success: true, 
-      url: urlWithTimestamp,
+      url: blob.url,
       filename: filename 
     });
 
