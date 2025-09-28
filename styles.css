@@ -1224,7 +1224,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
 /* Student interface group cards - make them more colorful and fun */
 .group-selection .group-card,
 .group-selection .group-folder {
-    background: linear-gradient(135deg, #FFE066 0%, #FF6B6B 50%, #4ECDC4 100%);
+    background: linear-gradient(135deg, #FF6B6B 0%, #E74C3C 100%);
     border: 4px solid white;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     transform: rotate(-2deg);
@@ -1235,13 +1235,31 @@ body:has(.group-selection), body:has(.flashcard-view) {
 .group-selection .group-card:nth-child(even),
 .group-selection .group-folder:nth-child(even) {
     transform: rotate(2deg);
-    background: linear-gradient(135deg, #A8E6CF 0%, #88D8C0 50%, #78C2AD 100%);
+    background: linear-gradient(135deg, #4ECDC4 0%, #2C3E50 100%);
 }
 
 .group-selection .group-card:nth-child(3n),
 .group-selection .group-folder:nth-child(3n) {
     transform: rotate(-1deg);
-    background: linear-gradient(135deg, #FFB3BA 0%, #FFDFBA 50%, #FFFFBA 100%);
+    background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%);
+}
+
+.group-selection .group-card:nth-child(4n),
+.group-selection .group-folder:nth-child(4n) {
+    transform: rotate(1deg);
+    background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+}
+
+.group-selection .group-card:nth-child(5n),
+.group-selection .group-folder:nth-child(5n) {
+    transform: rotate(-1.5deg);
+    background: linear-gradient(135deg, #27AE60 0%, #229954 100%);
+}
+
+.group-selection .group-card:nth-child(6n),
+.group-selection .group-folder:nth-child(6n) {
+    transform: rotate(2.5deg);
+    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
 }
 
 .group-selection .group-card:hover,
