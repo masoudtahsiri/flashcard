@@ -8,6 +8,7 @@ export default async function handler(req, res) {
       case 'GET':
         // Get all flashcards
         const flashcardsData = await getFlashcards();
+        console.log('API GET: Returning', flashcardsData.length, 'flashcards');
         res.status(200).json({ success: true, flashcards: flashcardsData });
         break;
 
@@ -18,6 +19,7 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'Missing flashcards data' });
         }
         
+        console.log('API POST: Saving', flashcards.length, 'flashcards');
         await saveFlashcards(flashcards);
         res.status(200).json({ success: true, message: 'Flashcards saved successfully' });
         break;
@@ -46,15 +48,20 @@ async function getFlashcards() {
   try {
     const flashcardsBlob = await list({
       prefix: 'flashcards-data/',
-      limit: 1
+      limit: 10
     });
 
     if (flashcardsBlob.blobs.length === 0) {
       return [];
     }
 
+    // Sort by creation date to get the latest
+    const sortedBlobs = flashcardsBlob.blobs.sort((a, b) => 
+      new Date(b.uploadedAt) - new Date(a.uploadedAt)
+    );
+
     // Get the latest flashcards data
-    const latestBlob = flashcardsBlob.blobs[0];
+    const latestBlob = sortedBlobs[0];
     const response = await fetch(latestBlob.url);
     const data = await response.json();
     

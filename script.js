@@ -215,6 +215,8 @@ async function refreshFlashcards() {
     const oldCount = flashcards.length;
     await loadFlashcards();
     
+    console.log('Refresh: Old count:', oldCount, 'New count:', flashcards.length);
+    
     // If new cards were added, update the display
     if (flashcards.length > oldCount) {
         updateFlashcard();
