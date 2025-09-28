@@ -110,7 +110,7 @@ function renderGroups() {
     }
     
     groups.forEach(group => {
-        const groupCards = flashcards.filter(card => card.groupId === group.id);
+        const groupCards = flashcards.filter(card => parseInt(card.groupId) === parseInt(group.id));
         const groupCard = document.createElement('div');
         groupCard.className = 'group-card';
         groupCard.innerHTML = `
@@ -129,7 +129,10 @@ function renderGroups() {
 
 function selectGroup(groupId) {
     currentGroupId = groupId;
-    currentGroupCards = flashcards.filter(card => card.groupId === groupId);
+    console.log('Selecting group:', groupId, 'Available flashcards:', flashcards);
+    console.log('Flashcards with groupId:', flashcards.map(card => ({ id: card.id, word: card.word, groupId: card.groupId })));
+    currentGroupCards = flashcards.filter(card => parseInt(card.groupId) === parseInt(groupId));
+    console.log('Filtered cards for group:', currentGroupCards);
     currentCardIndex = 0;
     
     // Update UI

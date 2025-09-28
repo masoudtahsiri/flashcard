@@ -1838,8 +1838,10 @@ function addFlashcard(word, imageFile, groupId) {
             word: word.trim(),
             image: compressedImage, // Store base64 data directly - no external dependencies
             audioUrl: '', // Will use text-to-speech
-            groupId: groupId || null
+            groupId: groupId ? parseInt(groupId) : null
         };
+        
+        console.log('Adding card with groupId:', newCard.groupId, 'Original groupId:', groupId);
         
         flashcards.push(newCard);
         
