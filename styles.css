@@ -1984,9 +1984,10 @@ body:has(.group-selection), body:has(.flashcard-view) {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    width: 4rem;
-    height: 4rem;
+    width: 6rem;
+    height: 6rem;
     display: inline-block;
+    font-size: 0;
 }
 
 /* Student interface group cards - make them more colorful and fun */
