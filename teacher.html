@@ -92,8 +92,22 @@
                             <input type="text" id="groupNameInput" placeholder="Enter unit name" class="text-input">
                         </div>
                         <button id="addGroupBtn" class="add-group-btn">Add Unit</button>
-                        <div id="groupsList" class="groups-list">
-                            <!-- Groups will be rendered here -->
+                        <div id="groupsTableContainer" class="groups-table-container">
+                            <table id="groupsTable" class="groups-table">
+                                <thead>
+                                    <tr>
+                                        <th>Unit Name</th>
+                                        <th>Parent Category</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupsTableBody">
+                                    <!-- Groups will be rendered here -->
+                                </tbody>
+                            </table>
+                            <div id="noGroupsMessage" class="no-groups-message" style="display: none;">
+                                <p>No units created yet. Add your first unit above.</p>
+                            </div>
                         </div>
                     </div>
                 </div>

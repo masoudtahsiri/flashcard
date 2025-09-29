@@ -2051,38 +2051,45 @@ function deleteGroup(groupId) {
     }
 }
 
-function editGroup(groupId) {
+// Table-based editing functions
+function editGroupTable(groupId) {
     const groupNameDisplay = document.getElementById(`groupName-${groupId}`);
-    const editForm = document.getElementById(`editForm-${groupId}`);
+    const parentNameDisplay = document.getElementById(`parentName-${groupId}`);
+    const groupNameInput = document.getElementById(`groupInput-${groupId}`);
+    const parentInput = document.getElementById(`parentInput-${groupId}`);
     const editBtn = document.getElementById(`editBtn-${groupId}`);
     const saveBtn = document.getElementById(`saveBtn-${groupId}`);
     const cancelBtn = document.getElementById(`cancelBtn-${groupId}`);
     
-    // Hide display and show edit form
+    // Hide display elements and show edit inputs
     groupNameDisplay.style.display = 'none';
-    editForm.style.display = 'block';
+    parentNameDisplay.style.display = 'none';
+    groupNameInput.style.display = 'block';
+    parentInput.style.display = 'block';
     
-    // Hide edit button, show save and cancel buttons
+    // Update button visibility
     editBtn.style.display = 'none';
     saveBtn.style.display = 'inline-block';
     cancelBtn.style.display = 'inline-block';
     
     // Focus on name input and select all text
-    const groupNameInput = document.getElementById(`groupInput-${groupId}`);
     groupNameInput.focus();
     groupNameInput.select();
     
     // Add enter key listener for quick save
-    groupNameInput.addEventListener('keydown', function(e) {
+    const handleKeydown = function(e) {
         if (e.key === 'Enter') {
-            saveGroupName(groupId);
+            saveGroupTable(groupId);
         } else if (e.key === 'Escape') {
-            cancelEditGroup(groupId);
+            cancelEditGroupTable(groupId);
         }
-    });
+    };
+    
+    groupNameInput.addEventListener('keydown', handleKeydown);
+    parentInput.addEventListener('keydown', handleKeydown);
 }
 
-function saveGroupName(groupId) {
+function saveGroupTable(groupId) {
     const groupNameInput = document.getElementById(`groupInput-${groupId}`);
     const parentInput = document.getElementById(`parentInput-${groupId}`);
     const newName = groupNameInput.value.trim();
@@ -2099,7 +2106,7 @@ function saveGroupName(groupId) {
         return;
     }
     
-    // Prevent circular references (group can't be its own parent or descendant)
+    // Prevent circular references
     if (newParentId === groupId) {
         alert('A unit cannot be its own parent');
         return;
@@ -2125,7 +2132,48 @@ function saveGroupName(groupId) {
     }
     
     // Exit edit mode
-    cancelEditGroup(groupId);
+    cancelEditGroupTable(groupId);
+}
+
+function cancelEditGroupTable(groupId) {
+    const groupNameDisplay = document.getElementById(`groupName-${groupId}`);
+    const parentNameDisplay = document.getElementById(`parentName-${groupId}`);
+    const groupNameInput = document.getElementById(`groupInput-${groupId}`);
+    const parentInput = document.getElementById(`parentInput-${groupId}`);
+    const editBtn = document.getElementById(`editBtn-${groupId}`);
+    const saveBtn = document.getElementById(`saveBtn-${groupId}`);
+    const cancelBtn = document.getElementById(`cancelBtn-${groupId}`);
+    
+    // Reset input values to original
+    const group = groups.find(g => g.id === groupId);
+    if (group) {
+        groupNameInput.value = group.name;
+        parentInput.value = group.parentId || '';
+    }
+    
+    // Show display elements and hide edit inputs
+    groupNameDisplay.style.display = 'block';
+    parentNameDisplay.style.display = 'block';
+    groupNameInput.style.display = 'none';
+    parentInput.style.display = 'none';
+    
+    // Update button visibility
+    editBtn.style.display = 'inline-block';
+    saveBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
+}
+
+// Legacy functions for backward compatibility (if needed elsewhere)
+function editGroup(groupId) {
+    editGroupTable(groupId);
+}
+
+function saveGroupName(groupId) {
+    saveGroupTable(groupId);
+}
+
+function cancelEditGroup(groupId) {
+    cancelEditGroupTable(groupId);
 }
 
 // Helper function to check if a group is a descendant of another
@@ -2195,41 +2243,56 @@ function updateAllGroupReferences() {
 }
 
 function renderGroupsList() {
-    const groupsList = document.getElementById('groupsList');
-    groupsList.innerHTML = '';
+    const tableBody = document.getElementById('groupsTableBody');
+    const noGroupsMessage = document.getElementById('noGroupsMessage');
+    const groupsTable = document.getElementById('groupsTable');
+    
+    tableBody.innerHTML = '';
     
     if (groups.length === 0) {
-        groupsList.innerHTML = '<p style="color: #666; font-style: italic;">No groups created yet</p>';
+        groupsTable.style.display = 'none';
+        noGroupsMessage.style.display = 'block';
         return;
     }
     
+    groupsTable.style.display = 'table';
+    noGroupsMessage.style.display = 'none';
+    
     groups.forEach(group => {
-        const groupItem = document.createElement('div');
-        groupItem.className = 'group-item';
+        const row = document.createElement('tr');
+        row.id = `groupRow-${group.id}`;
         
         // Get current parent name for display
         const parent = group.parentId ? groups.find(g => g.id === group.parentId) : null;
-        const parentDisplay = parent ? ` (under ${parent.name})` : '';
+        const parentDisplayText = parent ? parent.name : 'None';
+        const parentDisplayClass = parent ? 'parent-category-display' : 'no-parent';
         
-        groupItem.innerHTML = `
-            <div class="group-info">
-                <span class="group-name-display" id="groupName-${group.id}">${group.name}${parentDisplay}</span>
-                <div class="group-edit-form" id="editForm-${group.id}" style="display: none;">
-                    <input type="text" class="group-name-input" id="groupInput-${group.id}" value="${group.name}" placeholder="Unit name">
-                    <select class="group-parent-select" id="parentInput-${group.id}">
+        row.innerHTML = `
+            <td>
+                <div class="table-cell-content">
+                    <span class="group-name-display" id="groupName-${group.id}">${group.name}</span>
+                    <input type="text" class="table-edit-input" id="groupInput-${group.id}" value="${group.name}" style="display: none;">
+                </div>
+            </td>
+            <td>
+                <div class="table-cell-content">
+                    <span class="parent-display ${parentDisplayClass}" id="parentName-${group.id}">${parentDisplayText}</span>
+                    <select class="table-edit-select" id="parentInput-${group.id}" style="display: none;">
                         <option value="">None (Top Level)</option>
                     </select>
                 </div>
-            </div>
-            <div class="group-actions">
-                <button class="group-edit-btn" id="editBtn-${group.id}" onclick="editGroup(${group.id})" title="Edit unit">✏️</button>
-                <button class="group-save-btn" id="saveBtn-${group.id}" onclick="saveGroupName(${group.id})" style="display: none;" title="Save changes">✓</button>
-                <button class="group-cancel-btn" id="cancelBtn-${group.id}" onclick="cancelEditGroup(${group.id})" style="display: none;" title="Cancel editing">✗</button>
-                <button class="group-delete-btn" onclick="deleteGroup(${group.id})" title="Delete unit">×</button>
-            </div>
+            </td>
+            <td>
+                <div class="table-actions">
+                    <button class="table-edit-btn" id="editBtn-${group.id}" onclick="editGroupTable(${group.id})">Edit</button>
+                    <button class="table-save-btn" id="saveBtn-${group.id}" onclick="saveGroupTable(${group.id})" style="display: none;">Save</button>
+                    <button class="table-cancel-btn" id="cancelBtn-${group.id}" onclick="cancelEditGroupTable(${group.id})" style="display: none;">Cancel</button>
+                    <button class="table-delete-btn" onclick="deleteGroup(${group.id})">Delete</button>
+                </div>
+            </td>
         `;
         
-        groupsList.appendChild(groupItem);
+        tableBody.appendChild(row);
         
         // Populate parent select options for this group
         const parentSelect = document.getElementById(`parentInput-${group.id}`);

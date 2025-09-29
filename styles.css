@@ -443,6 +443,144 @@ input:checked + .toggle-slider:before {
     cursor: pointer;
 }
 
+/* Table-based category management */
+.groups-table-container {
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.groups-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-family: inherit;
+}
+
+.groups-table th {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.groups-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.groups-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.groups-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-cell-content {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+}
+
+.table-edit-input, .table-edit-select {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #f9fff9;
+}
+
+.table-edit-input:focus, .table-edit-select:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.table-edit-select {
+    cursor: pointer;
+}
+
+.table-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.table-edit-btn, .table-save-btn, .table-cancel-btn, .table-delete-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    text-align: center;
+}
+
+.table-edit-btn {
+    background: #2196F3;
+    color: white;
+}
+
+.table-edit-btn:hover {
+    background: #1976D2;
+}
+
+.table-save-btn {
+    background: #4CAF50;
+    color: white;
+}
+
+.table-save-btn:hover {
+    background: #45a049;
+}
+
+.table-cancel-btn {
+    background: #ff9800;
+    color: white;
+}
+
+.table-cancel-btn:hover {
+    background: #f57c00;
+}
+
+.table-delete-btn {
+    background: #f44336;
+    color: white;
+}
+
+.table-delete-btn:hover {
+    background: #d32f2f;
+}
+
+.no-groups-message {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    background: white;
+}
+
+.parent-category-display {
+    color: #666;
+    font-style: italic;
+}
+
+.no-parent {
+    color: #999;
+    font-style: italic;
+}
+
 .group-select {
     padding: 10px;
     border: 2px solid #ddd;
