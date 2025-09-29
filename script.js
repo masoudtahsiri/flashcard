@@ -283,6 +283,16 @@ function goBackToGroups() {
         currentGroupId = null;
         currentGroupCards = [];
         currentCardIndex = 0;
+    } else {
+        // We're in group selection view, check if we need to go back to main categories
+        const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+        if (groupSelectionHeader && groupSelectionHeader.style.display !== 'none') {
+            // We're in sub-categories, go back to main categories
+            groupSelectionHeader.style.display = 'none';
+            document.getElementById('topicSelectionTitle').textContent = 'Choose your Topic';
+            navigationHistory = []; // Clear history when going to main
+            renderGroups();
+        }
     }
 }
 
@@ -472,12 +482,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('prevBtn').addEventListener('click', goToPrevious);
     document.getElementById('nextBtn').addEventListener('click', goToNext);
     
-    // Set up back to groups button
-    document.getElementById('backToGroupsBtn').addEventListener('click', goBackToGroups);
-    
     // Initialize with groups view
     renderGroups();
-    
+
+    // Set up back button event listeners
+    const backFromUnitsBtn = document.getElementById('backFromUnitsBtn');
+    const backFromCardsBtn = document.getElementById('backFromCardsBtn');
+
+    if (backFromUnitsBtn) backFromUnitsBtn.addEventListener('click', goBackToGroups);
+    if (backFromCardsBtn) backFromCardsBtn.addEventListener('click', goBackToGroups);
+
     // Add keyboard navigation
     document.addEventListener('keydown', (event) => {
         if (event.key === 'ArrowLeft') {
@@ -486,7 +500,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             goToNext();
         }
     });
-    
+
     // No auto-refresh needed - flashcards load once on page load
     // Teachers can refresh the student page manually when they add new cards
 });
