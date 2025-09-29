@@ -294,11 +294,25 @@ let voices = [];
 // Load available voices and set Google US English as default
 // Load welcome title from localStorage or use default
 function loadWelcomeTitle() {
-    const welcomeTitle = localStorage.getItem('welcomeTitle') || 'Welcome to Mrs Sadaf 1B Class';
-    const titleElement = document.getElementById('welcomeTitle');
-    if (titleElement) {
-        titleElement.textContent = welcomeTitle;
+    const line1 = localStorage.getItem('welcomeTitleLine1') || 'Welcome to';
+    const line2 = localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class';
+    const font = localStorage.getItem('welcomeFont') || 'Arial Black';
+
+    const titleLine1Element = document.getElementById('welcomeTitleLine1');
+    const titleLine2Element = document.getElementById('welcomeTitleLine2');
+
+    if (titleLine1Element) {
+        titleLine1Element.textContent = line1;
     }
+    if (titleLine2Element) {
+        titleLine2Element.textContent = line2;
+    }
+
+    // Apply font to welcome title
+    const welcomeElements = document.querySelectorAll('.welcome-section h1');
+    welcomeElements.forEach(el => {
+        el.style.fontFamily = font + ', Arial, sans-serif';
+    });
 }
 
 function loadVoices() {

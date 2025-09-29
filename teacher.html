@@ -156,9 +156,26 @@
                         <h3>Student Interface Settings</h3>
 
                         <div class="form-group">
-                            <label for="welcomeTitleInput">Welcome Title:</label>
-                            <input type="text" id="welcomeTitleInput" placeholder="Enter welcome message for students">
-                            <small class="form-help">This will appear at the top of the student interface</small>
+                            <label for="welcomeTitleLine1">Welcome Title (Line 1):</label>
+                            <input type="text" id="welcomeTitleLine1" placeholder="Enter first line (e.g., 'Welcome to')">
+                            <small class="form-help">First line of the welcome message</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="welcomeTitleLine2">Welcome Title (Line 2):</label>
+                            <input type="text" id="welcomeTitleLine2" placeholder="Enter second line (e.g., 'Mrs Sadaf 1B Class')">
+                            <small class="form-help">Second line of the welcome message</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="welcomeFontSelect">Font Style:</label>
+                            <select id="welcomeFontSelect">
+                                <option value="Arial Black">Arial Black (Bold)</option>
+                                <option value="Impact">Impact (Bold)</option>
+                                <option value="Comic Sans MS">Comic Sans MS (Fun)</option>
+                                <option value="Fredoka">Fredoka (Rounded)</option>
+                            </select>
+                            <small class="form-help">Choose the font style for the welcome title</small>
                         </div>
 
                         <div class="form-actions">
@@ -170,7 +187,8 @@
                             <h4>Preview:</h4>
                             <div class="welcome-preview">
                                 <div class="welcome-section">
-                                    <h1 id="previewTitle">Welcome to Mrs Sadaf 1B Class</h1>
+                                    <h1 id="previewTitleLine1">Welcome to</h1>
+                                    <h1 id="previewTitleLine2">Mrs Sadaf 1B Class</h1>
                                 </div>
                             </div>
                         </div>

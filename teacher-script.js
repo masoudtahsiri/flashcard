@@ -470,52 +470,96 @@ function showTab(tabName) {
 
 // Settings functions
 function loadSettings() {
-    // Load welcome title from localStorage or use default
-    const welcomeTitle = localStorage.getItem('welcomeTitle') || 'Welcome to Mrs Sadaf 1B Class';
-    document.getElementById('welcomeTitleInput').value = welcomeTitle;
-    document.getElementById('previewTitle').textContent = welcomeTitle;
+    // Load welcome title lines from localStorage or use defaults
+    const line1 = localStorage.getItem('welcomeTitleLine1') || 'Welcome to';
+    const line2 = localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class';
+    const font = localStorage.getItem('welcomeFont') || 'Arial Black';
+
+    document.getElementById('welcomeTitleLine1').value = line1;
+    document.getElementById('welcomeTitleLine2').value = line2;
+    document.getElementById('welcomeFontSelect').value = font;
+
+    // Update preview
+    updatePreview();
+}
+
+function updatePreview() {
+    const line1 = document.getElementById('welcomeTitleLine1').value || 'Welcome to';
+    const line2 = document.getElementById('welcomeTitleLine2').value || 'Mrs Sadaf 1B Class';
+    const font = document.getElementById('welcomeFontSelect').value;
+
+    document.getElementById('previewTitleLine1').textContent = line1;
+    document.getElementById('previewTitleLine2').textContent = line2;
+
+    // Apply font to preview
+    const previewElements = document.querySelectorAll('.welcome-preview .welcome-section h1');
+    previewElements.forEach(el => {
+        el.style.fontFamily = font + ', Arial, sans-serif';
+    });
 }
 
 function saveWelcomeTitle() {
-    const welcomeTitle = document.getElementById('welcomeTitleInput').value.trim();
+    const line1 = document.getElementById('welcomeTitleLine1').value.trim();
+    const line2 = document.getElementById('welcomeTitleLine2').value.trim();
+    const font = document.getElementById('welcomeFontSelect').value;
 
-    if (!welcomeTitle) {
-        alert('Please enter a welcome title.');
+    if (!line1 || !line2) {
+        alert('Please enter both lines of the welcome title.');
         return;
     }
 
     // Save to localStorage
-    localStorage.setItem('welcomeTitle', welcomeTitle);
+    localStorage.setItem('welcomeTitleLine1', line1);
+    localStorage.setItem('welcomeTitleLine2', line2);
+    localStorage.setItem('welcomeFont', font);
 
     // Update preview
-    document.getElementById('previewTitle').textContent = welcomeTitle;
+    updatePreview();
 
     // Update student interface if it's open
-    if (window.studentWindow && !window.studentWindow.closed) {
-        const studentTitle = window.studentWindow.document.getElementById('welcomeTitle');
-        if (studentTitle) {
-            studentTitle.textContent = welcomeTitle;
-        }
-    }
+    updateStudentInterface();
 
-    alert('Welcome title saved successfully!');
+    alert('Welcome title settings saved successfully!');
 }
 
 function resetWelcomeTitle() {
-    const defaultTitle = 'Welcome to Mrs Sadaf 1B Class';
-    document.getElementById('welcomeTitleInput').value = defaultTitle;
-    document.getElementById('previewTitle').textContent = defaultTitle;
-    localStorage.removeItem('welcomeTitle');
+    const defaultLine1 = 'Welcome to';
+    const defaultLine2 = 'Mrs Sadaf 1B Class';
+    const defaultFont = 'Arial Black';
 
-    // Update student interface if it's open
+    document.getElementById('welcomeTitleLine1').value = defaultLine1;
+    document.getElementById('welcomeTitleLine2').value = defaultLine2;
+    document.getElementById('welcomeFontSelect').value = defaultFont;
+
+    localStorage.removeItem('welcomeTitleLine1');
+    localStorage.removeItem('welcomeTitleLine2');
+    localStorage.removeItem('welcomeFont');
+
+    // Update preview and student interface
+    updatePreview();
+    updateStudentInterface();
+
+    alert('Welcome title settings reset to default!');
+}
+
+function updateStudentInterface() {
     if (window.studentWindow && !window.studentWindow.closed) {
-        const studentTitle = window.studentWindow.document.getElementById('welcomeTitle');
-        if (studentTitle) {
-            studentTitle.textContent = defaultTitle;
-        }
-    }
+        const line1 = localStorage.getItem('welcomeTitleLine1') || 'Welcome to';
+        const line2 = localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class';
+        const font = localStorage.getItem('welcomeFont') || 'Arial Black';
 
-    alert('Welcome title reset to default!');
+        const studentLine1 = window.studentWindow.document.getElementById('welcomeTitleLine1');
+        const studentLine2 = window.studentWindow.document.getElementById('welcomeTitleLine2');
+
+        if (studentLine1) studentLine1.textContent = line1;
+        if (studentLine2) studentLine2.textContent = line2;
+
+        // Apply font to student interface
+        const studentElements = window.studentWindow.document.querySelectorAll('.welcome-section h1');
+        studentElements.forEach(el => {
+            el.style.fontFamily = font + ', Arial, sans-serif';
+        });
+    }
 }
 
 // Pagination functions
@@ -3008,9 +3052,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set up add group button
     document.getElementById('addGroupBtn').addEventListener('click', addGroup);
-    
+
     // Set up back to groups button
     document.getElementById('backToGroupsBtn').addEventListener('click', goBackToGroups);
+
+    // Set up settings form event listeners
+    document.getElementById('welcomeTitleLine1').addEventListener('input', updatePreview);
+    document.getElementById('welcomeTitleLine2').addEventListener('input', updatePreview);
+    document.getElementById('welcomeFontSelect').addEventListener('change', updatePreview);
     
     // Set up modal image preview
     document.getElementById('editCardImage').addEventListener('change', function(e) {
