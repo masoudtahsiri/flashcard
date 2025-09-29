@@ -412,6 +412,37 @@ input:checked + .toggle-slider:before {
     background: #f57c00;
 }
 
+.group-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.group-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.group-name-input, .group-parent-select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+.group-name-input:focus, .group-parent-select:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.group-parent-select {
+    background: white;
+    cursor: pointer;
+}
+
 .group-select {
     padding: 10px;
     border: 2px solid #ddd;

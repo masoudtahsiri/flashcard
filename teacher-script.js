@@ -2053,21 +2053,22 @@ function deleteGroup(groupId) {
 
 function editGroup(groupId) {
     const groupNameDisplay = document.getElementById(`groupName-${groupId}`);
-    const groupNameInput = document.getElementById(`groupInput-${groupId}`);
+    const editForm = document.getElementById(`editForm-${groupId}`);
     const editBtn = document.getElementById(`editBtn-${groupId}`);
     const saveBtn = document.getElementById(`saveBtn-${groupId}`);
     const cancelBtn = document.getElementById(`cancelBtn-${groupId}`);
     
-    // Hide display span and show input
+    // Hide display and show edit form
     groupNameDisplay.style.display = 'none';
-    groupNameInput.style.display = 'inline-block';
+    editForm.style.display = 'block';
     
     // Hide edit button, show save and cancel buttons
     editBtn.style.display = 'none';
     saveBtn.style.display = 'inline-block';
     cancelBtn.style.display = 'inline-block';
     
-    // Focus on input and select all text
+    // Focus on name input and select all text
+    const groupNameInput = document.getElementById(`groupInput-${groupId}`);
     groupNameInput.focus();
     groupNameInput.select();
     
@@ -2083,16 +2084,30 @@ function editGroup(groupId) {
 
 function saveGroupName(groupId) {
     const groupNameInput = document.getElementById(`groupInput-${groupId}`);
+    const parentInput = document.getElementById(`parentInput-${groupId}`);
     const newName = groupNameInput.value.trim();
+    const newParentId = parentInput.value ? parseInt(parentInput.value) : null;
     
     if (!newName) {
-        alert('Please enter a group name');
+        alert('Please enter a unit name');
         return;
     }
     
     // Check if group name already exists (excluding current group)
     if (groups.some(group => group.id !== groupId && group.name.toLowerCase() === newName.toLowerCase())) {
-        alert('A group with this name already exists');
+        alert('A unit with this name already exists');
+        return;
+    }
+    
+    // Prevent circular references (group can't be its own parent or descendant)
+    if (newParentId === groupId) {
+        alert('A unit cannot be its own parent');
+        return;
+    }
+    
+    // Check if the new parent is a descendant of this group
+    if (newParentId && isDescendant(groupId, newParentId)) {
+        alert('Cannot set parent: this would create a circular reference');
         return;
     }
     
@@ -2100,34 +2115,47 @@ function saveGroupName(groupId) {
     const group = groups.find(g => g.id === groupId);
     if (group) {
         group.name = newName;
+        group.parentId = newParentId;
         saveFlashcards();
         
         // Update all UI elements that display group names
         updateAllGroupReferences();
         
-        alert('Group name updated successfully!');
+        alert('Unit updated successfully!');
     }
     
     // Exit edit mode
     cancelEditGroup(groupId);
 }
 
+// Helper function to check if a group is a descendant of another
+function isDescendant(parentId, potentialDescendantId) {
+    const potentialDescendant = groups.find(g => g.id === potentialDescendantId);
+    if (!potentialDescendant || !potentialDescendant.parentId) return false;
+    
+    if (potentialDescendant.parentId === parentId) return true;
+    return isDescendant(parentId, potentialDescendant.parentId);
+}
+
 function cancelEditGroup(groupId) {
     const groupNameDisplay = document.getElementById(`groupName-${groupId}`);
+    const editForm = document.getElementById(`editForm-${groupId}`);
     const groupNameInput = document.getElementById(`groupInput-${groupId}`);
+    const parentInput = document.getElementById(`parentInput-${groupId}`);
     const editBtn = document.getElementById(`editBtn-${groupId}`);
     const saveBtn = document.getElementById(`saveBtn-${groupId}`);
     const cancelBtn = document.getElementById(`cancelBtn-${groupId}`);
     
-    // Reset input value to original
+    // Reset input values to original
     const group = groups.find(g => g.id === groupId);
     if (group) {
         groupNameInput.value = group.name;
+        parentInput.value = group.parentId || '';
     }
     
-    // Show display span and hide input
-    groupNameDisplay.style.display = 'inline-block';
-    groupNameInput.style.display = 'none';
+    // Show display and hide edit form
+    groupNameDisplay.style.display = 'block';
+    editForm.style.display = 'none';
     
     // Show edit button, hide save and cancel buttons
     editBtn.style.display = 'inline-block';
@@ -2178,17 +2206,40 @@ function renderGroupsList() {
     groups.forEach(group => {
         const groupItem = document.createElement('div');
         groupItem.className = 'group-item';
+        
+        // Get current parent name for display
+        const parent = group.parentId ? groups.find(g => g.id === group.parentId) : null;
+        const parentDisplay = parent ? ` (under ${parent.name})` : '';
+        
         groupItem.innerHTML = `
-            <span class="group-name-display" id="groupName-${group.id}">${group.name}</span>
-            <input type="text" class="group-name-input" id="groupInput-${group.id}" value="${group.name}" style="display: none;">
+            <div class="group-info">
+                <span class="group-name-display" id="groupName-${group.id}">${group.name}${parentDisplay}</span>
+                <div class="group-edit-form" id="editForm-${group.id}" style="display: none;">
+                    <input type="text" class="group-name-input" id="groupInput-${group.id}" value="${group.name}" placeholder="Unit name">
+                    <select class="group-parent-select" id="parentInput-${group.id}">
+                        <option value="">None (Top Level)</option>
+                    </select>
+                </div>
+            </div>
             <div class="group-actions">
-                <button class="group-edit-btn" id="editBtn-${group.id}" onclick="editGroup(${group.id})" title="Edit group name">✏️</button>
+                <button class="group-edit-btn" id="editBtn-${group.id}" onclick="editGroup(${group.id})" title="Edit unit">✏️</button>
                 <button class="group-save-btn" id="saveBtn-${group.id}" onclick="saveGroupName(${group.id})" style="display: none;" title="Save changes">✓</button>
                 <button class="group-cancel-btn" id="cancelBtn-${group.id}" onclick="cancelEditGroup(${group.id})" style="display: none;" title="Cancel editing">✗</button>
-                <button class="group-delete-btn" onclick="deleteGroup(${group.id})" title="Delete group">×</button>
+                <button class="group-delete-btn" onclick="deleteGroup(${group.id})" title="Delete unit">×</button>
             </div>
         `;
+        
         groupsList.appendChild(groupItem);
+        
+        // Populate parent select options for this group
+        const parentSelect = document.getElementById(`parentInput-${group.id}`);
+        groups.filter(g => !g.parentId && g.id !== group.id).forEach(parentGroup => {
+            const option = document.createElement('option');
+            option.value = parentGroup.id;
+            option.textContent = parentGroup.name;
+            option.selected = group.parentId === parentGroup.id;
+            parentSelect.appendChild(option);
+        });
     });
 }
 
