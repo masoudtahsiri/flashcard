@@ -101,11 +101,18 @@ function getImageUrl(imageData) {
 function renderGroups() {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
-    
+
+    // Hide back button for main categories (first level)
+    const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+    if (groupSelectionHeader) {
+        groupSelectionHeader.style.display = 'none';
+    }
+
     if (groups.length === 0) {
         groupsGrid.innerHTML = `
             <div class="empty-state">
-                <h3>No units available</h3>
+                <h3>No topics available</h3>
+                <p>Ask your teacher to add some topics!</p>
             </div>
         `;
         return;
@@ -166,7 +173,7 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
         parentName: parentCategoryName
     });
 
-    // Show header for sub-categories
+    // Show back button for sub-categories
     const groupSelectionHeader = document.getElementById('groupSelectionHeader');
     if (groupSelectionHeader) {
         groupSelectionHeader.style.display = 'flex';
@@ -255,7 +262,7 @@ function goBackToGroups() {
         document.getElementById('groupSelection').style.display = 'block';
         document.getElementById('flashcardView').style.display = 'none';
 
-        // Hide the group selection header when going back
+        // Hide the back button when going back to main categories
         const groupSelectionHeader = document.getElementById('groupSelectionHeader');
         if (groupSelectionHeader) {
             groupSelectionHeader.style.display = 'none';

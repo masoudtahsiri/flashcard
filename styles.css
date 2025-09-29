@@ -1338,6 +1338,8 @@ input:checked + .toggle-slider:before {
     font-size: 1.8rem;
     color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    margin: 0 0 20px 0;
+    text-align: center;
 }
 
 .group-selection .group-header {
@@ -2158,6 +2160,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
 @media (max-width: 768px) {
     .group-selection h2 {
         font-size: 2rem;
+        margin: 0 0 15px 0;
     }
     
     .group-selection .group-card,
