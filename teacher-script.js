@@ -167,6 +167,7 @@ function reorderFlashcards(draggedId, targetId) {
     
     // Save the updated order and refresh the view
     saveFlashcards().then(() => {
+        // Stay on the same page if possible, but refresh the view
         renderGridView();
         // Show a brief success message
         showOrderUpdateMessage();
@@ -176,10 +177,40 @@ function reorderFlashcards(draggedId, targetId) {
     });
 }
 
-function showOrderUpdateMessage() {
+function moveCardToPosition(cardId, targetIndex) {
+    const currentIndex = flashcards.findIndex(card => card.id === cardId);
+    
+    if (currentIndex === -1 || targetIndex < 0 || targetIndex >= flashcards.length) return;
+    
+    // Remove the card from its current position
+    const cardToMove = flashcards.splice(currentIndex, 1)[0];
+    
+    // Insert it at the target position
+    flashcards.splice(targetIndex, 0, cardToMove);
+    
+    // Update sortOrder for all cards to maintain proper sequence
+    flashcards.forEach((card, index) => {
+        card.sortOrder = index + 1;
+    });
+    
+    // Save the updated order and refresh the view
+    saveFlashcards().then(() => {
+        // Calculate which page the moved card is now on and navigate there
+        const newPage = Math.floor(targetIndex / itemsPerPage) + 1;
+        currentPage = newPage;
+        renderGridView();
+        // Show a brief success message
+        showOrderUpdateMessage(`Card moved to position ${targetIndex + 1}!`);
+    }).catch(error => {
+        console.error('Error saving card order:', error);
+        alert('Failed to save new order. Please try again.');
+    });
+}
+
+function showOrderUpdateMessage(customMessage = 'Card order updated!') {
     // Create a temporary message element
     const message = document.createElement('div');
-    message.textContent = 'Card order updated!';
+    message.textContent = customMessage;
     message.style.cssText = `
         position: fixed;
         top: 20px;
@@ -258,12 +289,16 @@ function renderGridView() {
             categoryOptionsHTML += `<option value="${group.id}" ${selected}>${displayName}</option>`;
         });
         
+        // Calculate the actual position in the full array (not just current page)
+        const actualPosition = flashcards.findIndex(c => c.id === card.id) + 1;
+        
         gridCard.innerHTML = `
             <div class="drag-handle">⋮⋮</div>
+            <div class="card-position">#${actualPosition}</div>
             <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-edit-hint">Click to edit • Drag to reorder</div>
+            <div class="grid-flashcard-edit-hint">Click to edit • Drag to reorder • Position: ${actualPosition}</div>
         `;
         
         // Make card draggable
@@ -276,10 +311,25 @@ function renderGridView() {
         gridCard.addEventListener('drop', handleDrop);
         gridCard.addEventListener('dragend', handleDragEnd);
         
-        // Add click to open edit modal (but not on drag handle)
+        // Add click to open edit modal (but not on drag handle or position)
         gridCard.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('drag-handle')) {
+            if (!e.target.classList.contains('drag-handle') && !e.target.classList.contains('card-position')) {
                 openCardEditModal(card.id);
+            }
+        });
+        
+        // Add double-click on position number to move to specific position
+        gridCard.addEventListener('dblclick', (e) => {
+            if (e.target.classList.contains('card-position')) {
+                const newPosition = prompt(`Move "${card.word}" to position (1-${flashcards.length}):`, actualPosition);
+                if (newPosition && !isNaN(newPosition)) {
+                    const targetPos = parseInt(newPosition);
+                    if (targetPos >= 1 && targetPos <= flashcards.length) {
+                        moveCardToPosition(card.id, targetPos - 1); // Convert to 0-based index
+                    } else {
+                        alert(`Please enter a position between 1 and ${flashcards.length}`);
+                    }
+                }
             }
         });
         
@@ -2407,7 +2457,7 @@ function deleteCardFromModal() {
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
-function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.9) {
+function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 1.0) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
