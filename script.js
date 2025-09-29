@@ -179,7 +179,7 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
     // Show back button for sub-categories
     const groupSelectionHeader = document.getElementById('groupSelectionHeader');
     if (groupSelectionHeader) {
-        groupSelectionHeader.style.display = 'flex';
+        groupSelectionHeader.style.display = 'flex !important';
     }
 
     // Update title to show we're choosing units
@@ -277,7 +277,7 @@ function goBackToGroups() {
 
         // Show the back button for sub-categories
         if (groupSelectionHeader) {
-            groupSelectionHeader.style.display = 'flex';
+            groupSelectionHeader.style.display = 'flex !important';
         }
 
         // Hide welcome section when returning to sub-categories
@@ -298,6 +298,22 @@ function goBackToGroups() {
         currentGroupId = null;
         currentGroupCards = [];
         currentCardIndex = 0;
+    } else {
+        // We're in group selection view, check if we need to go back to main categories
+        const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+        if (groupSelectionHeader && groupSelectionHeader.style.display !== 'none') {
+            // We're in sub-categories, go back to main categories
+            groupSelectionHeader.style.display = 'none !important';
+            document.getElementById('topicSelectionTitle').textContent = 'Choose your Topic';
+            navigationHistory = []; // Clear history when going to main
+            renderGroups();
+
+            // Show welcome section when returning to main categories
+            const welcomeSection = document.querySelector('.welcome-section');
+            if (welcomeSection) {
+                welcomeSection.style.display = 'block';
+            }
+        }
     }
 }
 
@@ -311,7 +327,7 @@ function goToMainMenu() {
     // Hide everything and show main categories
     if (flashcardView) flashcardView.style.display = 'none';
     if (groupSelection) groupSelection.style.display = 'block';
-    if (groupSelectionHeader) groupSelectionHeader.style.display = 'none';
+    if (groupSelectionHeader) groupSelectionHeader.style.display = 'none !important';
     if (welcomeSection) welcomeSection.style.display = 'block';
 
     // Reset to main categories
