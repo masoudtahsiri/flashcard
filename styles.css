@@ -1215,6 +1215,53 @@ input:checked + .toggle-slider:before {
     padding: 40px;
 }
 
+/* Child-friendly fonts and styles for student interface */
+.student-interface {
+    font-family: 'Fredoka', 'Comic Sans MS', 'Trebuchet MS', cursive, sans-serif;
+}
+
+.welcome-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+}
+
+.welcome-section h1 {
+    font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow 3s ease-in-out infinite alternate;
+}
+
+@keyframes rainbow {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(60deg); }
+}
+
+.student-interface h2,
+.student-interface h3 {
+    font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+    font-weight: 500;
+}
+
+.student-interface .group-selection h2 {
+    font-size: 1.8rem;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.student-interface .group-folder-name {
+    font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+    font-weight: 500;
+}
+
 .empty-state h3 {
     font-size: 1.5rem;
     margin-bottom: 10px;

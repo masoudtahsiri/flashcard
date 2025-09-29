@@ -108,48 +108,135 @@ function renderGroups() {
         return;
     }
     
-    groups.forEach(group => {
-        const groupCards = flashcards.filter(card => parseInt(card.groupId) === parseInt(group.id));
+    // Show only main categories (no parentId)
+    const mainCategories = groups.filter(group => !group.parentId);
+    
+    mainCategories.forEach(category => {
+        // Count cards in this category and all its sub-categories
+        const subCategories = groups.filter(g => g.parentId === category.id);
+        const directCards = flashcards.filter(card => card.categoryId === category.id);
+        const subCategoryCards = flashcards.filter(card => 
+            subCategories.some(sub => sub.id === card.categoryId)
+        );
+        const totalCards = directCards.length + subCategoryCards.length;
+        
         const groupCard = document.createElement('div');
         groupCard.className = 'group-card';
         groupCard.innerHTML = `
             <div class="group-icon">📚</div>
-            <div class="group-name">${group.name}</div>
-            <div class="group-count">${groupCards.length} cards</div>
+            <div class="group-name">${category.name}</div>
+            <div class="group-count">${totalCards} cards</div>
         `;
         
         groupCard.addEventListener('click', () => {
-            selectGroup(group.id);
+            showCategoryDetail(category.id, category.name);
         });
         
         groupsGrid.appendChild(groupCard);
     });
 }
 
-function selectGroup(groupId) {
+// Function to show category detail (sub-categories or direct cards)
+function showCategoryDetail(categoryId, categoryName) {
+    // Check if this category has sub-categories
+    const subCategories = groups.filter(g => g.parentId === categoryId);
+    
+    if (subCategories.length > 0) {
+        // Show sub-categories
+        renderSubCategories(categoryId, categoryName);
+    } else {
+        // No sub-categories, show cards directly
+        selectGroup(categoryId, categoryName);
+    }
+}
+
+// Function to render sub-categories
+function renderSubCategories(parentCategoryId, parentCategoryName) {
+    const groupsGrid = document.getElementById('groupsGrid');
+    groupsGrid.innerHTML = '';
+    
+    // Update title to show we're in sub-categories
+    document.getElementById('topicSelectionTitle').textContent = `Choose from ${parentCategoryName}`;
+    
+    // Get sub-categories for this parent
+    const subCategories = groups.filter(g => g.parentId === parentCategoryId);
+    
+    // Add cards that belong directly to the parent category (if any)
+    const directCards = flashcards.filter(card => card.categoryId === parentCategoryId);
+    let allSubFolders = [...subCategories];
+    
+    if (directCards.length > 0) {
+        allSubFolders.unshift({
+            id: parentCategoryId,
+            name: `${parentCategoryName} (Direct)`,
+            isDirect: true
+        });
+    }
+    
+    if (allSubFolders.length === 0) {
+        groupsGrid.innerHTML = `
+            <div class="empty-state">
+                <h3>No sub-topics available</h3>
+                <p>This topic doesn't have any cards yet!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    allSubFolders.forEach(subFolder => {
+        const subCards = flashcards.filter(card => card.categoryId === subFolder.id);
+        const subCard = document.createElement('div');
+        subCard.className = 'group-card';
+        subCard.innerHTML = `
+            <div class="group-icon">${subFolder.isDirect ? '📖' : '📚'}</div>
+            <div class="group-name">${subFolder.name}</div>
+            <div class="group-count">${subCards.length} cards</div>
+        `;
+        
+        subCard.addEventListener('click', () => {
+            selectGroup(subFolder.id, subFolder.name);
+        });
+        
+        groupsGrid.appendChild(subCard);
+    });
+}
+
+function selectGroup(groupId, groupName) {
     currentGroupId = groupId;
-    console.log('Selecting group:', groupId, 'Available flashcards:', flashcards);
-    console.log('Flashcards with groupId:', flashcards.map(card => ({ id: card.id, word: card.word, groupId: card.groupId })));
-    currentGroupCards = flashcards.filter(card => parseInt(card.groupId) === parseInt(groupId));
-    console.log('Filtered cards for group:', currentGroupCards);
+    currentGroupCards = flashcards.filter(card => card.categoryId === groupId);
     currentCardIndex = 0;
     
     // Update UI
     document.getElementById('groupSelection').style.display = 'none';
     document.getElementById('flashcardView').style.display = 'block';
     
-    const group = groups.find(g => g.id === groupId);
-    document.getElementById('currentGroupName').textContent = group.name;
+    document.getElementById('currentGroupName').textContent = groupName || 'Topic';
     
-    updateFlashcard();
+    if (currentGroupCards.length > 0) {
+        updateFlashcard();
+    } else {
+        document.getElementById('currentFlashcard').innerHTML = `
+            <div class="no-cards">
+                <h3>No cards in this topic</h3>
+                <p>Ask your teacher to add some cards!</p>
+            </div>
+        `;
+    }
 }
 
 function goBackToGroups() {
     document.getElementById('groupSelection').style.display = 'block';
     document.getElementById('flashcardView').style.display = 'none';
+    
+    // Reset title back to main selection
+    document.getElementById('topicSelectionTitle').textContent = 'Select your Topic';
+    
     currentGroupId = null;
     currentGroupCards = [];
     currentCardIndex = 0;
+    
+    // Go back to main categories
+    renderGroups();
 }
 
 // Function to update the displayed flashcard
