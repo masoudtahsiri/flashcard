@@ -162,9 +162,9 @@ function renderGridView() {
         });
         
         gridCard.innerHTML = `
+            <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-category">${categoryName}</div>
             <div class="grid-flashcard-edit-hint">Click to edit</div>
         `;
         
