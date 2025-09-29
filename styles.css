@@ -966,10 +966,14 @@ input:checked + .toggle-slider:before {
     background: white;
 }
 
-.grid-flashcard-group {
+.grid-flashcard-category {
     position: absolute;
     top: 4px;
     left: 4px;
+    z-index: 10;
+}
+
+.category-display {
     background: rgba(76, 175, 80, 0.9);
     color: white;
     padding: 2px 6px;
@@ -978,32 +982,85 @@ input:checked + .toggle-slider:before {
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 10;
+    display: inline-block;
+}
+
+.category-edit-select {
+    background: white;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    padding: 2px 4px;
+    color: #333;
+    max-width: 80px;
 }
 
 
-.grid-flashcard-delete {
+.grid-flashcard-actions {
     position: absolute;
     top: 4px;
     right: 4px;
-    background: #f44336;
+    display: flex;
+    gap: 2px;
+    z-index: 3;
+}
+
+.grid-flashcard-edit,
+.grid-flashcard-save,
+.grid-flashcard-cancel,
+.grid-flashcard-delete {
+    background: #4CAF50;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     cursor: pointer;
-    font-size: 0.6rem;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.3s ease;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.grid-flashcard-save {
+    background: #2196F3;
+}
+
+.grid-flashcard-cancel {
+    background: #FF9800;
+}
+
+.grid-flashcard-delete {
+    background: #f44336;
+}
+
+.grid-flashcard:hover .grid-flashcard-edit,
+.grid-flashcard:hover .grid-flashcard-save,
+.grid-flashcard:hover .grid-flashcard-cancel,
 .grid-flashcard:hover .grid-flashcard-delete {
     opacity: 1;
 }
 
+.grid-flashcard-edit:hover {
+    background: #45a049;
+    transform: scale(1.1);
+}
+
+.grid-flashcard-save:hover {
+    background: #1976D2;
+    transform: scale(1.1);
+}
+
+.grid-flashcard-cancel:hover {
+    background: #F57C00;
+    transform: scale(1.1);
+}
+
 .grid-flashcard-delete:hover {
     background: #d32f2f;
+    transform: scale(1.1);
 }
 
 .empty-state {

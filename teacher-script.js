@@ -134,16 +134,36 @@ function renderGridView() {
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
         
-        // Find the group name for this card
-        const group = groups.find(g => g.id === card.groupId);
-        const groupName = group ? group.name : 'No Group';
+        // Find the category name for this card
+        const category = groups.find(g => g.id === card.categoryId);
+        const categoryName = category ? category.name : 'No Category';
         
         gridCard.innerHTML = `
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-group">${groupName}</div>
-            <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
+            <div class="grid-flashcard-category" id="cardCategory-${card.id}">
+                <span class="category-display">${categoryName}</span>
+                <select class="category-edit-select" id="categorySelect-${card.id}" style="display: none;">
+                    <option value="">No Category</option>
+                </select>
+            </div>
+            <div class="grid-flashcard-actions">
+                <button class="grid-flashcard-edit" onclick="editCardCategory(${card.id})" title="Edit category">✏️</button>
+                <button class="grid-flashcard-save" id="saveCategory-${card.id}" onclick="saveCardCategory(${card.id})" style="display: none;" title="Save">✓</button>
+                <button class="grid-flashcard-cancel" id="cancelCategory-${card.id}" onclick="cancelEditCardCategory(${card.id})" style="display: none;" title="Cancel">✗</button>
+                <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})" title="Delete">×</button>
+            </div>
         `;
+        
+        // Populate category select options
+        const categorySelect = document.getElementById(`categorySelect-${card.id}`);
+        groups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.name;
+            option.selected = card.categoryId === group.id;
+            categorySelect.appendChild(option);
+        });
         
         // Add click to play audio
         gridCard.addEventListener('click', (e) => {
@@ -1962,6 +1982,72 @@ function deleteCardFromGrid(index) {
             renderGroupedCardsView();
         }
     }
+}
+
+// Function to edit card category
+function editCardCategory(cardId) {
+    const categoryDisplay = document.querySelector(`#cardCategory-${cardId} .category-display`);
+    const categorySelect = document.getElementById(`categorySelect-${cardId}`);
+    const editBtn = document.querySelector(`button[onclick="editCardCategory(${cardId})"]`);
+    const saveBtn = document.getElementById(`saveCategory-${cardId}`);
+    const cancelBtn = document.getElementById(`cancelCategory-${cardId}`);
+    
+    // Hide display and show select
+    categoryDisplay.style.display = 'none';
+    categorySelect.style.display = 'inline-block';
+    
+    // Update button visibility
+    editBtn.style.display = 'none';
+    saveBtn.style.display = 'inline-block';
+    cancelBtn.style.display = 'inline-block';
+    
+    // Focus on select
+    categorySelect.focus();
+}
+
+// Function to save card category
+function saveCardCategory(cardId) {
+    const categorySelect = document.getElementById(`categorySelect-${cardId}`);
+    const newCategoryId = categorySelect.value ? parseInt(categorySelect.value) : null;
+    
+    // Find and update the card
+    const card = flashcards.find(c => c.id === cardId);
+    if (card) {
+        card.categoryId = newCategoryId;
+        saveFlashcards();
+        
+        // Refresh views
+        renderGridView();
+        if (document.getElementById('groupedCardsView').style.display !== 'none') {
+            renderGroupedCardsView();
+        }
+        
+        alert('Card category updated successfully!');
+    }
+}
+
+// Function to cancel card category edit
+function cancelEditCardCategory(cardId) {
+    const categoryDisplay = document.querySelector(`#cardCategory-${cardId} .category-display`);
+    const categorySelect = document.getElementById(`categorySelect-${cardId}`);
+    const editBtn = document.querySelector(`button[onclick="editCardCategory(${cardId})"]`);
+    const saveBtn = document.getElementById(`saveCategory-${cardId}`);
+    const cancelBtn = document.getElementById(`cancelCategory-${cardId}`);
+    
+    // Reset select to original value
+    const card = flashcards.find(c => c.id === cardId);
+    if (card) {
+        categorySelect.value = card.categoryId || '';
+    }
+    
+    // Show display and hide select
+    categoryDisplay.style.display = 'inline-block';
+    categorySelect.style.display = 'none';
+    
+    // Update button visibility
+    editBtn.style.display = 'inline-block';
+    saveBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
 }
 
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
