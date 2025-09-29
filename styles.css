@@ -1957,7 +1957,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
 /* Flashcard category title - same style as topic selection title */
 #flashcardCategoryTitle {
     font-family: 'Fredoka', 'Inter', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #2C3E50;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
@@ -2058,35 +2058,35 @@ body:has(.group-selection), body:has(.flashcard-view) {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Subject-specific color classes - consistent with project palette */
+/* Subject-specific color classes - updated with new palette */
 .group-selection .group-card.color-english,
 .group-selection .group-folder.color-english {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #A855F7 0%, #9333EA 100%) !important;
 }
 
 .group-selection .group-card.color-math,
 .group-selection .group-folder.color-math {
-    background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%) !important;
+    background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%) !important;
 }
 
 .group-selection .group-card.color-science,
 .group-selection .group-folder.color-science {
-    background: linear-gradient(135deg, #27AE60 0%, #229954 100%) !important;
+    background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%) !important;
 }
 
 .group-selection .group-card.color-pe,
 .group-selection .group-folder.color-pe {
-    background: linear-gradient(135deg, #FF6B6B 0%, #E74C3C 100%) !important;
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%) !important;
 }
 
 .group-selection .group-card.color-history,
 .group-selection .group-folder.color-history {
-    background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%) !important;
+    background: linear-gradient(135deg, #92400E 0%, #78350F 100%) !important;
 }
 
 .group-selection .group-card.color-geography,
 .group-selection .group-folder.color-geography {
-    background: linear-gradient(135deg, #4ECDC4 0%, #2C3E50 100%) !important;
+    background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%) !important;
 }
 
 .group-selection .group-card.color-default,
@@ -2206,7 +2206,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
     
     /* Mobile: Flashcard category title */
     #flashcardCategoryTitle {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         margin: 0 0 15px 0;
     }
     
