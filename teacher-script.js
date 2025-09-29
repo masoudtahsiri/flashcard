@@ -159,19 +159,22 @@ function renderGridView() {
     createPaginationControls('allCardsView', flashcards.length, renderGridView);
 }
 
-// Function to render grouped cards view (folder navigation)
+// Function to render grouped cards view (hierarchical navigation)
 function renderGroupedCardsView() {
     currentView = 'groupFolders';
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
     
-    // Create array of all folders (groups + ungrouped)
-    let allFolders = [...groups];
-    const ungroupedCards = flashcards.filter(card => !card.groupId);
+    // Show only top-level categories (no parentId)
+    const topLevelCategories = groups.filter(group => !group.parentId);
+    
+    // Add ungrouped cards if they exist
+    let allFolders = [...topLevelCategories];
+    const ungroupedCards = flashcards.filter(card => !card.categoryId);
     if (ungroupedCards.length > 0) {
         allFolders.push({
             id: null,
-            name: 'No Group',
+            name: 'No Category',
             isNoGroup: true
         });
     }
@@ -179,8 +182,8 @@ function renderGroupedCardsView() {
     if (allFolders.length === 0) {
         groupsGrid.innerHTML = `
             <div class="empty-state">
-                <h3>No groups available</h3>
-                <p>Create groups using the form above</p>
+                <h3>No categories available</h3>
+                <p>Create categories using the Manage Units section</p>
             </div>
         `;
         return;
@@ -189,22 +192,38 @@ function renderGroupedCardsView() {
     // Get paginated folders
     const paginatedFolders = getPaginatedItems(allFolders);
     
-    // Render each folder
+    // Render each top-level category
     paginatedFolders.forEach(folder => {
-        const groupCards = folder.isNoGroup ? 
-            ungroupedCards : 
-            flashcards.filter(card => card.groupId === folder.id);
+        let totalCards = 0;
+        
+        if (folder.isNoGroup) {
+            totalCards = ungroupedCards.length;
+        } else {
+            // Count cards in this category and all its sub-categories
+            const subCategories = groups.filter(g => g.parentId === folder.id);
+            const categoryCards = flashcards.filter(card => card.categoryId === folder.id);
+            const subCategoryCards = flashcards.filter(card => 
+                subCategories.some(sub => sub.id === card.categoryId)
+            );
+            totalCards = categoryCards.length + subCategoryCards.length;
+        }
         
         const groupFolder = document.createElement('div');
         groupFolder.className = 'group-folder';
         groupFolder.innerHTML = `
             <div class="group-folder-icon">${folder.isNoGroup ? '📂' : '📁'}</div>
             <div class="group-folder-name">${folder.name}</div>
-            <div class="group-folder-count">${groupCards.length} cards</div>
+            <div class="group-folder-count">${totalCards} cards</div>
         `;
         
         groupFolder.addEventListener('click', () => {
-            showGroupDetail(folder.id, folder.name);
+            if (folder.isNoGroup) {
+                // Show ungrouped cards directly
+                showGroupDetail(null, folder.name);
+            } else {
+                // Show sub-categories or cards for this top-level category
+                showCategoryDetail(folder.id, folder.name);
+            }
         });
         
         groupsGrid.appendChild(groupFolder);
@@ -214,7 +233,78 @@ function renderGroupedCardsView() {
     createPaginationControls('groupedCardsView', allFolders.length, renderGroupedCardsView);
 }
 
-// Function to show group detail view
+// Function to show category detail (sub-categories or direct cards)
+function showCategoryDetail(categoryId, categoryName) {
+    // Check if this category has sub-categories
+    const subCategories = groups.filter(g => g.parentId === categoryId);
+    
+    if (subCategories.length > 0) {
+        // Show sub-categories
+        renderSubCategories(categoryId, categoryName);
+    } else {
+        // No sub-categories, show cards directly
+        showGroupDetail(categoryId, categoryName);
+    }
+}
+
+// Function to render sub-categories view
+function renderSubCategories(parentCategoryId, parentCategoryName) {
+    currentView = 'subCategories';
+    const groupsGrid = document.getElementById('groupsGrid');
+    groupsGrid.innerHTML = '';
+    
+    // Get sub-categories for this parent
+    const subCategories = groups.filter(g => g.parentId === parentCategoryId);
+    
+    // Add cards that belong directly to the parent category (if any)
+    const directCards = flashcards.filter(card => card.categoryId === parentCategoryId);
+    let allSubFolders = [...subCategories];
+    
+    if (directCards.length > 0) {
+        allSubFolders.unshift({
+            id: parentCategoryId,
+            name: `${parentCategoryName} (Direct)`,
+            isDirect: true
+        });
+    }
+    
+    if (allSubFolders.length === 0) {
+        groupsGrid.innerHTML = `
+            <div class="empty-state">
+                <h3>No sub-categories in ${parentCategoryName}</h3>
+                <p>Add flashcards to create sub-categories</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Get paginated sub-folders
+    const paginatedSubFolders = getPaginatedItems(allSubFolders);
+    
+    // Render each sub-category
+    paginatedSubFolders.forEach(subFolder => {
+        const subCategoryCards = flashcards.filter(card => card.categoryId === subFolder.id);
+        
+        const groupFolder = document.createElement('div');
+        groupFolder.className = 'group-folder';
+        groupFolder.innerHTML = `
+            <div class="group-folder-icon">📂</div>
+            <div class="group-folder-name">${subFolder.name}</div>
+            <div class="group-folder-count">${subCategoryCards.length} cards</div>
+        `;
+        
+        groupFolder.addEventListener('click', () => {
+            showGroupDetail(subFolder.id, subFolder.name);
+        });
+        
+        groupsGrid.appendChild(groupFolder);
+    });
+    
+    // Add pagination controls
+    createPaginationControls('groupedCardsView', allSubFolders.length, () => renderSubCategories(parentCategoryId, parentCategoryName));
+}
+
+// Function to show group detail view (final level - shows actual flashcards)
 function showGroupDetail(groupId, groupName) {
     currentView = 'groupDetail';
     currentGroupIdForDetail = groupId;
@@ -232,10 +322,10 @@ function showGroupDetail(groupId, groupName) {
 
 // Function to render cards in group detail view with pagination
 function renderGroupDetailCards() {
-    // Filter cards for this group
+    // Filter cards for this category
     const groupCards = currentGroupIdForDetail ? 
-        flashcards.filter(card => card.groupId === currentGroupIdForDetail) : 
-        flashcards.filter(card => !card.groupId);
+        flashcards.filter(card => card.categoryId === currentGroupIdForDetail) : 
+        flashcards.filter(card => !card.categoryId);
     
     // Render cards
     const container = document.getElementById('groupCardsContainer');
@@ -278,11 +368,27 @@ function renderGroupDetailCards() {
     createPaginationControls('groupDetailView', groupCards.length, renderGroupDetailCards);
 }
 
-// Function to go back to groups view
+// Function to go back to previous view
 function goBackToGroups() {
     document.getElementById('groupsGrid').style.display = 'grid';
     document.getElementById('groupDetailView').style.display = 'none';
-    // Force re-render to fix layout issues
+    
+    // Determine which view to go back to based on current context
+    if (currentView === 'groupDetail') {
+        // If we were viewing cards, check if we should go back to sub-categories or main categories
+        const currentGroup = groups.find(g => g.id === currentGroupIdForDetail);
+        
+        if (currentGroup && currentGroup.parentId) {
+            // Go back to sub-categories view
+            const parentGroup = groups.find(g => g.id === currentGroup.parentId);
+            if (parentGroup) {
+                renderSubCategories(parentGroup.id, parentGroup.name);
+                return;
+            }
+        }
+    }
+    
+    // Default: go back to main categories
     setTimeout(() => {
         renderGroupedCardsView();
     }, 10);
@@ -2347,7 +2453,7 @@ function getRandomColor() {
 }
 
 // Function to add a new flashcard
-function addFlashcard(word, imageFile, groupId) {
+function addFlashcard(word, imageFile, categoryId) {
     if (!word.trim()) {
         alert('Please enter a word');
         return;
@@ -2371,10 +2477,10 @@ function addFlashcard(word, imageFile, groupId) {
             word: word.trim(),
             image: compressedImage, // Store base64 data directly - no external dependencies
             audioUrl: '', // Will use text-to-speech
-            groupId: groupId ? parseInt(groupId) : null
+            categoryId: categoryId ? parseInt(categoryId) : null
         };
         
-        console.log('Adding card with groupId:', newCard.groupId, 'Original groupId:', groupId);
+        console.log('Adding card with categoryId:', newCard.categoryId, 'Original categoryId:', categoryId);
         
         flashcards.push(newCard);
         
@@ -2621,8 +2727,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('addCardBtn').addEventListener('click', function() {
         const word = document.getElementById('wordInput').value;
         const imageFile = document.getElementById('imageInput').files[0];
-        const groupId = document.getElementById('groupSelect').value;
-        addFlashcard(word, imageFile, groupId);
+        const categoryId = document.getElementById('groupSelect').value;
+        addFlashcard(word, imageFile, categoryId);
     });
 
     // Set up add group button
