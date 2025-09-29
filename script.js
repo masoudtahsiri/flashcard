@@ -45,6 +45,9 @@ let currentGroupId = null;
 let currentGroupCards = [];
 let currentCardIndex = 0;
 
+// Track navigation history for back button
+let navigationHistory = [];
+
 // Function to load flashcards from API (shared storage)
 async function loadFlashcards() {
     try {
@@ -140,9 +143,9 @@ function renderGroups() {
 function showCategoryDetail(categoryId, categoryName) {
     // Check if this category has sub-categories
     const subCategories = groups.filter(g => g.parentId === categoryId);
-    
+
     if (subCategories.length > 0) {
-        // Show sub-categories
+        // Show sub-categories with "Choose a Unit" title
         renderSubCategories(categoryId, categoryName);
     } else {
         // No sub-categories, show cards directly
@@ -154,17 +157,31 @@ function showCategoryDetail(categoryId, categoryName) {
 function renderSubCategories(parentCategoryId, parentCategoryName) {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
-    
-    // Update title to show we're in sub-categories
-    document.getElementById('topicSelectionTitle').textContent = `Choose from ${parentCategoryName}`;
-    
+
+    // Add to navigation history
+    navigationHistory.push({
+        type: 'subcategories',
+        title: 'Choose a Unit',
+        parentId: parentCategoryId,
+        parentName: parentCategoryName
+    });
+
+    // Show header for sub-categories
+    const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+    if (groupSelectionHeader) {
+        groupSelectionHeader.style.display = 'flex';
+    }
+
+    // Update title to show we're choosing units
+    document.getElementById('topicSelectionTitle').textContent = 'Choose a Unit';
+
     // Get sub-categories for this parent
     const subCategories = groups.filter(g => g.parentId === parentCategoryId);
-    
+
     // Add cards that belong directly to the parent category (if any)
     const directCards = flashcards.filter(card => card.categoryId === parentCategoryId);
     let allSubFolders = [...subCategories];
-    
+
     if (directCards.length > 0) {
         allSubFolders.unshift({
             id: parentCategoryId,
@@ -172,17 +189,17 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
             isDirect: true
         });
     }
-    
+
     if (allSubFolders.length === 0) {
         groupsGrid.innerHTML = `
             <div class="empty-state">
-                <h3>No sub-topics available</h3>
-                <p>This topic doesn't have any cards yet!</p>
+                <h3>No units available</h3>
+                <p>This topic doesn't have any units yet!</p>
             </div>
         `;
         return;
     }
-    
+
     allSubFolders.forEach(subFolder => {
         const subCards = flashcards.filter(card => card.categoryId === subFolder.id);
         const subCard = document.createElement('div');
@@ -192,11 +209,11 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
             <div class="group-name">${subFolder.name}</div>
             <div class="group-count">${subCards.length} cards</div>
         `;
-        
+
         subCard.addEventListener('click', () => {
             selectGroup(subFolder.id, subFolder.name);
         });
-        
+
         groupsGrid.appendChild(subCard);
     });
 }
@@ -205,19 +222,27 @@ function selectGroup(groupId, groupName) {
     currentGroupId = groupId;
     currentGroupCards = flashcards.filter(card => card.categoryId === groupId);
     currentCardIndex = 0;
-    
+
+    // Add to navigation history
+    navigationHistory.push({
+        type: 'flashcards',
+        title: groupName || 'Topic',
+        groupId: groupId,
+        groupName: groupName
+    });
+
     // Update UI
     document.getElementById('groupSelection').style.display = 'none';
     document.getElementById('flashcardView').style.display = 'block';
-    
+
     document.getElementById('currentGroupName').textContent = groupName || 'Topic';
-    
+
     if (currentGroupCards.length > 0) {
         updateFlashcard();
     } else {
         document.getElementById('currentFlashcard').innerHTML = `
             <div class="no-cards">
-                <h3>No cards in this topic</h3>
+                <h3>No cards in this unit</h3>
                 <p>Ask your teacher to add some cards!</p>
             </div>
         `;
@@ -225,18 +250,40 @@ function selectGroup(groupId, groupName) {
 }
 
 function goBackToGroups() {
-    document.getElementById('groupSelection').style.display = 'block';
-    document.getElementById('flashcardView').style.display = 'none';
-    
-    // Reset title back to main selection
-    document.getElementById('topicSelectionTitle').textContent = 'Select your Topic';
-    
-    currentGroupId = null;
-    currentGroupCards = [];
-    currentCardIndex = 0;
-    
-    // Go back to main categories
-    renderGroups();
+    // If we're in flashcards view, go back to previous level
+    if (document.getElementById('flashcardView').style.display !== 'none') {
+        document.getElementById('groupSelection').style.display = 'block';
+        document.getElementById('flashcardView').style.display = 'none';
+
+        // Hide the group selection header when going back
+        const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+        if (groupSelectionHeader) {
+            groupSelectionHeader.style.display = 'none';
+        }
+
+        // Reset to last navigation level
+        if (navigationHistory.length > 0) {
+            const lastLevel = navigationHistory.pop();
+            document.getElementById('topicSelectionTitle').textContent = lastLevel.title;
+
+            // If we were in sub-categories, show them again
+            if (lastLevel.type === 'subcategories') {
+                renderSubCategories(lastLevel.parentId, lastLevel.parentName);
+            } else {
+                // Otherwise show main categories
+                document.getElementById('topicSelectionTitle').textContent = 'Select your Topic';
+                renderGroups();
+            }
+        } else {
+            // No history, go to main categories
+            document.getElementById('topicSelectionTitle').textContent = 'Select your Topic';
+            renderGroups();
+        }
+
+        currentGroupId = null;
+        currentGroupCards = [];
+        currentCardIndex = 0;
+    }
 }
 
 // Function to update the displayed flashcard
