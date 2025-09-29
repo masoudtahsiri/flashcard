@@ -2206,8 +2206,13 @@ body:has(.group-selection), body:has(.flashcard-view) {
     
     /* Mobile: Flashcard category title */
     #flashcardCategoryTitle {
-        font-size: 1.2rem;
+        font-size: 1rem;
         margin: 0 0 15px 0;
+    }
+    
+    #flashcardCategoryTitle::before,
+    #flashcardCategoryTitle::after {
+        font-size: 1rem;
     }
     
     .group-selection .group-card,
