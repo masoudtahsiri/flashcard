@@ -1228,7 +1228,9 @@ function generateStandaloneHTML() {
                 return; 
             } 
             const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en')); 
-            const preferredNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David']; 
+            const iosNames = ['Samantha', 'Alex', 'Susan', 'Daniel', 'Karen', 'Moira']; 
+            const windowsNames = ['Microsoft Zira', 'Microsoft David', 'Microsoft Mark']; 
+            const preferredNames = [...iosNames, ...windowsNames]; 
             for (const name of preferredNames) { 
                 const found = offlineVoices.find(v => v.name.includes(name)); 
                 if (found) { 
@@ -1475,7 +1477,9 @@ function generateMobileHTML() {
                 return; 
             } 
             const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en')); 
-            const preferredNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David']; 
+            const iosNames = ['Samantha', 'Alex', 'Susan', 'Daniel', 'Karen', 'Moira']; 
+            const windowsNames = ['Microsoft Zira', 'Microsoft David', 'Microsoft Mark']; 
+            const preferredNames = [...iosNames, ...windowsNames]; 
             for (const name of preferredNames) { 
                 const found = offlineVoices.find(v => v.name.includes(name)); 
                 if (found) { 
@@ -3135,7 +3139,13 @@ function loadVoices() {
     
     // Priority 3: Best offline voices (for when Google is not available)
     const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en'));
-    const preferredOfflineNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David'];
+    
+    // iOS/iPhone specific voice preferences (most natural sounding)
+    const iosPreferredNames = ['Samantha', 'Alex', 'Susan', 'Daniel', 'Karen', 'Moira'];
+    // Windows specific voice preferences
+    const windowsPreferredNames = ['Microsoft Zira', 'Microsoft David', 'Microsoft Mark'];
+    // Combined preferences with iOS first (since it's more common on mobile)
+    const preferredOfflineNames = [...iosPreferredNames, ...windowsPreferredNames];
     
     for (const name of preferredOfflineNames) {
         const found = offlineVoices.find(v => v.name.includes(name));

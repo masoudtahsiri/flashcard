@@ -636,32 +636,54 @@ function loadWelcomeTitle() {
 function loadVoices() {
     voices = speechSynthesis.getVoices();
 
-    // Priority 1: Google US English voices (highest priority for consistency across devices)
-    const googleUSVoices = voices.filter(voice =>
-        voice.name.includes('Google') &&
-        (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))
-    );
+    // Detect iOS devices (iPhone/iPad don't support Google voices)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    
+    console.log('🔍 Device detection:', {
+        userAgent: navigator.userAgent.substring(0, 50) + '...',
+        platform: navigator.platform,
+        isIOS: isIOS,
+        totalVoices: voices.length
+    });
 
-    if (googleUSVoices.length > 0) {
-        selectedVoice = googleUSVoices[0];
-        console.log('🎯 Using Google US English voice:', selectedVoice.name);
-        return;
+    // Priority 1: Google US English voices (highest priority for consistency across devices)
+    // Skip Google voices on iOS since they're not available
+    if (!isIOS) {
+        const googleUSVoices = voices.filter(voice =>
+            voice.name.includes('Google') &&
+            (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))
+        );
+
+        if (googleUSVoices.length > 0) {
+            selectedVoice = googleUSVoices[0];
+            console.log('🎯 Using Google US English voice:', selectedVoice.name);
+            return;
+        }
     }
 
-    // Priority 2: Any Google English voice (online, high quality)
-    const googleEnglishVoices = voices.filter(voice => 
-        voice.name.includes('Google') && voice.lang.startsWith('en')
-    );
-    
-    if (googleEnglishVoices.length > 0) {
-        selectedVoice = googleEnglishVoices[0];
-        console.log('🎯 Using Google English voice:', selectedVoice.name);
-        return;
+    // Priority 2: Any Google English voice (online, high quality) - Skip on iOS
+    if (!isIOS) {
+        const googleEnglishVoices = voices.filter(voice => 
+            voice.name.includes('Google') && voice.lang.startsWith('en')
+        );
+        
+        if (googleEnglishVoices.length > 0) {
+            selectedVoice = googleEnglishVoices[0];
+            console.log('🎯 Using Google English voice:', selectedVoice.name);
+            return;
+        }
     }
 
     // Priority 3: Best offline voices (for when Google is not available)
     const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en'));
-    const preferredOfflineNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David'];
+    
+    // iOS/iPhone specific voice preferences (most natural sounding)
+    const iosPreferredNames = ['Samantha', 'Alex', 'Susan', 'Daniel', 'Karen', 'Moira'];
+    // Windows specific voice preferences
+    const windowsPreferredNames = ['Microsoft Zira', 'Microsoft David', 'Microsoft Mark'];
+    // Combined preferences with iOS first (since it's more common on mobile)
+    const preferredOfflineNames = [...iosPreferredNames, ...windowsPreferredNames];
     
     for (const name of preferredOfflineNames) {
         const found = offlineVoices.find(v => v.name.includes(name));
