@@ -180,6 +180,7 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
     const groupSelectionHeader = document.getElementById('groupSelectionHeader');
     if (groupSelectionHeader) {
         groupSelectionHeader.style.display = 'flex !important';
+        console.log('Setting groupSelectionHeader to flex for sub-categories');
     }
 
     // Update title to show we're choosing units
