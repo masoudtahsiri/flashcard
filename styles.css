@@ -865,7 +865,7 @@ input:checked + .toggle-slider:before {
     display: flex;
     justify-content: center;
     gap: 15px;
-    margin-top: -10px;
+    margin-top: -20px;
 }
 
 .nav-btn {
@@ -1154,42 +1154,42 @@ input:checked + .toggle-slider:before {
     }
     
     .group-header .back-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-        border-radius: 18px;
+        padding: 12px 24px;
+        font-size: 1.1rem;
+        border-radius: 25px;
         white-space: nowrap;
         background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-        box-shadow: 0 3px 12px rgba(255, 107, 107, 0.3);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         border: none;
         color: white;
         font-weight: 600;
         text-align: center;
         display: inline-block;
-        min-width: 80px;
+        min-width: 120px;
     }
     
     .group-header h2,
     .group-header #currentGroupName {
-        font-size: 0.85rem !important;
-        padding: 6px 12px !important;
+        font-size: 1.1rem !important;
+        padding: 12px 24px !important;
         margin: 0;
         width: auto !important;
-        min-width: 80px !important;
-        max-width: 140px !important;
+        min-width: 120px !important;
+        max-width: 180px !important;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         background: rgba(255, 255, 255, 0.9) !important;
         border: 2px solid #FFE066 !important;
-        border-radius: 18px !important;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 25px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
         text-align: center !important;
         display: inline-block !important;
     }
     
     .group-header #currentGroupName::before {
-        font-size: 0.8rem !important;
-        margin-right: 4px !important;
+        font-size: 1rem !important;
+        margin-right: 6px !important;
     }
     
     /* Enhanced responsive styles for new grid system */
@@ -1603,13 +1603,13 @@ body:has(.group-selection), body:has(.flashcard-view) {
     }
     
     .nav-btn {
-        padding: 10px 20px;
-        font-size: 1rem;
+        padding: 12px 24px;
+        font-size: 1.1rem;
         margin: 5px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 22px;
+        border-radius: 25px;
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        min-width: 100px;
+        min-width: 120px;
         text-align: center;
         display: inline-block;
         color: white;
