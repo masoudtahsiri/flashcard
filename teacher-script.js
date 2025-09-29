@@ -138,13 +138,20 @@ function renderGridView() {
         const category = groups.find(g => g.id === card.categoryId);
         const categoryName = category ? category.name : 'No Category';
         
+        // Build category select options HTML
+        let categoryOptionsHTML = '<option value="">No Category</option>';
+        groups.forEach(group => {
+            const selected = card.categoryId === group.id ? 'selected' : '';
+            categoryOptionsHTML += `<option value="${group.id}" ${selected}>${group.name}</option>`;
+        });
+        
         gridCard.innerHTML = `
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
             <div class="grid-flashcard-category" id="cardCategory-${card.id}">
                 <span class="category-display">${categoryName}</span>
                 <select class="category-edit-select" id="categorySelect-${card.id}" style="display: none;">
-                    <option value="">No Category</option>
+                    ${categoryOptionsHTML}
                 </select>
             </div>
             <div class="grid-flashcard-actions">
@@ -154,16 +161,6 @@ function renderGridView() {
                 <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})" title="Delete">×</button>
             </div>
         `;
-        
-        // Populate category select options
-        const categorySelect = document.getElementById(`categorySelect-${card.id}`);
-        groups.forEach(group => {
-            const option = document.createElement('option');
-            option.value = group.id;
-            option.textContent = group.name;
-            option.selected = card.categoryId === group.id;
-            categorySelect.appendChild(option);
-        });
         
         // Add click to play audio
         gridCard.addEventListener('click', (e) => {
