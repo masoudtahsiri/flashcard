@@ -522,25 +522,7 @@ function saveWelcomeTitle() {
     alert('Welcome title settings saved successfully!');
 }
 
-function resetWelcomeTitle() {
-    const defaultLine1 = 'Welcome to';
-    const defaultLine2 = 'Mrs Sadaf 1B Class';
-    const defaultFont = 'Arial Black';
-
-    document.getElementById('welcomeTitleLine1').value = defaultLine1;
-    document.getElementById('welcomeTitleLine2').value = defaultLine2;
-    document.getElementById('welcomeFontSelect').value = defaultFont;
-
-    localStorage.removeItem('welcomeTitleLine1');
-    localStorage.removeItem('welcomeTitleLine2');
-    localStorage.removeItem('welcomeFont');
-
-    // Update preview and student interface
-    updatePreview();
-    updateStudentInterface();
-
-    alert('Welcome title settings reset to default!');
-}
+// Reset functionality removed - no longer needed
 
 function updateStudentInterface() {
     if (window.studentWindow && !window.studentWindow.closed) {
