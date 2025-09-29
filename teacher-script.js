@@ -134,15 +134,31 @@ function renderGridView() {
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
         
-        // Find the category name for this card
+        // Find the category name for this card (show full hierarchical path)
         const category = groups.find(g => g.id === card.categoryId);
-        const categoryName = category ? category.name : 'No Category';
+        let categoryName = 'No Category';
         
-        // Build category select options HTML
+        if (category) {
+            if (category.parentId) {
+                // This is a sub-category, show "Main Category > Sub Category"
+                const parentCategory = groups.find(g => g.id === category.parentId);
+                categoryName = parentCategory ? `${parentCategory.name} > ${category.name}` : category.name;
+            } else {
+                // This is a main category
+                categoryName = category.name;
+            }
+        }
+        
+        // Build category select options HTML with hierarchical names
         let categoryOptionsHTML = '<option value="">No Category</option>';
         groups.forEach(group => {
             const selected = card.categoryId === group.id ? 'selected' : '';
-            categoryOptionsHTML += `<option value="${group.id}" ${selected}>${group.name}</option>`;
+            let displayName = group.name;
+            if (group.parentId) {
+                const parentGroup = groups.find(g => g.id === group.parentId);
+                displayName = parentGroup ? `${parentGroup.name} > ${group.name}` : group.name;
+            }
+            categoryOptionsHTML += `<option value="${group.id}" ${selected}>${displayName}</option>`;
         });
         
         gridCard.innerHTML = `
