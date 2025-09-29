@@ -1616,10 +1616,19 @@ body:has(.group-selection), body:has(.flashcard-view) {
         border: none;
     }
     
-    .nav-btn:hover {
+    .nav-btn:hover:not(:disabled) {
         background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .nav-btn:disabled {
+        background: #ccc !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        opacity: 0.6 !important;
+        color: #666 !important;
     }
     
     .card-counter {
