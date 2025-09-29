@@ -1343,10 +1343,14 @@ input:checked + .toggle-slider:before {
 }
 
 .group-selection .group-header {
-    display: none !important; /* Hidden by default - shown only when needed */
+    display: none; /* Hidden by default - shown only when needed */
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
+}
+
+.group-selection .group-header.show {
+    display: flex !important;
 }
 
 .group-selection .group-header h2 {

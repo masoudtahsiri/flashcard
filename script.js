@@ -179,8 +179,8 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
     // Show back button for sub-categories
     const groupSelectionHeader = document.getElementById('groupSelectionHeader');
     if (groupSelectionHeader) {
-        groupSelectionHeader.style.display = 'flex !important';
-        console.log('Setting groupSelectionHeader to flex for sub-categories');
+        groupSelectionHeader.classList.add('show');
+        console.log('Setting groupSelectionHeader to show for sub-categories');
     }
 
     // Update title to show we're choosing units
@@ -278,7 +278,7 @@ function goBackToGroups() {
 
         // Show the back button for sub-categories
         if (groupSelectionHeader) {
-            groupSelectionHeader.style.display = 'flex !important';
+            groupSelectionHeader.classList.add('show');
         }
 
         // Hide welcome section when returning to sub-categories
@@ -302,9 +302,9 @@ function goBackToGroups() {
     } else {
         // We're in group selection view, check if we need to go back to main categories
         const groupSelectionHeader = document.getElementById('groupSelectionHeader');
-        if (groupSelectionHeader && groupSelectionHeader.style.display !== 'none') {
+        if (groupSelectionHeader && groupSelectionHeader.classList.contains('show')) {
             // We're in sub-categories, go back to main categories
-            groupSelectionHeader.style.display = 'none !important';
+            groupSelectionHeader.classList.remove('show');
             document.getElementById('topicSelectionTitle').textContent = 'Choose your Topic';
             navigationHistory = []; // Clear history when going to main
             renderGroups();
@@ -328,7 +328,7 @@ function goToMainMenu() {
     // Hide everything and show main categories
     if (flashcardView) flashcardView.style.display = 'none';
     if (groupSelection) groupSelection.style.display = 'block';
-    if (groupSelectionHeader) groupSelectionHeader.style.display = 'none !important';
+    if (groupSelectionHeader) groupSelectionHeader.classList.remove('show');
     if (welcomeSection) welcomeSection.style.display = 'block';
 
     // Reset to main categories
