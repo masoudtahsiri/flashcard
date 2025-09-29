@@ -162,18 +162,21 @@ function renderGridView() {
             categoryOptionsHTML += `<option value="${group.id}" ${selected}>${displayName}</option>`;
         });
         
-        // Calculate the actual position in the full array (not just current page)
-        const actualPosition = flashcards.findIndex(c => c.id === card.id) + 1;
+        // Calculate the position within the card's category
+        const cardsInSameCategory = flashcards
+            .filter(c => c.categoryId === card.categoryId)
+            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        const positionInCategory = cardsInSameCategory.findIndex(c => c.id === card.id) + 1;
         
         gridCard.innerHTML = `
             <div class="card-checkbox">
                 <input type="checkbox" id="card-${card.id}" class="card-select-checkbox" data-card-id="${card.id}" onchange="updateDeleteButton()">
             </div>
-            <div class="card-position">#${actualPosition}</div>
+            <div class="card-position">#${positionInCategory}</div>
             <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-edit-hint">Click to edit • Position: ${actualPosition}</div>
+            <div class="grid-flashcard-edit-hint">Click to edit • Position: ${positionInCategory} in category</div>
         `;
         
         // Add click to open edit modal (but not when clicking checkbox)
@@ -408,18 +411,21 @@ function renderGroupDetailCards() {
             }
         }
         
-        // Calculate the actual position in the full array
-        const actualPosition = flashcards.findIndex(c => c.id === card.id) + 1;
+        // Calculate the position within the card's category
+        const cardsInSameCategory = flashcards
+            .filter(c => c.categoryId === card.categoryId)
+            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        const positionInCategory = cardsInSameCategory.findIndex(c => c.id === card.id) + 1;
         
         gridCard.innerHTML = `
             <div class="card-checkbox">
                 <input type="checkbox" id="card-group-${card.id}" class="card-select-checkbox" data-card-id="${card.id}" onchange="updateDeleteButton()">
             </div>
-            <div class="card-position">#${actualPosition}</div>
+            <div class="card-position">#${positionInCategory}</div>
             <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-edit-hint">Click to edit • Position: ${actualPosition}</div>
+            <div class="grid-flashcard-edit-hint">Click to edit • Position: ${positionInCategory} in category</div>
         `;
         
         // Add click to open edit modal (but not when clicking checkbox)
@@ -2196,29 +2202,36 @@ function saveCardCategory(cardId) {
     }
 }
 
-// Function to swap card positions
-function swapCardPositions(cardId, newPosition) {
-    const currentIndex = flashcards.findIndex(c => c.id === cardId);
-    const targetIndex = newPosition - 1; // Convert to 0-based index
+// Function to swap card positions within a category
+function swapCardPositionsInCategory(cardId, newPosition, categoryId) {
+    const card = flashcards.find(c => c.id === cardId);
+    if (!card) return;
     
-    if (currentIndex === -1 || targetIndex < 0 || targetIndex >= flashcards.length) {
+    // Get all cards in the target category, sorted by sortOrder
+    const cardsInCategory = flashcards
+        .filter(c => c.categoryId === categoryId)
+        .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    
+    if (newPosition < 1 || newPosition > cardsInCategory.length) {
         return;
     }
     
-    // If there's already a card at the target position, swap them
-    if (targetIndex !== currentIndex) {
-        // Remove the card from current position
-        const cardToMove = flashcards.splice(currentIndex, 1)[0];
+    // Find current position of the card in this category
+    const currentPositionInCategory = cardsInCategory.findIndex(c => c.id === cardId) + 1;
+    
+    if (newPosition !== currentPositionInCategory) {
+        // Remove the card from the category array
+        const cardToMove = cardsInCategory.splice(currentPositionInCategory - 1, 1)[0];
         
         // Insert at new position
-        flashcards.splice(targetIndex, 0, cardToMove);
+        cardsInCategory.splice(newPosition - 1, 0, cardToMove);
         
-        // Update sortOrder for all cards
-        flashcards.forEach((card, index) => {
-            card.sortOrder = index + 1;
+        // Update sortOrder for all cards in this category
+        cardsInCategory.forEach((categoryCard, index) => {
+            categoryCard.sortOrder = index + 1;
         });
         
-        console.log(`Card "${cardToMove.word}" moved from position ${currentIndex + 1} to position ${targetIndex + 1}`);
+        console.log(`Card "${cardToMove.word}" moved to position ${newPosition} in category ${categoryId || 'No Category'}`);
     }
 }
 
@@ -2234,10 +2247,13 @@ function openCardEditModal(cardId) {
     document.getElementById('editCardWord').value = card.word;
     document.getElementById('editCardCategory').value = card.categoryId || '';
     
-    // Set the current order position
-    const currentPosition = flashcards.findIndex(c => c.id === cardId) + 1;
-    document.getElementById('editCardOrder').value = currentPosition;
-    document.getElementById('editCardOrder').max = flashcards.length;
+    // Set the current order position within the category
+    const cardsInSameCategory = flashcards
+        .filter(c => c.categoryId === card.categoryId)
+        .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    const currentPositionInCategory = cardsInSameCategory.findIndex(c => c.id === cardId) + 1;
+    document.getElementById('editCardOrder').value = currentPositionInCategory;
+    document.getElementById('editCardOrder').max = cardsInSameCategory.length;
     
     // Show current image
     const imagePreview = document.getElementById('editImagePreview');
@@ -2290,19 +2306,25 @@ async function saveCardEdits() {
         return;
     }
     
-    if (isNaN(newOrder) || newOrder < 1 || newOrder > flashcards.length) {
-        alert(`Please enter a valid order position between 1 and ${flashcards.length}.`);
-        return;
-    }
-    
-    // Update card data
+    // Update card data first (in case category changed)
+    const oldCategoryId = card.categoryId;
     card.word = newWord;
     card.categoryId = newCategoryId ? parseInt(newCategoryId) : null;
     
-    // Handle order change - swap positions if needed
-    const currentPosition = flashcards.findIndex(c => c.id === currentEditingCardId) + 1;
-    if (newOrder !== currentPosition) {
-        swapCardPositions(currentEditingCardId, newOrder);
+    // Get cards in the target category (after potential category change)
+    const cardsInTargetCategory = flashcards
+        .filter(c => c.categoryId === card.categoryId)
+        .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    
+    if (isNaN(newOrder) || newOrder < 1 || newOrder > cardsInTargetCategory.length) {
+        alert(`Please enter a valid order position between 1 and ${cardsInTargetCategory.length} for this category.`);
+        return;
+    }
+    
+    // Handle order change - swap positions within category if needed
+    const currentPositionInCategory = cardsInTargetCategory.findIndex(c => c.id === currentEditingCardId) + 1;
+    if (newOrder !== currentPositionInCategory || oldCategoryId !== card.categoryId) {
+        swapCardPositionsInCategory(currentEditingCardId, newOrder, card.categoryId);
     }
     
     // Handle image update if new image selected
@@ -2449,12 +2471,27 @@ async function loadFlashcards() {
             nextId = flashcards.length > 0 ? Math.max(...flashcards.map(card => card.id)) + 1 : 1;
             
             // Assign sortOrder to existing cards that don't have it (backwards compatibility)
+            // Group by category and assign category-specific sortOrders
             let needsUpdate = false;
-            flashcards.forEach((card, index) => {
-                if (card.sortOrder === undefined || card.sortOrder === null) {
-                    card.sortOrder = index + 1;
-                    needsUpdate = true;
+            const cardsByCategory = {};
+            
+            // Group cards by category
+            flashcards.forEach(card => {
+                const categoryKey = card.categoryId || 'null';
+                if (!cardsByCategory[categoryKey]) {
+                    cardsByCategory[categoryKey] = [];
                 }
+                cardsByCategory[categoryKey].push(card);
+            });
+            
+            // Assign sortOrder within each category
+            Object.values(cardsByCategory).forEach(categoryCards => {
+                categoryCards.forEach((card, index) => {
+                    if (card.sortOrder === undefined || card.sortOrder === null) {
+                        card.sortOrder = index + 1;
+                        needsUpdate = true;
+                    }
+                });
             });
             
             // Save updated cards with sortOrder if needed
@@ -2899,16 +2936,19 @@ function addFlashcard(word, imageFile, categoryId) {
     
     // Compress image and store directly as base64
     compressImage(imageFile).then(async (compressedImage) => {
-        // Calculate next sort order (highest existing order + 1)
-        const maxSortOrder = flashcards.length > 0 ? Math.max(...flashcards.map(card => card.sortOrder || 0)) : 0;
+        // Calculate next sort order within the specific category
+        const targetCategoryId = categoryId ? parseInt(categoryId) : null;
+        const cardsInCategory = flashcards.filter(card => card.categoryId === targetCategoryId);
+        const maxSortOrderInCategory = cardsInCategory.length > 0 ? 
+            Math.max(...cardsInCategory.map(card => card.sortOrder || 0)) : 0;
         
         const newCard = {
             id: nextId++,
             word: word.trim(),
             image: compressedImage, // Store base64 data directly - no external dependencies
             audioUrl: '', // Will use text-to-speech
-            categoryId: categoryId ? parseInt(categoryId) : null,
-            sortOrder: maxSortOrder + 1 // Add sort order for proper sequencing
+            categoryId: targetCategoryId,
+            sortOrder: maxSortOrderInCategory + 1 // Add sort order within category
         };
         
         console.log('Adding card with categoryId:', newCard.categoryId, 'Original categoryId:', categoryId);
@@ -3274,9 +3314,25 @@ async function deleteSelectedCards() {
     // Remove selected cards
     flashcards = flashcards.filter(card => !selectedIds.includes(card.id));
     
-    // Update sortOrder for remaining cards
-    flashcards.forEach((card, index) => {
-        card.sortOrder = index + 1;
+    // Update sortOrder for remaining cards within each category
+    const cardsByCategory = {};
+    
+    // Group remaining cards by category
+    flashcards.forEach(card => {
+        const categoryKey = card.categoryId || 'null';
+        if (!cardsByCategory[categoryKey]) {
+            cardsByCategory[categoryKey] = [];
+        }
+        cardsByCategory[categoryKey].push(card);
+    });
+    
+    // Update sortOrder within each category
+    Object.values(cardsByCategory).forEach(categoryCards => {
+        categoryCards
+            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+            .forEach((card, index) => {
+                card.sortOrder = index + 1;
+            });
     });
     
     try {
