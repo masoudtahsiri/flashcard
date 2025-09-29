@@ -497,7 +497,7 @@ function showGroupedCards() {
 
 // Function to clear all storage (emergency cleanup)
 async function clearAllStorage() {
-    if (confirm('This will delete ALL flashcards and cannot be undone. Are you sure?')) {
+    if (confirm('This will delete ALL flashcards AND categories and cannot be undone. Are you sure?')) {
         try {
             const response = await fetch('/api/flashcards', {
                 method: 'DELETE'
@@ -512,13 +512,27 @@ async function clearAllStorage() {
                 throw new Error(result.error || 'Clear failed');
             }
 
-            flashcards = []; // Empty array, no default cards
+            // Clear both arrays
+            flashcards = []; // Empty flashcards array
+            groups = []; // Empty groups/categories array
             nextId = 1; // Reset ID counter
+            nextGroupId = 1; // Reset group ID counter
+            
+            // Refresh all UI components
             renderGridView();
-            alert('All flashcards cleared!');
+            renderGroupsList();
+            updateGroupSelect();
+            updateParentGroupSelect();
+            
+            // If grouped view is visible, refresh it too
+            if (document.getElementById('groupedCardsView').style.display !== 'none') {
+                renderGroupedCardsView();
+            }
+            
+            alert(`All data cleared successfully!\nDeleted: ${result.deletedFlashcards} flashcards, ${result.deletedGroups} categories`);
         } catch (error) {
-            console.error('Error clearing flashcards:', error);
-            alert('Error clearing flashcards. Please try again.');
+            console.error('Error clearing all data:', error);
+            alert('Error clearing data. Please try again.');
         }
     }
 }
