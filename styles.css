@@ -1269,12 +1269,12 @@ input:checked + .toggle-slider:before {
     z-index: 2;
     color: #ffffff;
     text-shadow:
-        3px 3px 0px #000000,
-        -3px -3px 0px #000000,
-        3px -3px 0px #000000,
-        -3px 3px 0px #000000,
-        0px 0px 15px rgba(0, 0, 0, 0.9);
-    -webkit-text-stroke: 2px #000000;
+        2px 2px 0px #000000,
+        -2px -2px 0px #000000,
+        2px -2px 0px #000000,
+        -2px 2px 0px #000000,
+        0px 0px 8px rgba(0, 0, 0, 0.8);
+    -webkit-text-stroke: 1px #000000;
     animation: rainbow-flow 4s ease-in-out infinite, bounce 2s ease-in-out infinite;
     letter-spacing: 1px;
     line-height: 1.2;
@@ -1426,12 +1426,12 @@ input:checked + .toggle-slider:before {
     animation: none;
     color: #ffffff;
     text-shadow:
-        3px 3px 0px #000000,
-        -3px -3px 0px #000000,
-        3px -3px 0px #000000,
-        -3px 3px 0px #000000,
-        0px 0px 15px rgba(0, 0, 0, 0.9);
-    -webkit-text-stroke: 2px #000000;
+        2px 2px 0px #000000,
+        -2px -2px 0px #000000,
+        2px -2px 0px #000000,
+        -2px 2px 0px #000000,
+        0px 0px 8px rgba(0, 0, 0, 0.8);
+    -webkit-text-stroke: 1px #000000;
 }
 
 .empty-state p {
