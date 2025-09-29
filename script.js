@@ -292,15 +292,24 @@ let selectedVoice = null;
 let voices = [];
 
 // Load available voices and set Google US English as default
+// Load welcome title from localStorage or use default
+function loadWelcomeTitle() {
+    const welcomeTitle = localStorage.getItem('welcomeTitle') || 'Welcome to Mrs Sadaf 1B Class';
+    const titleElement = document.getElementById('welcomeTitle');
+    if (titleElement) {
+        titleElement.textContent = welcomeTitle;
+    }
+}
+
 function loadVoices() {
     voices = speechSynthesis.getVoices();
-    
+
     // Look specifically for Google US English voices
-    const googleVoices = voices.filter(voice => 
-        voice.name.includes('Google') && 
+    const googleVoices = voices.filter(voice =>
+        voice.name.includes('Google') &&
         (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))
     );
-    
+
     if (googleVoices.length > 0) {
         // Prefer Google US English voices
         selectedVoice = googleVoices[0];
@@ -386,7 +395,10 @@ function goToNext() {
 document.addEventListener('DOMContentLoaded', async () => {
     // Load saved flashcards
     await loadFlashcards();
-    
+
+    // Load welcome title
+    loadWelcomeTitle();
+
     // Load voices immediately
     loadVoices();
     

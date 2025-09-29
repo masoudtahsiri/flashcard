@@ -462,7 +462,60 @@ function showTab(tabName) {
     } else if (tabName === 'manageGroups') {
         document.getElementById('manageGroupsContent').classList.add('active');
         document.getElementById('manageGroupsTab').classList.add('active');
+    } else if (tabName === 'settings') {
+        document.getElementById('settingsContent').classList.add('active');
+        document.getElementById('settingsTab').classList.add('active');
     }
+}
+
+// Settings functions
+function loadSettings() {
+    // Load welcome title from localStorage or use default
+    const welcomeTitle = localStorage.getItem('welcomeTitle') || 'Welcome to Mrs Sadaf 1B Class';
+    document.getElementById('welcomeTitleInput').value = welcomeTitle;
+    document.getElementById('previewTitle').textContent = welcomeTitle;
+}
+
+function saveWelcomeTitle() {
+    const welcomeTitle = document.getElementById('welcomeTitleInput').value.trim();
+
+    if (!welcomeTitle) {
+        alert('Please enter a welcome title.');
+        return;
+    }
+
+    // Save to localStorage
+    localStorage.setItem('welcomeTitle', welcomeTitle);
+
+    // Update preview
+    document.getElementById('previewTitle').textContent = welcomeTitle;
+
+    // Update student interface if it's open
+    if (window.studentWindow && !window.studentWindow.closed) {
+        const studentTitle = window.studentWindow.document.getElementById('welcomeTitle');
+        if (studentTitle) {
+            studentTitle.textContent = welcomeTitle;
+        }
+    }
+
+    alert('Welcome title saved successfully!');
+}
+
+function resetWelcomeTitle() {
+    const defaultTitle = 'Welcome to Mrs Sadaf 1B Class';
+    document.getElementById('welcomeTitleInput').value = defaultTitle;
+    document.getElementById('previewTitle').textContent = defaultTitle;
+    localStorage.removeItem('welcomeTitle');
+
+    // Update student interface if it's open
+    if (window.studentWindow && !window.studentWindow.closed) {
+        const studentTitle = window.studentWindow.document.getElementById('welcomeTitle');
+        if (studentTitle) {
+            studentTitle.textContent = defaultTitle;
+        }
+    }
+
+    alert('Welcome title reset to default!');
 }
 
 // Pagination functions

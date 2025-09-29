@@ -89,6 +89,10 @@
                     <span class="tab-icon">📁</span>
                     Manage Units
                 </button>
+                <button id="settingsTab" class="tab-btn" onclick="showTab('settings')">
+                    <span class="tab-icon">⚙️</span>
+                    Settings
+                </button>
             </div>
             
             <div class="tab-content">
@@ -141,6 +145,33 @@
                             </table>
                             <div id="noGroupsMessage" class="no-groups-message" style="display: none;">
                                 <p>No units created yet. Add your first unit above.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settingsContent" class="tab-panel">
+                    <div class="settings-form">
+                        <h3>Student Interface Settings</h3>
+
+                        <div class="form-group">
+                            <label for="welcomeTitleInput">Welcome Title:</label>
+                            <input type="text" id="welcomeTitleInput" placeholder="Enter welcome message for students">
+                            <small class="form-help">This will appear at the top of the student interface</small>
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="saveWelcomeTitle()">Save Settings</button>
+                            <button class="btn btn-secondary" onclick="resetWelcomeTitle()">Reset to Default</button>
+                        </div>
+
+                        <div class="settings-preview">
+                            <h4>Preview:</h4>
+                            <div class="welcome-preview">
+                                <div class="welcome-section">
+                                    <h1 id="previewTitle">Welcome to Mrs Sadaf 1B Class</h1>
+                                </div>
                             </div>
                         </div>
                     </div>
