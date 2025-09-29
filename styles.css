@@ -1145,7 +1145,7 @@ input:checked + .toggle-slider:before {
         display: flex !important;
         flex-direction: row !important;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
         gap: 8px;
         text-align: left;
         flex-wrap: nowrap;
@@ -1157,13 +1157,14 @@ input:checked + .toggle-slider:before {
         padding: 4px 8px;
         font-size: 0.7rem;
         border-radius: 15px;
-        flex-shrink: 0;
         white-space: nowrap;
         background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
         box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
         border: none;
         color: white;
         font-weight: 600;
+        width: auto;
+        min-width: auto;
     }
     
     .group-header h2,
@@ -1171,8 +1172,9 @@ input:checked + .toggle-slider:before {
         font-size: 0.9rem !important;
         padding: 4px 8px !important;
         margin: 0;
-        flex: 1;
-        min-width: 0;
+        width: auto !important;
+        min-width: auto !important;
+        max-width: 150px !important;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
