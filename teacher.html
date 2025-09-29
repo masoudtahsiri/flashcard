@@ -53,7 +53,11 @@
                 </button>
                 <button id="manageGroupsTab" class="tab-btn" onclick="showTab('manageGroups')">
                     <span class="tab-icon">📁</span>
-                    Manage Units
+                    Manage Categories
+                </button>
+                <button id="manageSubCategoriesTab" class="tab-btn" onclick="showTab('manageSubCategories')">
+                    <span class="tab-icon">📂</span>
+                    Manage Sub-Categories
                 </button>
             </div>
             
@@ -70,9 +74,15 @@
                             <input type="text" id="wordInput" placeholder="Enter word or text" class="text-input">
                         </div>
                         <div class="form-group">
-                            <label for="groupSelect">Unit:</label>
+                            <label for="groupSelect">Category:</label>
                             <select id="groupSelect" class="group-select">
-                                <option value="">Select a unit</option>
+                                <option value="">Select a category</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subCategorySelect">Sub-Category:</label>
+                            <select id="subCategorySelect" class="group-select">
+                                <option value="">Select a sub-category</option>
                             </select>
                         </div>
                         <button id="addCardBtn" class="add-card-btn">Add Flashcard</button>
@@ -82,12 +92,31 @@
                 <div id="manageGroupsContent" class="tab-panel">
                     <div class="groups-management">
                         <div class="form-group">
-                            <label for="groupNameInput">Unit Name:</label>
-                            <input type="text" id="groupNameInput" placeholder="Enter unit name" class="text-input">
+                            <label for="groupNameInput">Category Name:</label>
+                            <input type="text" id="groupNameInput" placeholder="Enter category name" class="text-input">
                         </div>
-                        <button id="addGroupBtn" class="add-group-btn">Add Unit</button>
+                        <button id="addGroupBtn" class="add-group-btn">Add Category</button>
                         <div id="groupsList" class="groups-list">
                             <!-- Groups will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="manageSubCategoriesContent" class="tab-panel">
+                    <div class="groups-management">
+                        <div class="form-group">
+                            <label for="subCategoryGroupSelect">Category:</label>
+                            <select id="subCategoryGroupSelect" class="group-select">
+                                <option value="">Select a category</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="subCategoryNameInput">Sub-Category Name:</label>
+                            <input type="text" id="subCategoryNameInput" placeholder="Enter sub-category name" class="text-input">
+                        </div>
+                        <button id="addSubCategoryBtn" class="add-group-btn">Add Sub-Category</button>
+                        <div id="subCategoriesList" class="groups-list">
+                            <!-- Sub-categories will be rendered here -->
                         </div>
                     </div>
                 </div>
