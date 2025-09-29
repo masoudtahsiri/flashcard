@@ -636,33 +636,56 @@ function loadWelcomeTitle() {
 function loadVoices() {
     voices = speechSynthesis.getVoices();
 
-    // Look specifically for Google US English voices
-    const googleVoices = voices.filter(voice =>
+    // Priority 1: Google US English voices (highest priority for consistency across devices)
+    const googleUSVoices = voices.filter(voice =>
         voice.name.includes('Google') &&
         (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))
     );
 
-    if (googleVoices.length > 0) {
-        // Prefer Google US English voices
-        selectedVoice = googleVoices[0];
-        console.log('Using Google US English voice:', selectedVoice.name);
-    } else {
-        // Fallback to any Google English voice
-        const anyGoogleEnglish = voices.filter(voice => 
-            voice.name.includes('Google') && voice.lang.startsWith('en')
-        );
-        
-        if (anyGoogleEnglish.length > 0) {
-            selectedVoice = anyGoogleEnglish[0];
-            console.log('Using Google English voice:', selectedVoice.name);
-        } else {
-            // Final fallback to any English voice
-            const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
-            if (englishVoices.length > 0) {
-                selectedVoice = englishVoices[0];
-                console.log('Using fallback English voice:', selectedVoice.name);
-            }
+    if (googleUSVoices.length > 0) {
+        selectedVoice = googleUSVoices[0];
+        console.log('🎯 Using Google US English voice:', selectedVoice.name);
+        return;
+    }
+
+    // Priority 2: Any Google English voice (online, high quality)
+    const googleEnglishVoices = voices.filter(voice => 
+        voice.name.includes('Google') && voice.lang.startsWith('en')
+    );
+    
+    if (googleEnglishVoices.length > 0) {
+        selectedVoice = googleEnglishVoices[0];
+        console.log('🎯 Using Google English voice:', selectedVoice.name);
+        return;
+    }
+
+    // Priority 3: Best offline voices (for when Google is not available)
+    const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en'));
+    const preferredOfflineNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David'];
+    
+    for (const name of preferredOfflineNames) {
+        const found = offlineVoices.find(v => v.name.includes(name));
+        if (found) {
+            selectedVoice = found;
+            console.log('🎯 Using offline voice:', found.name);
+            return;
         }
+    }
+
+    // Priority 4: Any offline English voice
+    if (offlineVoices.length > 0) {
+        selectedVoice = offlineVoices[0];
+        console.log('🎯 Using first offline English voice:', offlineVoices[0].name);
+        return;
+    }
+
+    // Final fallback: Any English voice
+    const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
+    if (englishVoices.length > 0) {
+        selectedVoice = englishVoices[0];
+        console.log('🎯 Using fallback English voice:', englishVoices[0].name);
+    } else {
+        console.warn('❌ No English voice found');
     }
 }
 

@@ -834,7 +834,7 @@ function generateStudentHTMLForZip() {
         let currentCardIndex = 0;
         let selectedVoice = null;
         let voices = [];
-        function loadVoices() { voices = speechSynthesis.getVoices(); const googleVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); if (googleVoices.length > 0) { selectedVoice = googleVoices[0]; } else { const anyGoogleEnglish = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); if (anyGoogleEnglish.length > 0) { selectedVoice = anyGoogleEnglish[0]; } else { const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); if (englishVoices.length > 0) { selectedVoice = englishVoices[0]; } } } }
+        function loadVoices() { voices = speechSynthesis.getVoices(); const googleUSVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); if (googleUSVoices.length > 0) { selectedVoice = googleUSVoices[0]; console.log('🎯 Google US English voice:', selectedVoice.name); return; } const googleEnglishVoices = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); if (googleEnglishVoices.length > 0) { selectedVoice = googleEnglishVoices[0]; console.log('🎯 Google English voice:', selectedVoice.name); return; } const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en')); const preferredNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David']; for (const name of preferredNames) { const found = offlineVoices.find(v => v.name.includes(name)); if (found) { selectedVoice = found; console.log('🎯 Offline voice:', found.name); return; } } if (offlineVoices.length > 0) { selectedVoice = offlineVoices[0]; console.log('🎯 First offline English voice:', offlineVoices[0].name); return; } const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); if (englishVoices.length > 0) { selectedVoice = englishVoices[0]; console.log('🎯 Fallback English voice:', englishVoices[0].name); } }
         function playAudio(word, audioUrl) { if ('speechSynthesis' in window) { speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(word); if (selectedVoice) { utterance.voice = selectedVoice; } utterance.lang = 'en-US'; utterance.rate = 0.9; utterance.pitch = 1.1; utterance.volume = 1.0; utterance.text = word; speechSynthesis.speak(utterance); } }
         function updateFlashcard() { if (flashcards.length === 0) { const flashcardElement = document.getElementById('currentFlashcard'); flashcardElement.innerHTML = \`<div class="empty-state"><h3>No flashcards available</h3><p>Please ask your teacher to add flashcards</p></div>\`; document.getElementById('currentCard').textContent = '0'; document.getElementById('totalCards').textContent = '0'; document.getElementById('prevBtn').disabled = true; document.getElementById('nextBtn').disabled = true; return; } const currentCard = flashcards[currentCardIndex]; const flashcardElement = document.getElementById('currentFlashcard'); flashcardElement.innerHTML = \`<img src="\${currentCard.image}" alt="\${currentCard.word}" class="flashcard-image"><div class="flashcard-text">\${currentCard.word}</div>\`; document.getElementById('currentCard').textContent = currentCardIndex + 1; document.getElementById('totalCards').textContent = flashcards.length; const prevBtn = document.getElementById('prevBtn'); const nextBtn = document.getElementById('nextBtn'); prevBtn.disabled = currentCardIndex === 0; nextBtn.disabled = currentCardIndex === flashcards.length - 1; flashcardElement.onclick = () => { playAudio(currentCard.word, currentCard.audioUrl); }; flashcardElement.addEventListener('touchend', (e) => { e.preventDefault(); playAudio(currentCard.word, currentCard.audioUrl); }); }
         function goToPrevious() { if (currentCardIndex > 0) { currentCardIndex--; updateFlashcard(); } }
@@ -1026,7 +1026,7 @@ self.addEventListener('fetch', function(event) {
         let voices = [];
         let deferredPrompt;
         
-        function loadVoices() { voices = speechSynthesis.getVoices(); const googleVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); if (googleVoices.length > 0) { selectedVoice = googleVoices[0]; } else { const anyGoogleEnglish = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); if (anyGoogleEnglish.length > 0) { selectedVoice = anyGoogleEnglish[0]; } else { const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); if (englishVoices.length > 0) { selectedVoice = englishVoices[0]; } } } }
+        function loadVoices() { voices = speechSynthesis.getVoices(); const googleUSVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); if (googleUSVoices.length > 0) { selectedVoice = googleUSVoices[0]; console.log('🎯 Google US English voice:', selectedVoice.name); return; } const googleEnglishVoices = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); if (googleEnglishVoices.length > 0) { selectedVoice = googleEnglishVoices[0]; console.log('🎯 Google English voice:', selectedVoice.name); return; } const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en')); const preferredNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David']; for (const name of preferredNames) { const found = offlineVoices.find(v => v.name.includes(name)); if (found) { selectedVoice = found; console.log('🎯 Offline voice:', found.name); return; } } if (offlineVoices.length > 0) { selectedVoice = offlineVoices[0]; console.log('🎯 First offline English voice:', offlineVoices[0].name); return; } const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); if (englishVoices.length > 0) { selectedVoice = englishVoices[0]; console.log('🎯 Fallback English voice:', englishVoices[0].name); } }
         function playAudio(word, audioUrl) { if ('speechSynthesis' in window) { speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(word); if (selectedVoice) { utterance.voice = selectedVoice; } utterance.lang = 'en-US'; utterance.rate = 0.9; utterance.pitch = 1.1; utterance.volume = 1.0; utterance.text = word; speechSynthesis.speak(utterance); } }
         function updateFlashcard() { if (flashcards.length === 0) { const flashcardElement = document.getElementById('currentFlashcard'); flashcardElement.innerHTML = \`<div class="empty-state"><h3>No flashcards available</h3><p>Please ask your teacher to add flashcards</p></div>\`; document.getElementById('currentCard').textContent = '0'; document.getElementById('totalCards').textContent = '0'; document.getElementById('prevBtn').disabled = true; document.getElementById('nextBtn').disabled = true; return; } const currentCard = flashcards[currentCardIndex]; const flashcardElement = document.getElementById('currentFlashcard'); flashcardElement.innerHTML = \`<img src="\${currentCard.image}" alt="\${currentCard.word}" class="flashcard-image"><div class="flashcard-text">\${currentCard.word}</div>\`; document.getElementById('currentCard').textContent = currentCardIndex + 1; document.getElementById('totalCards').textContent = flashcards.length; const prevBtn = document.getElementById('prevBtn'); const nextBtn = document.getElementById('nextBtn'); prevBtn.disabled = currentCardIndex === 0; nextBtn.disabled = currentCardIndex === flashcards.length - 1; flashcardElement.onclick = () => { playAudio(currentCard.word, currentCard.audioUrl); }; flashcardElement.addEventListener('touchend', (e) => { e.preventDefault(); playAudio(currentCard.word, currentCard.audioUrl); }); }
         function goToPrevious() { if (currentCardIndex > 0) { currentCardIndex--; updateFlashcard(); } }
@@ -1215,19 +1215,37 @@ function generateStandaloneHTML() {
         
         function loadVoices() { 
             voices = speechSynthesis.getVoices(); 
-            const googleVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); 
-            if (googleVoices.length > 0) { 
-                selectedVoice = googleVoices[0]; 
-            } else { 
-                const anyGoogleEnglish = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); 
-                if (anyGoogleEnglish.length > 0) { 
-                    selectedVoice = anyGoogleEnglish[0]; 
-                } else { 
-                    const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); 
-                    if (englishVoices.length > 0) { 
-                        selectedVoice = englishVoices[0]; 
-                    } 
+            const googleUSVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); 
+            if (googleUSVoices.length > 0) { 
+                selectedVoice = googleUSVoices[0]; 
+                console.log('🎯 Google US English voice:', selectedVoice.name); 
+                return; 
+            } 
+            const googleEnglishVoices = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); 
+            if (googleEnglishVoices.length > 0) { 
+                selectedVoice = googleEnglishVoices[0]; 
+                console.log('🎯 Google English voice:', selectedVoice.name); 
+                return; 
+            } 
+            const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en')); 
+            const preferredNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David']; 
+            for (const name of preferredNames) { 
+                const found = offlineVoices.find(v => v.name.includes(name)); 
+                if (found) { 
+                    selectedVoice = found; 
+                    console.log('🎯 Offline voice:', found.name); 
+                    return; 
                 } 
+            } 
+            if (offlineVoices.length > 0) { 
+                selectedVoice = offlineVoices[0]; 
+                console.log('🎯 First offline English voice:', offlineVoices[0].name); 
+                return; 
+            } 
+            const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); 
+            if (englishVoices.length > 0) { 
+                selectedVoice = englishVoices[0]; 
+                console.log('🎯 Fallback English voice:', englishVoices[0].name); 
             } 
         }
         
@@ -1444,19 +1462,37 @@ function generateMobileHTML() {
         
         function loadVoices() { 
             voices = speechSynthesis.getVoices(); 
-            const googleVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); 
-            if (googleVoices.length > 0) { 
-                selectedVoice = googleVoices[0]; 
-            } else { 
-                const anyGoogleEnglish = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); 
-                if (anyGoogleEnglish.length > 0) { 
-                    selectedVoice = anyGoogleEnglish[0]; 
-                } else { 
-                    const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); 
-                    if (englishVoices.length > 0) { 
-                        selectedVoice = englishVoices[0]; 
-                    } 
+            const googleUSVoices = voices.filter(voice => voice.name.includes('Google') && (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))); 
+            if (googleUSVoices.length > 0) { 
+                selectedVoice = googleUSVoices[0]; 
+                console.log('🎯 Google US English voice:', selectedVoice.name); 
+                return; 
+            } 
+            const googleEnglishVoices = voices.filter(voice => voice.name.includes('Google') && voice.lang.startsWith('en')); 
+            if (googleEnglishVoices.length > 0) { 
+                selectedVoice = googleEnglishVoices[0]; 
+                console.log('🎯 Google English voice:', selectedVoice.name); 
+                return; 
+            } 
+            const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en')); 
+            const preferredNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David']; 
+            for (const name of preferredNames) { 
+                const found = offlineVoices.find(v => v.name.includes(name)); 
+                if (found) { 
+                    selectedVoice = found; 
+                    console.log('🎯 Offline voice:', found.name); 
+                    return; 
                 } 
+            } 
+            if (offlineVoices.length > 0) { 
+                selectedVoice = offlineVoices[0]; 
+                console.log('🎯 First offline English voice:', offlineVoices[0].name); 
+                return; 
+            } 
+            const englishVoices = voices.filter(voice => voice.lang.startsWith('en')); 
+            if (englishVoices.length > 0) { 
+                selectedVoice = englishVoices[0]; 
+                console.log('🎯 Fallback English voice:', englishVoices[0].name); 
             } 
         }
         
@@ -3074,33 +3110,56 @@ let voices = [];
 function loadVoices() {
     voices = speechSynthesis.getVoices();
     
-    // Look specifically for Google US English voices
-    const googleVoices = voices.filter(voice => 
+    // Priority 1: Google US English voices (highest priority for consistency across devices)
+    const googleUSVoices = voices.filter(voice => 
         voice.name.includes('Google') && 
         (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))
     );
     
-    if (googleVoices.length > 0) {
-        // Prefer Google US English voices
-        selectedVoice = googleVoices[0];
-        console.log('Using Google US English voice:', selectedVoice.name);
-    } else {
-        // Fallback to any Google English voice
-        const anyGoogleEnglish = voices.filter(voice => 
-            voice.name.includes('Google') && voice.lang.startsWith('en')
-        );
-        
-        if (anyGoogleEnglish.length > 0) {
-            selectedVoice = anyGoogleEnglish[0];
-            console.log('Using Google English voice:', selectedVoice.name);
-        } else {
-            // Final fallback to any English voice
-            const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
-            if (englishVoices.length > 0) {
-                selectedVoice = englishVoices[0];
-                console.log('Using fallback English voice:', selectedVoice.name);
-            }
+    if (googleUSVoices.length > 0) {
+        selectedVoice = googleUSVoices[0];
+        console.log('🎯 Using Google US English voice:', selectedVoice.name);
+        return;
+    }
+    
+    // Priority 2: Any Google English voice (online, high quality)
+    const googleEnglishVoices = voices.filter(voice => 
+        voice.name.includes('Google') && voice.lang.startsWith('en')
+    );
+    
+    if (googleEnglishVoices.length > 0) {
+        selectedVoice = googleEnglishVoices[0];
+        console.log('🎯 Using Google English voice:', selectedVoice.name);
+        return;
+    }
+    
+    // Priority 3: Best offline voices (for when Google is not available)
+    const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en'));
+    const preferredOfflineNames = ['Samantha', 'Alex', 'Microsoft Zira', 'Microsoft David'];
+    
+    for (const name of preferredOfflineNames) {
+        const found = offlineVoices.find(v => v.name.includes(name));
+        if (found) {
+            selectedVoice = found;
+            console.log('🎯 Using offline voice:', found.name);
+            return;
         }
+    }
+    
+    // Priority 4: Any offline English voice
+    if (offlineVoices.length > 0) {
+        selectedVoice = offlineVoices[0];
+        console.log('🎯 Using first offline English voice:', offlineVoices[0].name);
+        return;
+    }
+    
+    // Final fallback: Any English voice
+    const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
+    if (englishVoices.length > 0) {
+        selectedVoice = englishVoices[0];
+        console.log('🎯 Using fallback English voice:', englishVoices[0].name);
+    } else {
+        console.warn('❌ No English voice found');
     }
 }
 
