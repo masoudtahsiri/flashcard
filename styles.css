@@ -1506,7 +1506,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
     .group-selection .group-card,
     .group-selection .group-folder {
         width: 162px;
-        height: 152px;
+        height: 162px;
         margin: 10px;
         padding: 10px 8px;
     }
