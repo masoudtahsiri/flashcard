@@ -1154,9 +1154,9 @@ input:checked + .toggle-slider:before {
     }
     
     .group-header .back-btn {
-        padding: 4px 8px;
-        font-size: 0.7rem;
-        border-radius: 15px;
+        padding: 3px 6px;
+        font-size: 0.6rem;
+        border-radius: 12px;
         white-space: nowrap;
         background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
         box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
@@ -1165,28 +1165,36 @@ input:checked + .toggle-slider:before {
         font-weight: 600;
         width: auto;
         min-width: auto;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .group-header h2,
     .group-header #currentGroupName {
-        font-size: 0.9rem !important;
-        padding: 4px 8px !important;
+        font-size: 0.7rem !important;
+        padding: 3px 6px !important;
         margin: 0;
         width: auto !important;
         min-width: auto !important;
-        max-width: 150px !important;
+        max-width: 120px !important;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         background: rgba(255, 255, 255, 0.8) !important;
         border: 2px solid #FFE066 !important;
-        border-radius: 15px !important;
+        border-radius: 12px !important;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     
     .group-header #currentGroupName::before {
-        font-size: 0.8rem !important;
-        margin-right: 3px !important;
+        font-size: 0.6rem !important;
+        margin-right: 2px !important;
     }
     
     /* Enhanced responsive styles for new grid system */
