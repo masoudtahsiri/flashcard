@@ -45,6 +45,40 @@
             </div>
         </div>
         
+        <!-- Card Edit Modal -->
+        <div id="cardEditModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Edit Flashcard</h3>
+                    <button class="modal-close" onclick="closeCardEditModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="edit-form-group">
+                        <label for="editCardWord">Word/Text:</label>
+                        <input type="text" id="editCardWord" placeholder="Enter word or text">
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label for="editCardCategory">Category:</label>
+                        <select id="editCardCategory">
+                            <option value="">No Category</option>
+                        </select>
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label for="editCardImage">Image:</label>
+                        <input type="file" id="editCardImage" accept="image/*">
+                        <div id="editImagePreview" class="image-preview"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeCardEditModal()">Cancel</button>
+                    <button class="btn btn-danger" onclick="deleteCardFromModal()">Delete Card</button>
+                    <button class="btn btn-primary" onclick="saveCardEdits()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="management-section">
             <div class="tab-controls">
                 <button id="addCardTab" class="tab-btn active" onclick="showTab('addCard')">

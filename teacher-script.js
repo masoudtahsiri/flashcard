@@ -164,25 +164,13 @@ function renderGridView() {
         gridCard.innerHTML = `
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-category" id="cardCategory-${card.id}">
-                <span class="category-display">${categoryName}</span>
-                <select class="category-edit-select" id="categorySelect-${card.id}" style="display: none;">
-                    ${categoryOptionsHTML}
-                </select>
-            </div>
-            <div class="grid-flashcard-actions">
-                <button class="grid-flashcard-edit" onclick="editCardCategory(${card.id})" title="Edit category">✏️</button>
-                <button class="grid-flashcard-save" id="saveCategory-${card.id}" onclick="saveCardCategory(${card.id})" style="display: none;" title="Save">✓</button>
-                <button class="grid-flashcard-cancel" id="cancelCategory-${card.id}" onclick="cancelEditCardCategory(${card.id})" style="display: none;" title="Cancel">✗</button>
-                <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})" title="Delete">×</button>
-            </div>
+            <div class="grid-flashcard-category">${categoryName}</div>
+            <div class="grid-flashcard-edit-hint">Click to edit</div>
         `;
         
-        // Add click to play audio
+        // Add click to open edit modal
         gridCard.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('grid-flashcard-delete')) {
-                playAudio(card.word, card.audioUrl);
-            }
+            openCardEditModal(card.id);
         });
         
         grid.appendChild(gridCard);
@@ -2087,28 +2075,121 @@ function saveCardCategory(cardId) {
     }
 }
 
-// Function to cancel card category edit
-function cancelEditCardCategory(cardId) {
-    const categoryDisplay = document.querySelector(`#cardCategory-${cardId} .category-display`);
-    const categorySelect = document.getElementById(`categorySelect-${cardId}`);
-    const editBtn = document.querySelector(`button[onclick="editCardCategory(${cardId})"]`);
-    const saveBtn = document.getElementById(`saveCategory-${cardId}`);
-    const cancelBtn = document.getElementById(`cancelCategory-${cardId}`);
-    
-    // Reset select to original value
+// Modal-based card editing functions
+let currentEditingCardId = null;
+
+function openCardEditModal(cardId) {
+    currentEditingCardId = cardId;
     const card = flashcards.find(c => c.id === cardId);
-    if (card) {
-        categorySelect.value = card.categoryId || '';
+    if (!card) return;
+    
+    // Populate modal with current card data
+    document.getElementById('editCardWord').value = card.word;
+    document.getElementById('editCardCategory').value = card.categoryId || '';
+    
+    // Show current image
+    const imagePreview = document.getElementById('editImagePreview');
+    if (card.image) {
+        imagePreview.innerHTML = `<img src="${getImageUrl(card.image)}" alt="Current image" style="max-width: 200px; max-height: 150px; object-fit: contain;">`;
+    } else {
+        imagePreview.innerHTML = '<p>No image</p>';
     }
     
-    // Show display and hide select
-    categoryDisplay.style.display = 'inline-block';
-    categorySelect.style.display = 'none';
+    // Populate category dropdown with hierarchical names
+    const categorySelect = document.getElementById('editCardCategory');
+    categorySelect.innerHTML = '<option value="">No Category</option>';
+    groups.forEach(group => {
+        let displayName = group.name;
+        if (group.parentId) {
+            const parentGroup = groups.find(g => g.id === group.parentId);
+            displayName = parentGroup ? `${parentGroup.name} > ${group.name}` : group.name;
+        }
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = displayName;
+        option.selected = card.categoryId === group.id;
+        categorySelect.appendChild(option);
+    });
     
-    // Update button visibility
-    editBtn.style.display = 'inline-block';
-    saveBtn.style.display = 'none';
-    cancelBtn.style.display = 'none';
+    // Show modal
+    document.getElementById('cardEditModal').style.display = 'flex';
+}
+
+function closeCardEditModal() {
+    document.getElementById('cardEditModal').style.display = 'none';
+    document.getElementById('editCardImage').value = '';
+    currentEditingCardId = null;
+}
+
+async function saveCardEdits() {
+    if (!currentEditingCardId) return;
+    
+    const card = flashcards.find(c => c.id === currentEditingCardId);
+    if (!card) return;
+    
+    // Get new values
+    const newWord = document.getElementById('editCardWord').value.trim();
+    const newCategoryId = document.getElementById('editCardCategory').value;
+    const imageFile = document.getElementById('editCardImage').files[0];
+    
+    if (!newWord) {
+        alert('Please enter a word/text for the flashcard.');
+        return;
+    }
+    
+    // Update card data
+    card.word = newWord;
+    card.categoryId = newCategoryId ? parseInt(newCategoryId) : null;
+    
+    // Handle image update if new image selected
+    if (imageFile) {
+        try {
+            const compressedImage = await compressImage(imageFile);
+            card.image = compressedImage;
+        } catch (error) {
+            console.error('Error processing image:', error);
+            alert('Error processing image. Please try again.');
+            return;
+        }
+    }
+    
+    // Save to database
+    try {
+        await saveFlashcards();
+        
+        // Refresh views
+        renderGridView();
+        if (document.getElementById('groupedCardsView').style.display !== 'none') {
+            renderGroupedCardsView();
+        }
+        
+        closeCardEditModal();
+        alert('Card updated successfully!');
+    } catch (error) {
+        console.error('Error saving card:', error);
+        alert('Error saving card. Please try again.');
+    }
+}
+
+function deleteCardFromModal() {
+    if (!currentEditingCardId) return;
+    
+    if (confirm('Are you sure you want to delete this card?')) {
+        const cardIndex = flashcards.findIndex(c => c.id === currentEditingCardId);
+        if (cardIndex !== -1) {
+            flashcards.splice(cardIndex, 1);
+            saveFlashcards();
+            
+            // Refresh views
+            renderGridView();
+            if (document.getElementById('groupedCardsView').style.display !== 'none') {
+                renderGroupedCardsView();
+            }
+            
+            closeCardEditModal();
+            alert('Card deleted successfully!');
+        }
+    }
 }
 
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
@@ -2862,6 +2943,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Set up back to groups button
     document.getElementById('backToGroupsBtn').addEventListener('click', goBackToGroups);
+    
+    // Set up modal image preview
+    document.getElementById('editCardImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('editImagePreview');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="New image preview" style="max-width: 200px; max-height: 150px; object-fit: contain;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Close modal when clicking outside
+    document.getElementById('cardEditModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCardEditModal();
+        }
+    });
     
     // Set up navigation buttons (only if they exist)
     const prevBtn = document.getElementById('prevBtn');
