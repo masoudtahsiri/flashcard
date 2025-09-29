@@ -1142,13 +1142,33 @@ input:checked + .toggle-slider:before {
     }
     
     .group-header {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        text-align: left;
+        flex-wrap: nowrap;
     }
     
-    .group-header h2 {
-        font-size: 1.5rem;
+    .group-header .back-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 18px;
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    
+    .group-header h2,
+    .group-header #currentGroupName {
+        font-size: 1.1rem !important;
+        padding: 6px 12px !important;
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     
     /* Enhanced responsive styles for new grid system */
