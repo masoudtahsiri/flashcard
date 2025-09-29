@@ -2334,6 +2334,11 @@ async function saveFlashcards() {
             body: JSON.stringify({
                 flashcards: flashcards,
                 groups: groups,
+                settings: {
+                    welcomeTitleLine1: localStorage.getItem('welcomeTitleLine1') || 'Welcome to',
+                    welcomeTitleLine2: localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class',
+                    welcomeFont: localStorage.getItem('welcomeFont') || 'Arial Black'
+                },
                 nextId: nextId
             })
         });
@@ -2379,6 +2384,22 @@ async function loadFlashcards() {
         } else {
             groups = [];
             nextGroupId = 1;
+        }
+
+        // Load welcome settings from database
+        if (result.success && result.settings) {
+            // Save welcome settings to localStorage for immediate use
+            if (result.settings.welcomeTitleLine1) {
+                localStorage.setItem('welcomeTitleLine1', result.settings.welcomeTitleLine1);
+            }
+            if (result.settings.welcomeTitleLine2) {
+                localStorage.setItem('welcomeTitleLine2', result.settings.welcomeTitleLine2);
+            }
+            if (result.settings.welcomeFont) {
+                localStorage.setItem('welcomeFont', result.settings.welcomeFont);
+            }
+            // Update the settings form if it's visible
+            loadSettings();
         }
     } catch (error) {
         console.error('Error loading flashcards:', error);

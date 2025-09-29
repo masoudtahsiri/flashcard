@@ -1802,8 +1802,7 @@ input:checked + .toggle-slider:before {
     }
     
     
-    .group-header h2,
-    .group-header #currentGroupName {
+    .group-header h2 {
         font-size: 1.1rem !important;
         padding: 12px 24px !important;
         margin: 0;
@@ -1819,11 +1818,6 @@ input:checked + .toggle-slider:before {
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
         text-align: center !important;
         display: inline-block !important;
-    }
-    
-    .group-header #currentGroupName::before {
-        font-size: 1rem !important;
-        margin-right: 6px !important;
     }
     
     /* Enhanced responsive styles for new grid system */
@@ -1973,13 +1967,13 @@ body:has(.group-selection), body:has(.flashcard-view) {
 }
 
 #flashcardCategoryTitle::before {
-    content: "🌟";
+    content: var(--category-emoji, "📚");
     margin-right: 15px;
     font-size: 2rem;
 }
 
 #flashcardCategoryTitle::after {
-    content: "🌟";
+    content: var(--category-emoji, "📚");
     margin-left: 15px;
     font-size: 2rem;
 }
@@ -2061,42 +2055,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
 /* Flashcard view for kids */
 .flashcard-view {
     font-family: 'Fredoka', 'Inter', sans-serif;
-}
-
-.flashcard-view .group-header h2,
-#currentGroupName {
-    font-family: 'Fredoka', 'Inter', sans-serif;
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #FF6B6B;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
-    padding: 15px 25px;
-    border-radius: 25px;
-    border: 3px solid #FFE066;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    margin: 0;
-    position: relative;
-    overflow: hidden;
-}
-
-#currentGroupName::before {
-    content: "📚";
-    margin-right: 10px;
-    font-size: 1.8rem;
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
-}
-
-#currentGroupName::after {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 230, 102, 0.3), transparent);
-    transform: rotate(45deg);
-    animation: shimmerTitle 4s ease-in-out infinite;
 }
 
 @keyframes shimmerTitle {
@@ -2235,8 +2193,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
     }
     
     
-    .group-detail-header h2,
-    #currentGroupName {
+    .group-detail-header h2 {
         font-size: 1.1rem;
         padding: 6px 12px;
         margin: 0;
@@ -2245,11 +2202,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-    
-    #currentGroupName::before {
-        font-size: 1rem;
-        margin-right: 4px;
     }
     
     .flashcard {

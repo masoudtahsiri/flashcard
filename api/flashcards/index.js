@@ -4,6 +4,7 @@ const MONGODB_URI = process.env.MONGODB_URI || "MONGODB_URI_ENVIRONMENT_VARIABLE
 const DB_NAME = 'flashcard';
 const COLLECTION_NAME = 'flashcards';
 const GROUPS_COLLECTION_NAME = 'groups';
+const SETTINGS_COLLECTION_NAME = 'settings';
 
 let client;
 let db;
@@ -37,18 +38,20 @@ export default async function handler(req, res) {
     const { db } = await connectToDatabase();
     const collection = db.collection(COLLECTION_NAME);
     const groupsCollection = db.collection(GROUPS_COLLECTION_NAME);
+    const settingsCollection = db.collection(SETTINGS_COLLECTION_NAME);
 
     switch (method) {
       case 'GET':
-        // Get all flashcards and groups
+        // Get all flashcards, groups, and settings
         const flashcards = await collection.find({}).sort({ createdAt: -1 }).toArray();
         const groups = await groupsCollection.find({}).sort({ createdAt: -1 }).toArray();
-        res.status(200).json({ success: true, flashcards, groups });
+        const settings = await settingsCollection.findOne({ type: 'welcome' }) || {};
+        res.status(200).json({ success: true, flashcards, groups, settings });
         break;
 
       case 'POST':
-        // Save flashcards and groups (replace all existing ones)
-        const { flashcards: newFlashcards, groups: newGroups } = req.body;
+        // Save flashcards, groups, and settings (replace all existing ones)
+        const { flashcards: newFlashcards, groups: newGroups, settings: newSettings } = req.body;
         
         if (!newFlashcards || !Array.isArray(newFlashcards)) {
           return res.status(400).json({ error: 'Missing flashcards data' });
@@ -84,23 +87,37 @@ export default async function handler(req, res) {
           await groupsCollection.insertMany(groupsWithTimestamps);
         }
 
+        // Save settings if provided
+        if (newSettings) {
+          await settingsCollection.deleteMany({ type: 'welcome' });
+          await settingsCollection.insertOne({
+            type: 'welcome',
+            ...newSettings,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+        }
+
         res.status(200).json({ 
           success: true, 
-          message: 'Flashcards and groups saved successfully',
+          message: 'Flashcards, groups, and settings saved successfully',
           flashcardsCount: newFlashcards.length,
-          groupsCount: newGroups.length
+          groupsCount: newGroups.length,
+          settingsSaved: !!newSettings
         });
         break;
 
       case 'DELETE':
-        // Clear all flashcards and groups
+        // Clear all flashcards, groups, and settings
         const deleteFlashcardsResult = await collection.deleteMany({});
         const deleteGroupsResult = await groupsCollection.deleteMany({});
+        const deleteSettingsResult = await settingsCollection.deleteMany({});
         res.status(200).json({ 
           success: true, 
-          message: 'All flashcards and groups cleared',
+          message: 'All flashcards, groups, and settings cleared',
           deletedFlashcards: deleteFlashcardsResult.deletedCount,
-          deletedGroups: deleteGroupsResult.deletedCount
+          deletedGroups: deleteGroupsResult.deletedCount,
+          deletedSettings: deleteSettingsResult.deletedCount
         });
         break;
 

@@ -48,6 +48,97 @@ let currentCardIndex = 0;
 // Track navigation history for back button
 let navigationHistory = [];
 
+// Function to get emoji for category based on name
+function getCategoryEmoji(categoryName) {
+    if (!categoryName) return '📚';
+    
+    const name = categoryName.toLowerCase().trim();
+    
+    // Check for unit numbers first (Unit 1, Unit 2, etc.)
+    const unitMatch = name.match(/unit\s*(\d+)/);
+    if (unitMatch) {
+        const unitNumber = parseInt(unitMatch[1]);
+        return getNumberEmoji(unitNumber);
+    }
+    
+    // Check for standalone numbers (1, 2, 3, etc.)
+    const numberMatch = name.match(/^\d+$/);
+    if (numberMatch) {
+        const number = parseInt(name);
+        return getNumberEmoji(number);
+    }
+    
+    // Map specific subjects to emojis
+    const emojiMap = {
+        'english': '📖',
+        'math': '🔢',
+        'mathematics': '🔢',
+        'maths': '🔢',
+        'science': '🔬',
+        'sciences': '🔬',
+        'p.e': '⚽',
+        'pe': '⚽',
+        'physical education': '⚽',
+        'history': '📜',
+        'geography': '🌍',
+        'geo': '🌍'
+    };
+    
+    // Check for exact matches first
+    if (emojiMap[name]) {
+        return emojiMap[name];
+    }
+    
+    // Check for partial matches (in case of "Science Unit 1", etc.)
+    for (const [key, emoji] of Object.entries(emojiMap)) {
+        if (name.includes(key)) {
+            return emoji;
+        }
+    }
+    
+    // Default emoji for unknown categories
+    return '📚';
+}
+
+// Function to get number emoji for units
+function getNumberEmoji(number) {
+    if (number < 1 || number > 100) return '📚';
+    
+    // Number emojis 1-10
+    const numberEmojis = {
+        1: '1️⃣', 2: '2️⃣', 3: '3️⃣', 4: '4️⃣', 5: '5️⃣',
+        6: '6️⃣', 7: '7️⃣', 8: '8️⃣', 9: '9️⃣', 10: '🔟'
+    };
+    
+    if (numberEmojis[number]) {
+        return numberEmojis[number];
+    }
+    
+    // For numbers 11-100, we'll use a combination approach
+    // Since there are no direct emojis for 11-100, we'll use creative alternatives
+    if (number >= 11 && number <= 20) {
+        return '🔢'; // Use math emoji for teens
+    } else if (number >= 21 && number <= 30) {
+        return '📊'; // Use chart emoji for 20s
+    } else if (number >= 31 && number <= 40) {
+        return '📈'; // Use trending up for 30s
+    } else if (number >= 41 && number <= 50) {
+        return '📉'; // Use trending down for 40s
+    } else if (number >= 51 && number <= 60) {
+        return '📋'; // Use clipboard for 50s
+    } else if (number >= 61 && number <= 70) {
+        return '📑'; // Use bookmark tabs for 60s
+    } else if (number >= 71 && number <= 80) {
+        return '📄'; // Use page for 70s
+    } else if (number >= 81 && number <= 90) {
+        return '📃'; // Use page with curl for 80s
+    } else if (number >= 91 && number <= 100) {
+        return '💯'; // Use 100 emoji for 90s and 100
+    }
+    
+    return '📚'; // Fallback
+}
+
 // Function to load flashcards from API (shared storage)
 async function loadFlashcards() {
     try {
@@ -76,6 +167,20 @@ async function loadFlashcards() {
             groups = result.groups;
         } else {
             groups = [];
+        }
+
+        // Load welcome settings from database
+        if (result.success && result.settings) {
+            // Save welcome settings to localStorage for immediate use
+            if (result.settings.welcomeTitleLine1) {
+                localStorage.setItem('welcomeTitleLine1', result.settings.welcomeTitleLine1);
+            }
+            if (result.settings.welcomeTitleLine2) {
+                localStorage.setItem('welcomeTitleLine2', result.settings.welcomeTitleLine2);
+            }
+            if (result.settings.welcomeFont) {
+                localStorage.setItem('welcomeFont', result.settings.welcomeFont);
+            }
         }
     } catch (error) {
         console.error('Error loading flashcards:', error);
@@ -133,7 +238,7 @@ function renderGroups() {
         const groupCard = document.createElement('div');
         groupCard.className = 'group-card';
         groupCard.innerHTML = `
-            <div class="group-icon">📚</div>
+            <div class="group-icon">${getCategoryEmoji(category.name)}</div>
             <div class="group-name">${category.name}</div>
             <div class="group-count">${totalCards} cards</div>
         `;
@@ -219,7 +324,7 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
         const subCard = document.createElement('div');
         subCard.className = 'group-card';
         subCard.innerHTML = `
-            <div class="group-icon">${subFolder.isDirect ? '📖' : '📚'}</div>
+            <div class="group-icon">${subFolder.isDirect ? getCategoryEmoji(subFolder.name) : getCategoryEmoji(subFolder.name)}</div>
             <div class="group-name">${subFolder.name}</div>
             <div class="group-count">${subCards.length} cards</div>
         `;
@@ -255,8 +360,29 @@ function selectGroup(groupId, groupName) {
     document.getElementById('groupSelection').style.display = 'none';
     document.getElementById('flashcardView').style.display = 'block';
 
-    document.getElementById('currentGroupName').textContent = groupName || 'Topic';
-    document.getElementById('flashcardCategoryTitle').textContent = groupName || 'Topic';
+    // Set category title in "category - subcategory" format
+    let categoryTitle = groupName || 'Topic';
+    let categoryForEmoji = groupName || 'Topic';
+    
+    // Check if we have parent category information from navigation history
+    if (navigationHistory.length > 0) {
+        const parentLevel = navigationHistory.find(level => level.type === 'subcategories');
+        if (parentLevel && parentLevel.parentName && groupName) {
+            // Remove "(Direct)" suffix if present for cleaner display
+            const cleanGroupName = groupName.replace(' (Direct)', '');
+            categoryTitle = `${parentLevel.parentName} - ${cleanGroupName}`;
+            // Use parent category for emoji determination
+            categoryForEmoji = parentLevel.parentName;
+        }
+    }
+    
+    const flashcardTitleElement = document.getElementById('flashcardCategoryTitle');
+    flashcardTitleElement.textContent = categoryTitle;
+    
+    // Update the CSS emoji dynamically
+    const emoji = getCategoryEmoji(categoryForEmoji);
+    flashcardTitleElement.style.setProperty('--category-emoji', `"${emoji}"`);
+    flashcardTitleElement.setAttribute('data-emoji', emoji);
 
     if (currentGroupCards.length > 0) {
         updateFlashcard();
