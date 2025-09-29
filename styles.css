@@ -1160,20 +1160,25 @@ input:checked + .toggle-slider:before {
     
     .group-folder {
         width: 120px;
-        height: 100px;
+        height: 110px;
+        padding: 8px 4px;
     }
     
     .group-folder-icon {
         font-size: 2rem;
+        margin-bottom: 6px;
     }
     
     .group-folder-name {
         font-size: 0.8rem;
+        margin-bottom: 6px;
+        line-height: 1.1;
     }
     
     .group-folder-count {
-        font-size: 0.6rem;
-        padding: 1px 4px;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        margin-top: 2px;
     }
     
     .group-cards-container {
@@ -1501,8 +1506,9 @@ body:has(.group-selection), body:has(.flashcard-view) {
     .group-selection .group-card,
     .group-selection .group-folder {
         width: 160px;
-        height: 140px;
+        height: 150px;
         margin: 10px;
+        padding: 10px 8px;
     }
     
     .group-selection .group-folder-name,
