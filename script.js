@@ -442,16 +442,8 @@ function selectGroup(groupId, groupName) {
     
     document.getElementById('flashcardCategoryTitle').textContent = categoryTitle;
 
-    if (currentGroupCards.length > 0) {
-        updateFlashcard();
-    } else {
-        document.getElementById('currentFlashcard').innerHTML = `
-            <div class="no-cards">
-                <h3>No cards in this unit</h3>
-                <p>Ask your teacher to add some cards!</p>
-            </div>
-        `;
-    }
+    // Always call updateFlashcard to handle both empty and populated states correctly
+    updateFlashcard();
 }
 
 function goBackToGroups() {
