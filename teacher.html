@@ -13,6 +13,8 @@
     <div class="container">
         <div class="header-controls">
             <div class="display-controls">
+                <button id="selectAllBtn" class="select-all-btn" onclick="toggleSelectAll()">Select All</button>
+                <button id="deleteSelectedBtn" class="delete-selected-btn" onclick="deleteSelectedCards()" disabled>Delete Selected (0)</button>
                 <button id="clearStorageBtn" class="clear-storage-btn" onclick="clearAllStorage()">Clear All</button>
             </div>
         </div>
@@ -63,6 +65,12 @@
                         <select id="editCardCategory">
                             <option value="">No Category</option>
                         </select>
+                    </div>
+                    
+                    <div class="edit-form-group">
+                        <label for="editCardOrder">Order Position:</label>
+                        <input type="number" id="editCardOrder" placeholder="Enter position (1, 2, 3...)" min="1">
+                        <small class="form-help">Enter the position where you want this card to appear. If another card is already at this position, they will swap places.</small>
                     </div>
                     
                     <div class="edit-form-group">

@@ -110,133 +110,6 @@ function getImageUrl(imageData) {
     return `${cleanUrl}?t=${Date.now()}`;
 }
 
-// Drag and drop functionality for reordering flashcards
-let draggedElement = null;
-let draggedCardId = null;
-
-function handleDragStart(e) {
-    draggedElement = e.currentTarget;
-    draggedCardId = parseInt(e.currentTarget.dataset.cardId);
-    e.currentTarget.style.opacity = '0.5';
-    e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragOver(e) {
-    if (e.preventDefault) {
-        e.preventDefault();
-    }
-    e.dataTransfer.dropEffect = 'move';
-    return false;
-}
-
-function handleDrop(e) {
-    if (e.stopPropagation) {
-        e.stopPropagation();
-    }
-    
-    if (draggedElement !== e.currentTarget) {
-        const targetCardId = parseInt(e.currentTarget.dataset.cardId);
-        reorderFlashcards(draggedCardId, targetCardId);
-    }
-    
-    return false;
-}
-
-function handleDragEnd(e) {
-    e.currentTarget.style.opacity = '1';
-    draggedElement = null;
-    draggedCardId = null;
-}
-
-function reorderFlashcards(draggedId, targetId) {
-    const draggedIndex = flashcards.findIndex(card => card.id === draggedId);
-    const targetIndex = flashcards.findIndex(card => card.id === targetId);
-    
-    if (draggedIndex === -1 || targetIndex === -1) return;
-    
-    // Remove the dragged card from its current position
-    const draggedCard = flashcards.splice(draggedIndex, 1)[0];
-    
-    // Insert it at the target position
-    flashcards.splice(targetIndex, 0, draggedCard);
-    
-    // Update sortOrder for all cards to maintain proper sequence
-    flashcards.forEach((card, index) => {
-        card.sortOrder = index + 1;
-    });
-    
-    // Save the updated order and refresh the view
-    saveFlashcards().then(() => {
-        // Stay on the same page if possible, but refresh the view
-        renderGridView();
-        // Show a brief success message
-        showOrderUpdateMessage();
-    }).catch(error => {
-        console.error('Error saving card order:', error);
-        alert('Failed to save new order. Please try again.');
-    });
-}
-
-function moveCardToPosition(cardId, targetIndex) {
-    const currentIndex = flashcards.findIndex(card => card.id === cardId);
-    
-    if (currentIndex === -1 || targetIndex < 0 || targetIndex >= flashcards.length) return;
-    
-    // Remove the card from its current position
-    const cardToMove = flashcards.splice(currentIndex, 1)[0];
-    
-    // Insert it at the target position
-    flashcards.splice(targetIndex, 0, cardToMove);
-    
-    // Update sortOrder for all cards to maintain proper sequence
-    flashcards.forEach((card, index) => {
-        card.sortOrder = index + 1;
-    });
-    
-    // Save the updated order and refresh the view
-    saveFlashcards().then(() => {
-        // Calculate which page the moved card is now on and navigate there
-        const newPage = Math.floor(targetIndex / itemsPerPage) + 1;
-        currentPage = newPage;
-        renderGridView();
-        // Show a brief success message
-        showOrderUpdateMessage(`Card moved to position ${targetIndex + 1}!`);
-    }).catch(error => {
-        console.error('Error saving card order:', error);
-        alert('Failed to save new order. Please try again.');
-    });
-}
-
-function showOrderUpdateMessage(customMessage = 'Card order updated!') {
-    // Create a temporary message element
-    const message = document.createElement('div');
-    message.textContent = customMessage;
-    message.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #4CAF50;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 1000;
-        font-weight: 600;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    `;
-    
-    document.body.appendChild(message);
-    
-    // Fade in
-    setTimeout(() => message.style.opacity = '1', 100);
-    
-    // Fade out and remove after 2 seconds
-    setTimeout(() => {
-        message.style.opacity = '0';
-        setTimeout(() => document.body.removeChild(message), 300);
-    }, 2000);
-}
 
 // Function to render grid view
 function renderGridView() {
@@ -293,43 +166,20 @@ function renderGridView() {
         const actualPosition = flashcards.findIndex(c => c.id === card.id) + 1;
         
         gridCard.innerHTML = `
-            <div class="drag-handle">⋮⋮</div>
+            <div class="card-checkbox">
+                <input type="checkbox" id="card-${card.id}" class="card-select-checkbox" data-card-id="${card.id}" onchange="updateDeleteButton()">
+            </div>
             <div class="card-position">#${actualPosition}</div>
             <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-edit-hint">Click to edit • Drag to reorder • Position: ${actualPosition}</div>
+            <div class="grid-flashcard-edit-hint">Click to edit • Position: ${actualPosition}</div>
         `;
         
-        // Make card draggable
-        gridCard.draggable = true;
-        gridCard.dataset.cardId = card.id;
-        
-        // Add drag event listeners
-        gridCard.addEventListener('dragstart', handleDragStart);
-        gridCard.addEventListener('dragover', handleDragOver);
-        gridCard.addEventListener('drop', handleDrop);
-        gridCard.addEventListener('dragend', handleDragEnd);
-        
-        // Add click to open edit modal (but not on drag handle or position)
+        // Add click to open edit modal (but not when clicking checkbox)
         gridCard.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('drag-handle') && !e.target.classList.contains('card-position')) {
+            if (!e.target.classList.contains('card-select-checkbox')) {
                 openCardEditModal(card.id);
-            }
-        });
-        
-        // Add double-click on position number to move to specific position
-        gridCard.addEventListener('dblclick', (e) => {
-            if (e.target.classList.contains('card-position')) {
-                const newPosition = prompt(`Move "${card.word}" to position (1-${flashcards.length}):`, actualPosition);
-                if (newPosition && !isNaN(newPosition)) {
-                    const targetPos = parseInt(newPosition);
-                    if (targetPos >= 1 && targetPos <= flashcards.length) {
-                        moveCardToPosition(card.id, targetPos - 1); // Convert to 0-based index
-                    } else {
-                        alert(`Please enter a position between 1 and ${flashcards.length}`);
-                    }
-                }
             }
         });
         
@@ -558,16 +408,25 @@ function renderGroupDetailCards() {
             }
         }
         
+        // Calculate the actual position in the full array
+        const actualPosition = flashcards.findIndex(c => c.id === card.id) + 1;
+        
         gridCard.innerHTML = `
+            <div class="card-checkbox">
+                <input type="checkbox" id="card-group-${card.id}" class="card-select-checkbox" data-card-id="${card.id}" onchange="updateDeleteButton()">
+            </div>
+            <div class="card-position">#${actualPosition}</div>
             <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-edit-hint">Click to edit</div>
+            <div class="grid-flashcard-edit-hint">Click to edit • Position: ${actualPosition}</div>
         `;
         
-        // Add click to open edit modal
+        // Add click to open edit modal (but not when clicking checkbox)
         gridCard.addEventListener('click', (e) => {
-            openCardEditModal(card.id);
+            if (!e.target.classList.contains('card-select-checkbox')) {
+                openCardEditModal(card.id);
+            }
         });
         
         container.appendChild(gridCard);
@@ -2337,6 +2196,32 @@ function saveCardCategory(cardId) {
     }
 }
 
+// Function to swap card positions
+function swapCardPositions(cardId, newPosition) {
+    const currentIndex = flashcards.findIndex(c => c.id === cardId);
+    const targetIndex = newPosition - 1; // Convert to 0-based index
+    
+    if (currentIndex === -1 || targetIndex < 0 || targetIndex >= flashcards.length) {
+        return;
+    }
+    
+    // If there's already a card at the target position, swap them
+    if (targetIndex !== currentIndex) {
+        // Remove the card from current position
+        const cardToMove = flashcards.splice(currentIndex, 1)[0];
+        
+        // Insert at new position
+        flashcards.splice(targetIndex, 0, cardToMove);
+        
+        // Update sortOrder for all cards
+        flashcards.forEach((card, index) => {
+            card.sortOrder = index + 1;
+        });
+        
+        console.log(`Card "${cardToMove.word}" moved from position ${currentIndex + 1} to position ${targetIndex + 1}`);
+    }
+}
+
 // Modal-based card editing functions
 let currentEditingCardId = null;
 
@@ -2348,6 +2233,11 @@ function openCardEditModal(cardId) {
     // Populate modal with current card data
     document.getElementById('editCardWord').value = card.word;
     document.getElementById('editCardCategory').value = card.categoryId || '';
+    
+    // Set the current order position
+    const currentPosition = flashcards.findIndex(c => c.id === cardId) + 1;
+    document.getElementById('editCardOrder').value = currentPosition;
+    document.getElementById('editCardOrder').max = flashcards.length;
     
     // Show current image
     const imagePreview = document.getElementById('editImagePreview');
@@ -2392,6 +2282,7 @@ async function saveCardEdits() {
     // Get new values
     const newWord = document.getElementById('editCardWord').value.trim();
     const newCategoryId = document.getElementById('editCardCategory').value;
+    const newOrder = parseInt(document.getElementById('editCardOrder').value);
     const imageFile = document.getElementById('editCardImage').files[0];
     
     if (!newWord) {
@@ -2399,9 +2290,20 @@ async function saveCardEdits() {
         return;
     }
     
+    if (isNaN(newOrder) || newOrder < 1 || newOrder > flashcards.length) {
+        alert(`Please enter a valid order position between 1 and ${flashcards.length}.`);
+        return;
+    }
+    
     // Update card data
     card.word = newWord;
     card.categoryId = newCategoryId ? parseInt(newCategoryId) : null;
+    
+    // Handle order change - swap positions if needed
+    const currentPosition = flashcards.findIndex(c => c.id === currentEditingCardId) + 1;
+    if (newOrder !== currentPosition) {
+        swapCardPositions(currentEditingCardId, newOrder);
+    }
     
     // Handle image update if new image selected
     if (imageFile) {
@@ -3312,3 +3214,86 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+
+// Bulk selection and deletion functions
+function updateDeleteButton() {
+    const checkboxes = document.querySelectorAll('.card-select-checkbox');
+    const selectedCheckboxes = document.querySelectorAll('.card-select-checkbox:checked');
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    
+    if (deleteBtn) {
+        if (selectedCheckboxes.length > 0) {
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = `Delete Selected (${selectedCheckboxes.length})`;
+        } else {
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = 'Delete Selected (0)';
+        }
+    }
+    
+    // Update Select All button text
+    if (selectAllBtn) {
+        if (selectedCheckboxes.length === checkboxes.length && checkboxes.length > 0) {
+            selectAllBtn.textContent = 'Select None';
+        } else {
+            selectAllBtn.textContent = 'Select All';
+        }
+    }
+}
+
+function toggleSelectAll() {
+    const checkboxes = document.querySelectorAll('.card-select-checkbox');
+    const selectedCheckboxes = document.querySelectorAll('.card-select-checkbox:checked');
+    const selectAll = selectedCheckboxes.length < checkboxes.length;
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll;
+    });
+    
+    updateDeleteButton();
+}
+
+async function deleteSelectedCards() {
+    const selectedCheckboxes = document.querySelectorAll('.card-select-checkbox:checked');
+    
+    if (selectedCheckboxes.length === 0) {
+        alert('No cards selected for deletion.');
+        return;
+    }
+    
+    const selectedIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.cardId));
+    const selectedCards = flashcards.filter(card => selectedIds.includes(card.id));
+    
+    const confirmMessage = `Are you sure you want to delete ${selectedCards.length} selected card(s)?\n\nCards to delete:\n${selectedCards.map(card => `• ${card.word}`).join('\n')}`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Remove selected cards
+    flashcards = flashcards.filter(card => !selectedIds.includes(card.id));
+    
+    // Update sortOrder for remaining cards
+    flashcards.forEach((card, index) => {
+        card.sortOrder = index + 1;
+    });
+    
+    try {
+        await saveFlashcards();
+        
+        // Refresh views
+        renderGridView();
+        if (document.getElementById('groupedCardsView').style.display !== 'none') {
+            renderGroupedCardsView();
+        }
+        
+        // Update delete button
+        updateDeleteButton();
+        
+        alert(`Successfully deleted ${selectedCards.length} card(s).`);
+    } catch (error) {
+        console.error('Error deleting cards:', error);
+        alert('Error deleting cards. Please try again.');
+    }
+}
