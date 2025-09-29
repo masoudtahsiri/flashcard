@@ -470,12 +470,13 @@ function showTab(tabName) {
 
 // Settings functions
 function loadSettings() {
-    // Load welcome title and font from localStorage or use defaults
+    // Load welcome title lines and font from localStorage or use defaults
     const line1 = localStorage.getItem('welcomeTitleLine1') || 'Welcome to';
     const line2 = localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class';
     const font = localStorage.getItem('welcomeFont') || 'Arial Black';
 
     document.getElementById('welcomeTitleLine1').value = line1;
+    document.getElementById('welcomeTitleLine2').value = line2;
     document.getElementById('welcomeFontSelect').value = font;
 
     // Update preview
@@ -484,7 +485,7 @@ function loadSettings() {
 
 function updatePreview() {
     const line1 = document.getElementById('welcomeTitleLine1').value || 'Welcome to';
-    const line2 = localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class';
+    const line2 = document.getElementById('welcomeTitleLine2').value || 'Mrs Sadaf 1B Class';
     const font = document.getElementById('welcomeFontSelect').value;
 
     document.getElementById('previewTitleLine1').textContent = line1;
@@ -499,15 +500,17 @@ function updatePreview() {
 
 function saveWelcomeTitle() {
     const line1 = document.getElementById('welcomeTitleLine1').value.trim();
+    const line2 = document.getElementById('welcomeTitleLine2').value.trim();
     const font = document.getElementById('welcomeFontSelect').value;
 
-    if (!line1) {
-        alert('Please enter a welcome title.');
+    if (!line1 || !line2) {
+        alert('Please enter both lines of the welcome title.');
         return;
     }
 
     // Save to localStorage
     localStorage.setItem('welcomeTitleLine1', line1);
+    localStorage.setItem('welcomeTitleLine2', line2);
     localStorage.setItem('welcomeFont', font);
 
     // Update preview
@@ -525,9 +528,11 @@ function resetWelcomeTitle() {
     const defaultFont = 'Arial Black';
 
     document.getElementById('welcomeTitleLine1').value = defaultLine1;
+    document.getElementById('welcomeTitleLine2').value = defaultLine2;
     document.getElementById('welcomeFontSelect').value = defaultFont;
 
     localStorage.removeItem('welcomeTitleLine1');
+    localStorage.removeItem('welcomeTitleLine2');
     localStorage.removeItem('welcomeFont');
 
     // Update preview and student interface
@@ -3053,6 +3058,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set up settings form event listeners
     document.getElementById('welcomeTitleLine1').addEventListener('input', updatePreview);
+    document.getElementById('welcomeTitleLine2').addEventListener('input', updatePreview);
     document.getElementById('welcomeFontSelect').addEventListener('change', updatePreview);
     
     // Set up modal image preview
