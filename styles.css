@@ -1146,29 +1146,45 @@ input:checked + .toggle-slider:before {
         flex-direction: row !important;
         align-items: center;
         justify-content: flex-start;
-        gap: 12px;
+        gap: 8px;
         text-align: left;
         flex-wrap: nowrap;
+        margin-bottom: 15px;
+        padding: 10px 0;
     }
     
     .group-header .back-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-        border-radius: 18px;
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        border-radius: 15px;
         flex-shrink: 0;
         white-space: nowrap;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        border: none;
+        color: white;
+        font-weight: 600;
     }
     
     .group-header h2,
     .group-header #currentGroupName {
-        font-size: 1.1rem !important;
-        padding: 6px 12px !important;
+        font-size: 0.9rem !important;
+        padding: 4px 8px !important;
         margin: 0;
         flex: 1;
         min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        background: rgba(255, 255, 255, 0.8) !important;
+        border: 2px solid #FFE066 !important;
+        border-radius: 15px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .group-header #currentGroupName::before {
+        font-size: 0.8rem !important;
+        margin-right: 3px !important;
     }
     
     /* Enhanced responsive styles for new grid system */
