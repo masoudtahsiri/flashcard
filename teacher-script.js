@@ -185,10 +185,10 @@ function renderGroupedCardsView() {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
     
-    // Update back button for main categories view
-    const backBtn = document.getElementById('backToGroupsBtn');
-    if (backBtn) {
-        backBtn.textContent = '← Back';
+    // Hide the header for main categories view (no back button needed at top level)
+    const groupedViewHeader = document.getElementById('groupedViewHeader');
+    if (groupedViewHeader) {
+        groupedViewHeader.style.display = 'none';
     }
     
     // Show only main categories (parentId is null or undefined)
@@ -258,10 +258,20 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
     
-    // Update back button
+    // Show the header with back button for sub-categories view
+    const groupedViewHeader = document.getElementById('groupedViewHeader');
+    if (groupedViewHeader) {
+        groupedViewHeader.style.display = 'flex';
+    }
+    
+    // Update back button and header title
     const backBtn = document.getElementById('backToGroupsBtn');
+    const headerTitle = document.getElementById('selectedGroupName');
     if (backBtn) {
         backBtn.textContent = '← Back';
+    }
+    if (headerTitle) {
+        headerTitle.textContent = parentCategoryName;
     }
     
     // Get sub-categories for this parent
@@ -324,6 +334,12 @@ function showGroupDetail(groupId, groupName) {
     // Hide groups grid and show group detail
     document.getElementById('groupsGrid').style.display = 'none';
     document.getElementById('groupDetailView').style.display = 'block';
+    
+    // Show the header with back button for flashcards view
+    const groupedViewHeader = document.getElementById('groupedViewHeader');
+    if (groupedViewHeader) {
+        groupedViewHeader.style.display = 'flex';
+    }
     
     // Update header
     document.getElementById('selectedGroupName').textContent = groupName;
