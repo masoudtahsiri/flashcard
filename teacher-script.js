@@ -1986,41 +1986,52 @@ async function loadFlashcards() {
 // Group management functions
 function addGroup() {
     const groupName = document.getElementById('groupNameInput').value.trim();
+    const parentGroupId = document.getElementById('parentGroupSelect').value;
     
     if (!groupName) {
-        alert('Please enter a group name');
+        alert('Please enter a unit name');
         return;
     }
     
     // Check if group name already exists
     if (groups.some(group => group.name.toLowerCase() === groupName.toLowerCase())) {
-        alert('A group with this name already exists');
+        alert('A unit with this name already exists');
         return;
     }
     
     const newGroup = {
         id: nextGroupId++,
         name: groupName,
-        color: getRandomColor()
+        color: getRandomColor(),
+        parentId: parentGroupId ? parseInt(parentGroupId) : null
     };
     
     groups.push(newGroup);
     saveFlashcards();
     renderGroupsList();
     updateGroupSelect();
+    updateParentGroupSelect();
     
-    // Clear input
+    // Clear inputs
     document.getElementById('groupNameInput').value = '';
+    document.getElementById('parentGroupSelect').value = '';
     
-    alert('Group added successfully!');
+    alert('Unit added successfully!');
 }
 
 function deleteGroup(groupId) {
-    if (confirm('Are you sure you want to delete this group? All flashcards in this group will be moved to "No Group".')) {
+    if (confirm('Are you sure you want to delete this unit? All flashcards in this unit will be moved to "No Unit".')) {
         // Move flashcards from this group to no group
         flashcards.forEach(card => {
-            if (card.groupId === groupId) {
-                card.groupId = null;
+            if (card.categoryId === groupId) {
+                card.categoryId = null;
+            }
+        });
+        
+        // Also move any child categories to become top-level
+        groups.forEach(group => {
+            if (group.parentId === groupId) {
+                group.parentId = null;
             }
         });
         
@@ -2030,12 +2041,13 @@ function deleteGroup(groupId) {
         saveFlashcards();
         renderGroupsList();
         updateGroupSelect();
+        updateParentGroupSelect();
         renderGridView();
         if (document.getElementById('groupedCardsView').style.display !== 'none') {
             renderGroupedCardsView();
         }
         
-        alert('Group deleted successfully!');
+        alert('Unit deleted successfully!');
     }
 }
 
@@ -2130,6 +2142,9 @@ function updateAllGroupReferences() {
     // Update the group select dropdown
     updateGroupSelect();
     
+    // Update the parent group select dropdown
+    updateParentGroupSelect();
+    
     // Update grid view if visible
     renderGridView();
     
@@ -2179,13 +2194,36 @@ function renderGroupsList() {
 
 function updateGroupSelect() {
     const groupSelect = document.getElementById('groupSelect');
-    groupSelect.innerHTML = '<option value="">Select a group</option>';
+    groupSelect.innerHTML = '<option value="">Select a unit</option>';
     
     groups.forEach(group => {
         const option = document.createElement('option');
         option.value = group.id;
-        option.textContent = group.name;
+        
+        // Show hierarchy in dropdown
+        if (group.parentId) {
+            const parent = groups.find(g => g.id === group.parentId);
+            option.textContent = parent ? `${parent.name} > ${group.name}` : group.name;
+        } else {
+            option.textContent = group.name;
+        }
+        
         groupSelect.appendChild(option);
+    });
+}
+
+function updateParentGroupSelect() {
+    const parentGroupSelect = document.getElementById('parentGroupSelect');
+    if (!parentGroupSelect) return;
+    
+    parentGroupSelect.innerHTML = '<option value="">None (Top Level)</option>';
+    
+    // Only show top-level categories as parent options
+    groups.filter(group => !group.parentId).forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = group.name;
+        parentGroupSelect.appendChild(option);
     });
 }
 
@@ -2450,6 +2488,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize groups
     renderGroupsList();
     updateGroupSelect();
+    updateParentGroupSelect();
     
     // Set up image preview
     document.getElementById('imageInput').addEventListener('change', function(e) {
