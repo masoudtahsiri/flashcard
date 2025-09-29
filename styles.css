@@ -1343,7 +1343,7 @@ input:checked + .toggle-slider:before {
 }
 
 .group-selection .group-header {
-    display: flex;
+    display: none !important; /* Hidden by default - shown only when needed */
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;

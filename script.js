@@ -102,11 +102,8 @@ function renderGroups() {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
 
-    // Hide back button for main categories (first level)
-    const groupSelectionHeader = document.getElementById('groupSelectionHeader');
-    if (groupSelectionHeader) {
-        groupSelectionHeader.style.display = 'none';
-    }
+    // Back button is hidden by CSS for main categories (first level)
+    // No need to set display: none as CSS handles it
 
     if (groups.length === 0) {
         groupsGrid.innerHTML = `
