@@ -1516,14 +1516,30 @@ body:has(.group-selection), body:has(.flashcard-view) {
         font-size: 1.1rem;
     }
     
+    .group-detail-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 15px 0;
+    }
+    
+    .back-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        border-radius: 20px;
+    }
+    
+    .group-detail-header h2,
     #currentGroupName {
-        font-size: 1.8rem;
-        padding: 12px 20px;
+        font-size: 1.4rem;
+        padding: 8px 16px;
+        margin: 0;
     }
     
     #currentGroupName::before {
-        font-size: 1.5rem;
-        margin-right: 8px;
+        font-size: 1.2rem;
+        margin-right: 6px;
     }
     
     .flashcard {
@@ -1536,9 +1552,19 @@ body:has(.group-selection), body:has(.flashcard-view) {
     }
     
     .nav-btn {
-        padding: 18px 35px;
-        font-size: 1.3rem;
-        margin: 10px;
+        padding: 12px 20px;
+        font-size: 1rem;
+        margin: 8px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 25px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        min-width: 80px;
+    }
+    
+    .nav-btn:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     }
     
     .card-counter {
