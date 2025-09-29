@@ -165,72 +165,51 @@ function renderGroupedCardsView() {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
     
-    // Show only top-level categories (no parentId)
-    const topLevelCategories = groups.filter(group => !group.parentId);
+    // Show only main categories (parentId is null or undefined)
+    const mainCategories = groups.filter(group => !group.parentId);
     
-    // Add ungrouped cards if they exist
-    let allFolders = [...topLevelCategories];
-    const ungroupedCards = flashcards.filter(card => !card.categoryId);
-    if (ungroupedCards.length > 0) {
-        allFolders.push({
-            id: null,
-            name: 'No Category',
-            isNoGroup: true
-        });
-    }
-    
-    if (allFolders.length === 0) {
+    if (mainCategories.length === 0) {
         groupsGrid.innerHTML = `
             <div class="empty-state">
-                <h3>No categories available</h3>
-                <p>Create categories using the Manage Units section</p>
+                <h3>No main categories available</h3>
+                <p>Create main categories using the Manage Units section</p>
+                <p>Main categories are units with no parent category set</p>
             </div>
         `;
         return;
     }
     
-    // Get paginated folders
-    const paginatedFolders = getPaginatedItems(allFolders);
+    // Get paginated main categories
+    const paginatedCategories = getPaginatedItems(mainCategories);
     
-    // Render each top-level category
-    paginatedFolders.forEach(folder => {
-        let totalCards = 0;
-        
-        if (folder.isNoGroup) {
-            totalCards = ungroupedCards.length;
-        } else {
-            // Count cards in this category and all its sub-categories
-            const subCategories = groups.filter(g => g.parentId === folder.id);
-            const categoryCards = flashcards.filter(card => card.categoryId === folder.id);
-            const subCategoryCards = flashcards.filter(card => 
-                subCategories.some(sub => sub.id === card.categoryId)
-            );
-            totalCards = categoryCards.length + subCategoryCards.length;
-        }
+    // Render each main category
+    paginatedCategories.forEach(category => {
+        // Count cards in this category and all its sub-categories
+        const subCategories = groups.filter(g => g.parentId === category.id);
+        const directCards = flashcards.filter(card => card.categoryId === category.id);
+        const subCategoryCards = flashcards.filter(card => 
+            subCategories.some(sub => sub.id === card.categoryId)
+        );
+        const totalCards = directCards.length + subCategoryCards.length;
         
         const groupFolder = document.createElement('div');
         groupFolder.className = 'group-folder';
         groupFolder.innerHTML = `
-            <div class="group-folder-icon">${folder.isNoGroup ? '📂' : '📁'}</div>
-            <div class="group-folder-name">${folder.name}</div>
+            <div class="group-folder-icon">📁</div>
+            <div class="group-folder-name">${category.name}</div>
             <div class="group-folder-count">${totalCards} cards</div>
         `;
         
         groupFolder.addEventListener('click', () => {
-            if (folder.isNoGroup) {
-                // Show ungrouped cards directly
-                showGroupDetail(null, folder.name);
-            } else {
-                // Show sub-categories or cards for this top-level category
-                showCategoryDetail(folder.id, folder.name);
-            }
+            // Show sub-categories or cards for this main category
+            showCategoryDetail(category.id, category.name);
         });
         
         groupsGrid.appendChild(groupFolder);
     });
     
     // Add pagination controls
-    createPaginationControls('groupedCardsView', allFolders.length, renderGroupedCardsView);
+    createPaginationControls('groupedCardsView', mainCategories.length, renderGroupedCardsView);
 }
 
 // Function to show category detail (sub-categories or direct cards)
