@@ -2210,6 +2210,23 @@ body:has(.group-selection), body:has(.flashcard-view) {
         flex-wrap: nowrap;
     }
     
+    /* Mobile: Only show group header when it has the 'show' class */
+    .group-selection .group-header.show {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 15px 0;
+        flex-wrap: nowrap;
+    }
+    
+    /* Mobile: Ensure group header stays hidden on main page */
+    .group-selection .group-header:not(.show) {
+        display: none !important;
+    }
+    
     .back-btn {
         padding: 6px 12px;
         font-size: 0.8rem;

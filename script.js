@@ -102,8 +102,11 @@ function renderGroups() {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
 
-    // Back button is hidden by CSS for main categories (first level)
-    // No need to set display: none as CSS handles it
+    // Ensure back button is hidden for main categories (first level)
+    const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+    if (groupSelectionHeader) {
+        groupSelectionHeader.classList.remove('show');
+    }
 
     if (groups.length === 0) {
         groupsGrid.innerHTML = `
@@ -563,6 +566,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Initialize with groups view
     renderGroups();
+    
+    // Ensure back button is hidden on main page
+    const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+    if (groupSelectionHeader) {
+        groupSelectionHeader.classList.remove('show');
+    }
 
     // Set up back button event listeners
     const backFromUnitsBtn = document.getElementById('backFromUnitsBtn');
