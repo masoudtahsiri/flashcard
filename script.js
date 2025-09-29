@@ -269,62 +269,58 @@ function selectGroup(groupId, groupName) {
 }
 
 function goBackToGroups() {
-    // If we're in flashcards view, go back to previous level
-    if (document.getElementById('flashcardView').style.display !== 'none') {
-        document.getElementById('groupSelection').style.display = 'block';
-        document.getElementById('flashcardView').style.display = 'none';
+    const flashcardView = document.getElementById('flashcardView');
+    const groupSelection = document.getElementById('groupSelection');
+    const groupSelectionHeader = document.getElementById('groupSelectionHeader');
 
-        // Hide the back button when going back to main categories
-        const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+    if (flashcardView.style.display !== 'none') {
+        // We're in flashcards view, go back to sub-categories
+        flashcardView.style.display = 'none';
+        groupSelection.style.display = 'block';
+
+        // Show the back button for sub-categories
         if (groupSelectionHeader) {
-            groupSelectionHeader.style.display = 'none';
+            groupSelectionHeader.style.display = 'flex';
         }
 
-        // Show welcome section when returning to main categories
+        // Hide welcome section when returning to sub-categories
         const welcomeSection = document.querySelector('.welcome-section');
         if (welcomeSection) {
-            welcomeSection.style.display = 'block';
+            welcomeSection.style.display = 'none';
         }
 
-        // Reset to last navigation level
+        // Go back to the last sub-category view
         if (navigationHistory.length > 0) {
-            const lastLevel = navigationHistory.pop();
-            document.getElementById('topicSelectionTitle').textContent = lastLevel.title;
-
-            // If we were in sub-categories, show them again
+            const lastLevel = navigationHistory[navigationHistory.length - 1];
             if (lastLevel.type === 'subcategories') {
+                document.getElementById('topicSelectionTitle').textContent = lastLevel.title;
                 renderSubCategories(lastLevel.parentId, lastLevel.parentName);
-            } else {
-                // Otherwise show main categories
-                document.getElementById('topicSelectionTitle').textContent = 'Select your Topic';
-                renderGroups();
             }
-        } else {
-            // No history, go to main categories
-            document.getElementById('topicSelectionTitle').textContent = 'Select your Topic';
-            renderGroups();
         }
 
         currentGroupId = null;
         currentGroupCards = [];
         currentCardIndex = 0;
-    } else {
-        // We're in group selection view, check if we need to go back to main categories
-        const groupSelectionHeader = document.getElementById('groupSelectionHeader');
-        if (groupSelectionHeader && groupSelectionHeader.style.display !== 'none') {
-            // We're in sub-categories, go back to main categories
-            groupSelectionHeader.style.display = 'none';
-            document.getElementById('topicSelectionTitle').textContent = 'Choose your Topic';
-            navigationHistory = []; // Clear history when going to main
-            renderGroups();
-
-            // Show welcome section when returning to main categories
-            const welcomeSection = document.querySelector('.welcome-section');
-            if (welcomeSection) {
-                welcomeSection.style.display = 'block';
-            }
-        }
     }
+}
+
+function goToMainMenu() {
+    // Go directly to main categories from anywhere
+    const flashcardView = document.getElementById('flashcardView');
+    const groupSelection = document.getElementById('groupSelection');
+    const groupSelectionHeader = document.getElementById('groupSelectionHeader');
+    const welcomeSection = document.querySelector('.welcome-section');
+
+    // Hide everything and show main categories
+    if (flashcardView) flashcardView.style.display = 'none';
+    if (groupSelection) groupSelection.style.display = 'block';
+    if (groupSelectionHeader) groupSelectionHeader.style.display = 'none';
+    if (welcomeSection) welcomeSection.style.display = 'block';
+
+    // Reset to main categories
+    document.getElementById('topicSelectionTitle').textContent = 'Choose your Topic';
+    navigationHistory = [];
+    renderGroups();
 }
 
 // Function to update the displayed flashcard
@@ -525,9 +521,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Set up back button event listeners
     const backFromUnitsBtn = document.getElementById('backFromUnitsBtn');
     const backFromCardsBtn = document.getElementById('backFromCardsBtn');
+    const mainMenuBtn = document.getElementById('mainMenuBtn');
 
     if (backFromUnitsBtn) backFromUnitsBtn.addEventListener('click', goBackToGroups);
     if (backFromCardsBtn) backFromCardsBtn.addEventListener('click', goBackToGroups);
+    if (mainMenuBtn) mainMenuBtn.addEventListener('click', goToMainMenu);
 
     // Add keyboard navigation
     document.addEventListener('keydown', (event) => {

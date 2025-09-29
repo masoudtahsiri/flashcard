@@ -2083,6 +2083,25 @@ body:has(.group-selection), body:has(.flashcard-view) {
     box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
 }
 
+.main-menu-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.main-menu-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
 .flashcard {
     background: linear-gradient(135deg, #FFE066 0%, #FF6B6B 100%);
     border: 6px solid white;
@@ -2180,7 +2199,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
         display: flex !important;
         flex-direction: row !important;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
         gap: 12px;
         margin-bottom: 20px;
         padding: 15px 0;
