@@ -745,9 +745,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         speechSynthesis.onvoiceschanged = loadVoices;
     }
     
-    // Set up navigation buttons
-    document.getElementById('prevBtn').addEventListener('click', goToPrevious);
-    document.getElementById('nextBtn').addEventListener('click', goToNext);
+    // Set up navigation buttons with proper event handling
+    document.getElementById('prevBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        goToPrevious();
+    });
+    document.getElementById('nextBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        goToNext();
+    });
     
     // Initialize with groups view
     renderGroups();
