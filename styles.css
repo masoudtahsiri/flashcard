@@ -354,6 +354,65 @@ input:checked + .toggle-slider:before {
     background: #d32f2f;
 }
 
+.group-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.group-name-input {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-width: 120px;
+}
+
+.group-name-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.group-edit-btn, .group-save-btn, .group-cancel-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.group-edit-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.group-save-btn {
+    background: #2196F3;
+}
+
+.group-save-btn:hover {
+    background: #1976D2;
+}
+
+.group-cancel-btn {
+    background: #ff9800;
+}
+
+.group-cancel-btn:hover {
+    background: #f57c00;
+}
+
 .group-select {
     padding: 10px;
     border: 2px solid #ddd;
