@@ -363,10 +363,47 @@ function updateFlashcard() {
     const currentCard = currentGroupCards[currentCardIndex];
     const flashcardElement = document.getElementById('currentFlashcard');
     
+    // Show loading state first
     flashcardElement.innerHTML = `
-        <img src="${getImageUrl(currentCard.image)}" alt="${currentCard.word}" class="flashcard-image">
-        <div class="flashcard-text">${currentCard.word}</div>
+        <div class="loading-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; color: #666;">
+            <div style="font-size: 2rem; margin-bottom: 10px;">⏳</div>
+            <div>Loading...</div>
+        </div>
     `;
+    
+    // Create image element and wait for it to load
+    const img = new Image();
+    img.onload = function() {
+        // Image loaded successfully, now display the card
+        flashcardElement.innerHTML = `
+            <img src="${getImageUrl(currentCard.image)}" alt="${currentCard.word}" class="flashcard-image">
+            <div class="flashcard-text">${currentCard.word}</div>
+        `;
+        
+        // Add click event to play audio
+        flashcardElement.onclick = () => {
+            playAudio(currentCard.word, currentCard.audioUrl);
+        };
+    };
+    
+    img.onerror = function() {
+        // Image failed to load, show error state
+        flashcardElement.innerHTML = `
+            <div class="error-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; color: #f44336;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📷</div>
+                <div class="flashcard-text" style="font-size: 2rem; margin-bottom: 10px;">${currentCard.word}</div>
+                <div style="font-size: 1rem; opacity: 0.7;">Image not available</div>
+            </div>
+        `;
+        
+        // Add click event to play audio even when image fails
+        flashcardElement.onclick = () => {
+            playAudio(currentCard.word, currentCard.audioUrl);
+        };
+    };
+    
+    // Start loading the image
+    img.src = getImageUrl(currentCard.image);
     
     // Update card counter
     document.getElementById('currentCard').textContent = currentCardIndex + 1;
@@ -378,11 +415,6 @@ function updateFlashcard() {
     
     prevBtn.disabled = currentCardIndex === 0;
     nextBtn.disabled = currentCardIndex === currentGroupCards.length - 1;
-    
-    // Add click event to play audio
-    flashcardElement.onclick = () => {
-        playAudio(currentCard.word, currentCard.audioUrl);
-    };
 }
 
 // Voice settings
