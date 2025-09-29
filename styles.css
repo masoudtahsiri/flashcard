@@ -955,7 +955,7 @@ input:checked + .toggle-slider:before {
 }
 
 .grid-flashcard-text {
-    height: 30%;
+    height: 15%;
     display: flex;
     align-items: center;
     justify-content: center;
