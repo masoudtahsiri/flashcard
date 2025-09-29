@@ -110,6 +110,103 @@ function getImageUrl(imageData) {
     return `${cleanUrl}?t=${Date.now()}`;
 }
 
+// Drag and drop functionality for reordering flashcards
+let draggedElement = null;
+let draggedCardId = null;
+
+function handleDragStart(e) {
+    draggedElement = e.currentTarget;
+    draggedCardId = parseInt(e.currentTarget.dataset.cardId);
+    e.currentTarget.style.opacity = '0.5';
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    
+    if (draggedElement !== e.currentTarget) {
+        const targetCardId = parseInt(e.currentTarget.dataset.cardId);
+        reorderFlashcards(draggedCardId, targetCardId);
+    }
+    
+    return false;
+}
+
+function handleDragEnd(e) {
+    e.currentTarget.style.opacity = '1';
+    draggedElement = null;
+    draggedCardId = null;
+}
+
+function reorderFlashcards(draggedId, targetId) {
+    const draggedIndex = flashcards.findIndex(card => card.id === draggedId);
+    const targetIndex = flashcards.findIndex(card => card.id === targetId);
+    
+    if (draggedIndex === -1 || targetIndex === -1) return;
+    
+    // Remove the dragged card from its current position
+    const draggedCard = flashcards.splice(draggedIndex, 1)[0];
+    
+    // Insert it at the target position
+    flashcards.splice(targetIndex, 0, draggedCard);
+    
+    // Update sortOrder for all cards to maintain proper sequence
+    flashcards.forEach((card, index) => {
+        card.sortOrder = index + 1;
+    });
+    
+    // Save the updated order and refresh the view
+    saveFlashcards().then(() => {
+        renderGridView();
+        // Show a brief success message
+        showOrderUpdateMessage();
+    }).catch(error => {
+        console.error('Error saving card order:', error);
+        alert('Failed to save new order. Please try again.');
+    });
+}
+
+function showOrderUpdateMessage() {
+    // Create a temporary message element
+    const message = document.createElement('div');
+    message.textContent = 'Card order updated!';
+    message.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        font-weight: 600;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    document.body.appendChild(message);
+    
+    // Fade in
+    setTimeout(() => message.style.opacity = '1', 100);
+    
+    // Fade out and remove after 2 seconds
+    setTimeout(() => {
+        message.style.opacity = '0';
+        setTimeout(() => document.body.removeChild(message), 300);
+    }, 2000);
+}
+
 // Function to render grid view
 function renderGridView() {
     currentView = 'allCards';
@@ -162,15 +259,28 @@ function renderGridView() {
         });
         
         gridCard.innerHTML = `
+            <div class="drag-handle">⋮⋮</div>
             <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <div class="grid-flashcard-edit-hint">Click to edit</div>
+            <div class="grid-flashcard-edit-hint">Click to edit • Drag to reorder</div>
         `;
         
-        // Add click to open edit modal
+        // Make card draggable
+        gridCard.draggable = true;
+        gridCard.dataset.cardId = card.id;
+        
+        // Add drag event listeners
+        gridCard.addEventListener('dragstart', handleDragStart);
+        gridCard.addEventListener('dragover', handleDragOver);
+        gridCard.addEventListener('drop', handleDrop);
+        gridCard.addEventListener('dragend', handleDragEnd);
+        
+        // Add click to open edit modal (but not on drag handle)
         gridCard.addEventListener('click', (e) => {
-            openCardEditModal(card.id);
+            if (!e.target.classList.contains('drag-handle')) {
+                openCardEditModal(card.id);
+            }
         });
         
         grid.appendChild(gridCard);
@@ -2297,7 +2407,7 @@ function deleteCardFromModal() {
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
-function compressImage(file, maxWidth = 300, maxHeight = 225, quality = 0.7) {
+function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.9) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -2320,6 +2430,10 @@ function compressImage(file, maxWidth = 300, maxHeight = 225, quality = 0.7) {
             
             canvas.width = width;
             canvas.height = height;
+            
+            // Enable image smoothing for better quality
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             
             // Draw and compress
             ctx.drawImage(img, 0, 0, width, height);
@@ -2381,6 +2495,22 @@ async function loadFlashcards() {
         if (result.success && result.flashcards) {
             flashcards = result.flashcards;
             nextId = flashcards.length > 0 ? Math.max(...flashcards.map(card => card.id)) + 1 : 1;
+            
+            // Assign sortOrder to existing cards that don't have it (backwards compatibility)
+            let needsUpdate = false;
+            flashcards.forEach((card, index) => {
+                if (card.sortOrder === undefined || card.sortOrder === null) {
+                    card.sortOrder = index + 1;
+                    needsUpdate = true;
+                }
+            });
+            
+            // Save updated cards with sortOrder if needed
+            if (needsUpdate) {
+                saveFlashcards().catch(error => {
+                    console.error('Error updating card sort orders:', error);
+                });
+            }
         } else {
             flashcards = [];
             nextId = 1;
@@ -2429,9 +2559,16 @@ function addGroup() {
         return;
     }
     
-    // Check if group name already exists
-    if (groups.some(group => group.name.toLowerCase() === groupName.toLowerCase())) {
-        alert('A unit with this name already exists');
+    // Check if group name already exists within the same parent category
+    const parentId = parentGroupId ? parseInt(parentGroupId) : null;
+    const existingInSameParent = groups.some(group => 
+        group.name.toLowerCase() === groupName.toLowerCase() && 
+        group.parentId === parentId
+    );
+    
+    if (existingInSameParent) {
+        const parentName = parentId ? groups.find(g => g.id === parentId)?.name || 'Unknown' : 'top level';
+        alert(`A unit with the name "${groupName}" already exists in ${parentName}. Please choose a different name.`);
         return;
     }
     
@@ -2536,9 +2673,17 @@ function saveGroupTable(groupId) {
         return;
     }
     
-    // Check if group name already exists (excluding current group)
-    if (groups.some(group => group.id !== groupId && group.name.toLowerCase() === newName.toLowerCase())) {
-        alert('A unit with this name already exists');
+    // Check if group name already exists within the same parent category (excluding current group)
+    const parentId = newParentId ? parseInt(newParentId) : null;
+    const existingInSameParent = groups.some(group => 
+        group.id !== groupId && 
+        group.name.toLowerCase() === newName.toLowerCase() && 
+        group.parentId === parentId
+    );
+    
+    if (existingInSameParent) {
+        const parentName = parentId ? groups.find(g => g.id === parentId)?.name || 'Unknown' : 'top level';
+        alert(`A unit with the name "${newName}" already exists in ${parentName}. Please choose a different name.`);
         return;
     }
     
@@ -2802,12 +2947,16 @@ function addFlashcard(word, imageFile, categoryId) {
     
     // Compress image and store directly as base64
     compressImage(imageFile).then(async (compressedImage) => {
+        // Calculate next sort order (highest existing order + 1)
+        const maxSortOrder = flashcards.length > 0 ? Math.max(...flashcards.map(card => card.sortOrder || 0)) : 0;
+        
         const newCard = {
             id: nextId++,
             word: word.trim(),
             image: compressedImage, // Store base64 data directly - no external dependencies
             audioUrl: '', // Will use text-to-speech
-            categoryId: categoryId ? parseInt(categoryId) : null
+            categoryId: categoryId ? parseInt(categoryId) : null,
+            sortOrder: maxSortOrder + 1 // Add sort order for proper sequencing
         };
         
         console.log('Adding card with categoryId:', newCard.categoryId, 'Original categoryId:', categoryId);

@@ -407,6 +407,14 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
 function selectGroup(groupId, groupName) {
     currentGroupId = groupId;
     currentGroupCards = flashcards.filter(card => card.categoryId === groupId);
+    
+    // Sort cards by sortOrder for consistent display order
+    currentGroupCards.sort((a, b) => {
+        const orderA = a.sortOrder || 0;
+        const orderB = b.sortOrder || 0;
+        return orderA - orderB;
+    });
+    
     currentCardIndex = 0;
 
     // Hide welcome section when viewing flashcards

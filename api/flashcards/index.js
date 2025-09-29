@@ -43,7 +43,8 @@ export default async function handler(req, res) {
     switch (method) {
       case 'GET':
         // Get all flashcards, groups, and settings
-        const flashcards = await collection.find({}).sort({ createdAt: -1 }).toArray();
+        // Sort by custom order first, then by createdAt for backwards compatibility
+        const flashcards = await collection.find({}).sort({ sortOrder: 1, createdAt: 1 }).toArray();
         const groups = await groupsCollection.find({}).sort({ createdAt: -1 }).toArray();
         const settings = await settingsCollection.findOne({ type: 'welcome' }) || {};
         res.status(200).json({ success: true, flashcards, groups, settings });

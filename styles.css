@@ -941,6 +941,43 @@ input:checked + .toggle-slider:before {
     border: 2px solid transparent;
 }
 
+.drag-handle {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+    background: rgba(76, 175, 80, 0.8);
+    color: white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: grab;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.grid-flashcard:hover .drag-handle {
+    opacity: 1;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.grid-flashcard[draggable="true"]:hover {
+    cursor: grab;
+}
+
+.grid-flashcard.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
 .grid-flashcard:hover {
     transform: translateY(-4px) scale(1.01);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
@@ -952,6 +989,9 @@ input:checked + .toggle-slider:before {
     height: 60%;
     object-fit: contain;
     background: #f8f9fa;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
 }
 
 .grid-flashcard-text {
@@ -1538,6 +1578,9 @@ input:checked + .toggle-slider:before {
     border-radius: 16px 16px 0 0;
     background: #f8f9fa;
     min-height: 200px;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
 }
 
 .flashcard-text {
