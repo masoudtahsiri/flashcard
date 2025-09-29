@@ -100,6 +100,63 @@ function getCategoryEmoji(categoryName) {
     return '📚';
 }
 
+// Function to get color class for category based on subject
+function getCategoryColorClass(categoryName) {
+    if (!categoryName) return 'color-default';
+    
+    const lowerName = categoryName.toLowerCase().trim();
+    
+    // Map specific subjects to color classes
+    const colorMap = {
+        'english': 'color-english',
+        'language': 'color-english',
+        'literature': 'color-english',
+        'reading': 'color-english',
+        'writing': 'color-english',
+        
+        'math': 'color-math',
+        'mathematics': 'color-math',
+        'maths': 'color-math',
+        'algebra': 'color-math',
+        'geometry': 'color-math',
+        'calculus': 'color-math',
+        
+        'science': 'color-science',
+        'sciences': 'color-science',
+        'biology': 'color-science',
+        'chemistry': 'color-science',
+        'physics': 'color-science',
+        
+        'p.e': 'color-pe',
+        'pe': 'color-pe',
+        'physical education': 'color-pe',
+        'sports': 'color-pe',
+        'fitness': 'color-pe',
+        
+        'history': 'color-history',
+        'social studies': 'color-history',
+        'civics': 'color-history',
+        
+        'geography': 'color-geography',
+        'earth science': 'color-geography',
+        'geology': 'color-geography'
+    };
+    
+    // Check for exact matches first
+    if (colorMap[lowerName]) {
+        return colorMap[lowerName];
+    }
+    
+    // Check for partial matches
+    for (const [key, colorClass] of Object.entries(colorMap)) {
+        if (lowerName.includes(key) || key.includes(lowerName)) {
+            return colorClass;
+        }
+    }
+    
+    return 'color-default';
+}
+
 // Function to get number emoji for units
 function getNumberEmoji(number) {
     if (number < 1 || number > 100) return '📚';
@@ -240,6 +297,8 @@ function renderGroups() {
         const emoji = getCategoryEmoji(category.name);
         const iconContent = emoji === 'custom-math-icon' ? '' : emoji;
         const iconClass = emoji === 'custom-math-icon' ? 'group-icon custom-math-icon' : 'group-icon';
+        const colorClass = getCategoryColorClass(category.name);
+        groupCard.classList.add(colorClass);
         groupCard.innerHTML = `
             <div class="${iconClass}">${iconContent}</div>
             <div class="group-name">${category.name}</div>
@@ -329,6 +388,8 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
         const emoji = getCategoryEmoji(subFolder.name);
         const iconContent = emoji === 'custom-math-icon' ? '' : emoji;
         const iconClass = emoji === 'custom-math-icon' ? 'group-icon custom-math-icon' : 'group-icon';
+        const colorClass = getCategoryColorClass(subFolder.name);
+        subCard.classList.add(colorClass);
         subCard.innerHTML = `
             <div class="${iconClass}">${iconContent}</div>
             <div class="group-name">${subFolder.name}</div>
