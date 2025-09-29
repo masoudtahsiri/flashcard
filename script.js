@@ -71,9 +71,9 @@ function getCategoryEmoji(categoryName) {
     // Map specific subjects to emojis
     const emojiMap = {
         'english': '📖',
-        'math': '🔢',
-        'mathematics': '🔢',
-        'maths': '🔢',
+        'math': 'custom-math-icon',
+        'mathematics': 'custom-math-icon',
+        'maths': 'custom-math-icon',
         'science': '🔬',
         'sciences': '🔬',
         'p.e': '⚽',
@@ -237,8 +237,11 @@ function renderGroups() {
         
         const groupCard = document.createElement('div');
         groupCard.className = 'group-card';
+        const emoji = getCategoryEmoji(category.name);
+        const iconContent = emoji === 'custom-math-icon' ? '' : emoji;
+        const iconClass = emoji === 'custom-math-icon' ? 'group-icon custom-math-icon' : 'group-icon';
         groupCard.innerHTML = `
-            <div class="group-icon">${getCategoryEmoji(category.name)}</div>
+            <div class="${iconClass}">${iconContent}</div>
             <div class="group-name">${category.name}</div>
             <div class="group-count">${totalCards} cards</div>
         `;
@@ -323,8 +326,11 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
         const subCards = flashcards.filter(card => card.categoryId === subFolder.id);
         const subCard = document.createElement('div');
         subCard.className = 'group-card';
+        const emoji = getCategoryEmoji(subFolder.name);
+        const iconContent = emoji === 'custom-math-icon' ? '' : emoji;
+        const iconClass = emoji === 'custom-math-icon' ? 'group-icon custom-math-icon' : 'group-icon';
         subCard.innerHTML = `
-            <div class="group-icon">${subFolder.isDirect ? getCategoryEmoji(subFolder.name) : getCategoryEmoji(subFolder.name)}</div>
+            <div class="${iconClass}">${iconContent}</div>
             <div class="group-name">${subFolder.name}</div>
             <div class="group-count">${subCards.length} cards</div>
         `;
@@ -362,7 +368,6 @@ function selectGroup(groupId, groupName) {
 
     // Set category title in "category - subcategory" format
     let categoryTitle = groupName || 'Topic';
-    let categoryForEmoji = groupName || 'Topic';
     
     // Check if we have parent category information from navigation history
     if (navigationHistory.length > 0) {
@@ -371,18 +376,10 @@ function selectGroup(groupId, groupName) {
             // Remove "(Direct)" suffix if present for cleaner display
             const cleanGroupName = groupName.replace(' (Direct)', '');
             categoryTitle = `${parentLevel.parentName} - ${cleanGroupName}`;
-            // Use parent category for emoji determination
-            categoryForEmoji = parentLevel.parentName;
         }
     }
     
-    const flashcardTitleElement = document.getElementById('flashcardCategoryTitle');
-    flashcardTitleElement.textContent = categoryTitle;
-    
-    // Update the CSS emoji dynamically
-    const emoji = getCategoryEmoji(categoryForEmoji);
-    flashcardTitleElement.style.setProperty('--category-emoji', `"${emoji}"`);
-    flashcardTitleElement.setAttribute('data-emoji', emoji);
+    document.getElementById('flashcardCategoryTitle').textContent = categoryTitle;
 
     if (currentGroupCards.length > 0) {
         updateFlashcard();

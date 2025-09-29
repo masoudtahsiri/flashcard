@@ -498,7 +498,7 @@ function updatePreview() {
     });
 }
 
-function saveWelcomeTitle() {
+async function saveWelcomeTitle() {
     const line1 = document.getElementById('welcomeTitleLine1').value.trim();
     const line2 = document.getElementById('welcomeTitleLine2').value.trim();
     const font = document.getElementById('welcomeFontSelect').value;
@@ -508,18 +508,26 @@ function saveWelcomeTitle() {
         return;
     }
 
-    // Save to localStorage
-    localStorage.setItem('welcomeTitleLine1', line1);
-    localStorage.setItem('welcomeTitleLine2', line2);
-    localStorage.setItem('welcomeFont', font);
+    try {
+        // Save to localStorage
+        localStorage.setItem('welcomeTitleLine1', line1);
+        localStorage.setItem('welcomeTitleLine2', line2);
+        localStorage.setItem('welcomeFont', font);
 
-    // Update preview
-    updatePreview();
+        // Update preview
+        updatePreview();
 
-    // Update student interface if it's open
-    updateStudentInterface();
+        // Update student interface if it's open
+        updateStudentInterface();
 
-    alert('Welcome title settings saved successfully!');
+        // Save to database immediately
+        await saveFlashcards();
+
+        alert('Welcome title settings saved and synced to database successfully!');
+    } catch (error) {
+        console.error('Error saving welcome title:', error);
+        alert('Welcome title saved locally, but failed to sync to database. Please try again.');
+    }
 }
 
 // Reset functionality removed - no longer needed
