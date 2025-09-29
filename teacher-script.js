@@ -382,17 +382,32 @@ function renderGroupDetailCards() {
         const originalIndex = flashcards.findIndex(c => c.id === card.id);
         const gridCard = document.createElement('div');
         gridCard.className = 'grid-flashcard';
+        
+        // Find the category name for this card (show full hierarchical path)
+        const category = groups.find(g => g.id === card.categoryId);
+        let categoryName = 'No Category';
+        
+        if (category) {
+            if (category.parentId) {
+                // This is a sub-category, show "Main Category > Sub Category"
+                const parentCategory = groups.find(g => g.id === category.parentId);
+                categoryName = parentCategory ? `${parentCategory.name} > ${category.name}` : category.name;
+            } else {
+                // This is a main category
+                categoryName = category.name;
+            }
+        }
+        
         gridCard.innerHTML = `
+            <div class="grid-flashcard-category-top">${categoryName}</div>
             <img src="${getImageUrl(card.image)}" alt="${card.word}" class="grid-flashcard-image">
             <div class="grid-flashcard-text">${card.word}</div>
-            <button class="grid-flashcard-delete" onclick="deleteCardFromGrid(${originalIndex})">×</button>
+            <div class="grid-flashcard-edit-hint">Click to edit</div>
         `;
         
-        // Add click to play audio
+        // Add click to open edit modal
         gridCard.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('grid-flashcard-delete')) {
-                playAudio(card.word, card.audioUrl);
-            }
+            openCardEditModal(card.id);
         });
         
         container.appendChild(gridCard);
