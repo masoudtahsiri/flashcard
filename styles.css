@@ -6,7 +6,6 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(to bottom, #FFD700 50%, #F5F5F5 50%);
     display: flex;
     justify-content: center;
     align-items: center;
