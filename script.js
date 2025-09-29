@@ -256,6 +256,7 @@ function selectGroup(groupId, groupName) {
     document.getElementById('flashcardView').style.display = 'block';
 
     document.getElementById('currentGroupName').textContent = groupName || 'Topic';
+    document.getElementById('flashcardCategoryTitle').textContent = groupName || 'Topic';
 
     if (currentGroupCards.length > 0) {
         updateFlashcard();

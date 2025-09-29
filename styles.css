@@ -1494,19 +1494,23 @@ input:checked + .toggle-slider:before {
     padding: 12px 24px;
     font-size: 1.1rem;
     font-weight: 600;
-    background: #4CAF50;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    min-width: 120px;
+    text-align: center;
+    display: inline-block;
+    margin: 5px;
 }
 
-.nav-btn:hover {
-    background: #45a049;
+.nav-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .nav-btn:active {
@@ -1514,10 +1518,12 @@ input:checked + .toggle-slider:before {
 }
 
 .nav-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    background: #ccc !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    opacity: 0.6 !important;
+    color: #666 !important;
 }
 
 .flashcard:hover {
@@ -1653,22 +1659,26 @@ input:checked + .toggle-slider:before {
 }
 
 .back-btn {
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 12px 24px;
+    font-size: 1.1rem;
     font-weight: 600;
-    background: #2196F3;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    min-width: 120px;
+    text-align: center;
+    display: inline-block;
+    margin: 5px;
 }
 
 .back-btn:hover {
-    background: #1976D2;
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .back-btn:active {
@@ -1709,10 +1719,26 @@ input:checked + .toggle-slider:before {
         font-size: 2rem;
     }
     
-    .nav-btn {
-        padding: 15px 25px;
-        font-size: 1.2rem;
+    /* Mobile welcome section - ensure 2 lines maximum */
+    .welcome-section {
+        padding: 20px 10px;
+        margin-bottom: 20px;
     }
+    
+    .welcome-section h1 {
+        font-size: 1.8rem !important;
+        line-height: 1.1 !important;
+        margin: 8px 0 !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    /* Mobile: Adjust star decorations */
+    .welcome-section::before,
+    .welcome-section::after {
+        font-size: 1rem;
+        letter-spacing: 8px;
+    }
+    
     
     .flashcard-grid {
         grid-template-columns: 1fr;
@@ -1775,20 +1801,6 @@ input:checked + .toggle-slider:before {
         padding: 5px 0;
     }
     
-    .group-header .back-btn {
-        padding: 12px 24px;
-        font-size: 1.1rem;
-        border-radius: 25px;
-        white-space: nowrap;
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-        border: none;
-        color: white;
-        font-weight: 600;
-        text-align: center;
-        display: inline-block;
-        min-width: 120px;
-    }
     
     .group-header h2,
     .group-header #currentGroupName {
@@ -1948,6 +1960,30 @@ body:has(.group-selection), body:has(.flashcard-view) {
     font-size: 2rem;
 }
 
+/* Flashcard category title - same style as topic selection title */
+#flashcardCategoryTitle {
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #2C3E50;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+    margin-bottom: 30px;
+    position: relative;
+    text-align: center;
+}
+
+#flashcardCategoryTitle::before {
+    content: "🌟";
+    margin-right: 15px;
+    font-size: 2rem;
+}
+
+#flashcardCategoryTitle::after {
+    content: "🌟";
+    margin-left: 15px;
+    font-size: 2rem;
+}
+
 /* Student interface group cards - make them more colorful and fun */
 .group-selection .group-card,
 .group-selection .group-folder {
@@ -2069,41 +2105,28 @@ body:has(.group-selection), body:has(.flashcard-view) {
     100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
 }
 
-.flashcard-view .back-btn {
-    font-family: 'Fredoka', 'Inter', sans-serif;
-    background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    transition: all 0.3s ease;
-}
-
-.flashcard-view .back-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-}
 
 .main-menu-btn {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    min-width: 120px;
+    text-align: center;
+    display: inline-block;
+    margin: 5px;
 }
 
 .main-menu-btn:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 .flashcard {
@@ -2144,28 +2167,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
     padding: 20px;
 }
 
-.nav-btn {
-    font-family: 'Fredoka', 'Inter', sans-serif;
-    background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 50px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.nav-btn:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
-}
-
-.nav-btn:active {
-    transform: translateY(-1px) scale(1.02);
-}
 
 .card-counter {
     font-family: 'Fredoka', 'Inter', sans-serif;
@@ -2182,6 +2183,12 @@ body:has(.group-selection), body:has(.flashcard-view) {
 /* Mobile responsiveness for kids - larger touch targets */
 @media (max-width: 768px) {
     .group-selection h2 {
+        font-size: 2rem;
+        margin: 0 0 15px 0;
+    }
+    
+    /* Mobile: Flashcard category title */
+    #flashcardCategoryTitle {
         font-size: 2rem;
         margin: 0 0 15px 0;
     }
@@ -2227,13 +2234,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
         display: none !important;
     }
     
-    .back-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-        border-radius: 18px;
-        flex-shrink: 0;
-        white-space: nowrap;
-    }
     
     .group-detail-header h2,
     #currentGroupName {
@@ -2261,35 +2261,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
         font-size: 2rem;
     }
     
-    .nav-btn {
-        padding: 12px 24px;
-        font-size: 1.1rem;
-        margin: 5px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 25px;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        min-width: 120px;
-        text-align: center;
-        display: inline-block;
-        color: white;
-        font-weight: 600;
-        border: none;
-    }
-    
-    .nav-btn:hover:not(:disabled) {
-        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    .nav-btn:disabled {
-        background: #ccc !important;
-        cursor: not-allowed !important;
-        transform: none !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-        opacity: 0.6 !important;
-        color: #666 !important;
-    }
     
     .card-counter {
         font-size: 1.3rem;
