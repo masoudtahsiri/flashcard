@@ -165,6 +165,12 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
 
+    // Hide welcome section when navigating to sub-categories
+    const welcomeSection = document.querySelector('.welcome-section');
+    if (welcomeSection) {
+        welcomeSection.style.display = 'none';
+    }
+
     // Add to navigation history
     navigationHistory.push({
         type: 'subcategories',
@@ -230,6 +236,12 @@ function selectGroup(groupId, groupName) {
     currentGroupCards = flashcards.filter(card => card.categoryId === groupId);
     currentCardIndex = 0;
 
+    // Hide welcome section when viewing flashcards
+    const welcomeSection = document.querySelector('.welcome-section');
+    if (welcomeSection) {
+        welcomeSection.style.display = 'none';
+    }
+
     // Add to navigation history
     navigationHistory.push({
         type: 'flashcards',
@@ -268,6 +280,12 @@ function goBackToGroups() {
             groupSelectionHeader.style.display = 'none';
         }
 
+        // Show welcome section when returning to main categories
+        const welcomeSection = document.querySelector('.welcome-section');
+        if (welcomeSection) {
+            welcomeSection.style.display = 'block';
+        }
+
         // Reset to last navigation level
         if (navigationHistory.length > 0) {
             const lastLevel = navigationHistory.pop();
@@ -299,6 +317,12 @@ function goBackToGroups() {
             document.getElementById('topicSelectionTitle').textContent = 'Choose your Topic';
             navigationHistory = []; // Clear history when going to main
             renderGroups();
+
+            // Show welcome section when returning to main categories
+            const welcomeSection = document.querySelector('.welcome-section');
+            if (welcomeSection) {
+                welcomeSection.style.display = 'block';
+            }
         }
     }
 }
@@ -474,8 +498,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load saved flashcards
     await loadFlashcards();
 
-    // Load welcome title
+    // Load welcome title and show welcome section
     loadWelcomeTitle();
+
+    // Ensure welcome section is visible on initial load
+    const welcomeSection = document.querySelector('.welcome-section');
+    if (welcomeSection) {
+        welcomeSection.style.display = 'block';
+    }
 
     // Load voices immediately
     loadVoices();
