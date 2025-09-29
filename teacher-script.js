@@ -5,76 +5,65 @@ let defaultFlashcards = [
         word: "animals",
         image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=300&fit=crop",
         audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        groupId: 1,
-        subCategoryId: 1
+        categoryId: 2  // Animals category
     },
     {
         id: 2,
         word: "elephant",
         image: "https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=400&h=300&fit=crop",
         audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        groupId: 1,
-        subCategoryId: 1
+        categoryId: 2  // Animals category
     },
     {
         id: 3,
         word: "lion",
         image: "https://images.unsplash.com/photo-1552410260-0fd9b577afa6?w=400&h=300&fit=crop",
         audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        groupId: 1,
-        subCategoryId: 1
+        categoryId: 2  // Animals category
     },
     {
         id: 4,
         word: "tiger",
         image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop",
         audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        groupId: 1,
-        subCategoryId: 1
+        categoryId: 2  // Animals category
     },
     {
         id: 5,
         word: "giraffe",
         image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop",
         audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        groupId: 1,
-        subCategoryId: 1
+        categoryId: 2  // Animals category
     },
     {
         id: 6,
         word: "panda",
         image: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop",
         audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        groupId: 1,
-        subCategoryId: 1
+        categoryId: 2  // Animals category
     }
 ];
 
-// Default groups data
+// Default groups data with hierarchical structure
 let defaultGroups = [
     {
         id: 1,
         name: "Science",
-        color: "#4CAF50"
-    }
-];
-
-// Default sub-categories data
-let defaultSubCategories = [
+        color: "#4CAF50",
+        parentId: null
+    },
     {
-        id: 1,
+        id: 2,
         name: "Animals",
-        groupId: 1,
-        color: "#66BB6A"
+        color: "#66BB6A",
+        parentId: 1
     }
 ];
 
-// Current flashcards, groups, and sub-categories (starts with defaults, can be modified)
+// Current flashcards and groups (starts with defaults, can be modified)
 let flashcards = [...defaultFlashcards];
 let groups = [...defaultGroups];
-let subCategories = [...defaultSubCategories];
-let nextGroupId = 2;
-let nextSubCategoryId = 2;
+let nextGroupId = 3;
 
 // Pagination variables
 let currentPage = 1;
