@@ -185,6 +185,12 @@ function renderGroupedCardsView() {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
     
+    // Update back button for main categories view
+    const backBtn = document.getElementById('backToGroupsBtn');
+    if (backBtn) {
+        backBtn.textContent = '← Back';
+    }
+    
     // Show only main categories (parentId is null or undefined)
     const mainCategories = groups.filter(group => !group.parentId);
     
@@ -252,6 +258,12 @@ function renderSubCategories(parentCategoryId, parentCategoryName) {
     const groupsGrid = document.getElementById('groupsGrid');
     groupsGrid.innerHTML = '';
     
+    // Update back button
+    const backBtn = document.getElementById('backToGroupsBtn');
+    if (backBtn) {
+        backBtn.textContent = '← Back';
+    }
+    
     // Get sub-categories for this parent
     const subCategories = groups.filter(g => g.parentId === parentCategoryId);
     
@@ -315,6 +327,12 @@ function showGroupDetail(groupId, groupName) {
     
     // Update header
     document.getElementById('selectedGroupName').textContent = groupName;
+    
+    // Update back button
+    const backBtn = document.getElementById('backToGroupsBtn');
+    if (backBtn) {
+        backBtn.textContent = '← Back';
+    }
     
     renderGroupDetailCards();
 }
@@ -2504,7 +2522,7 @@ function updateGroupSelect() {
             const parent = groups.find(g => g.id === group.parentId);
             option.textContent = parent ? `${parent.name} > ${group.name}` : group.name;
         } else {
-            option.textContent = group.name;
+        option.textContent = group.name;
         }
         
         groupSelect.appendChild(option);
