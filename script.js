@@ -57,6 +57,82 @@ function getUrlParameter(name) {
     return urlParams.get(name);
 }
 
+// Function to show class selection screen
+async function showClassSelection() {
+    try {
+        // Hide main content
+        const welcomeSection = document.querySelector('.welcome-section');
+        const groupSelectionSection = document.querySelector('.group-selection');
+        const flashcardSection = document.querySelector('.flashcard-section');
+        
+        if (welcomeSection) welcomeSection.style.display = 'none';
+        if (groupSelectionSection) groupSelectionSection.style.display = 'none';
+        if (flashcardSection) flashcardSection.style.display = 'none';
+        
+        // Show class selection screen
+        const classSelectionScreen = document.getElementById('classSelectionScreen');
+        if (classSelectionScreen) {
+            classSelectionScreen.style.display = 'block';
+        }
+        
+        // Load available classes
+        await loadAvailableClasses();
+        
+    } catch (error) {
+        console.error('Error showing class selection:', error);
+    }
+}
+
+// Function to load available classes
+async function loadAvailableClasses() {
+    try {
+        const response = await fetch('/api/classes');
+        if (!response.ok) {
+            throw new Error('Failed to load classes');
+        }
+        
+        const result = await response.json();
+        if (result.success && result.classes) {
+            renderClassSelection(result.classes);
+        } else {
+            throw new Error('No classes found');
+        }
+    } catch (error) {
+        console.error('Error loading classes:', error);
+        // Show error message
+        const classList = document.getElementById('classList');
+        if (classList) {
+            classList.innerHTML = '<p style="text-align: center; color: #666;">Unable to load classes. Please try again later.</p>';
+        }
+    }
+}
+
+// Function to render class selection
+function renderClassSelection(classes) {
+    const classList = document.getElementById('classList');
+    if (!classList) return;
+    
+    if (classes.length === 0) {
+        classList.innerHTML = '<p style="text-align: center; color: #666;">No classes available.</p>';
+        return;
+    }
+    
+    classList.innerHTML = classes.map(cls => `
+        <div class="class-card" onclick="selectClass('${cls.id}')">
+            <div class="class-name">${cls.name}</div>
+            <div class="class-info">Click to enter</div>
+        </div>
+    `).join('');
+}
+
+// Function to select a class
+function selectClass(classId) {
+    // Update URL with class parameter
+    const url = new URL(window.location);
+    url.searchParams.set('class', classId);
+    window.location.href = url.toString();
+}
+
 // Function to get emoji for category based on name
 function getCategoryEmoji(categoryName) {
     if (!categoryName) return '📚';
@@ -742,6 +818,12 @@ function goToNext() {
 document.addEventListener('DOMContentLoaded', async () => {
     // Get class ID from URL parameter
     currentClassId = getUrlParameter('class');
+    
+    // If no class is selected, show class selection screen
+    if (!currentClassId) {
+        showClassSelection();
+        return;
+    }
     
     // Load saved flashcards (will be filtered by class if specified)
     await loadFlashcards();
