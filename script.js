@@ -794,14 +794,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load saved flashcards (will be filtered by class if specified)
     await loadFlashcards();
 
-    // Load welcome title and show welcome section
+    // Load welcome title
     loadWelcomeTitle();
 
-    // Hide loading indicator and show welcome section
+    // Hide loading indicator and show content sections
     if (loadingIndicator) loadingIndicator.style.display = 'none';
+    
     const welcomeSection = document.querySelector('.welcome-section');
     if (welcomeSection) {
         welcomeSection.style.display = 'block';
+    }
+    
+    const groupSelection = document.getElementById('groupSelection');
+    if (groupSelection) {
+        groupSelection.style.display = 'block';
     }
 
     // Load voices immediately
