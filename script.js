@@ -1,4 +1,5 @@
 // Default flashcard data - empty array, all data comes from database
+// Updated: Responsive design improvements
 let defaultFlashcards = [];
 
 // Current flashcards and groups (starts with defaults, can be modified)
