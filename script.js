@@ -779,11 +779,14 @@ function goToNext() {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    
     // Get class ID from URL parameter
     currentClassId = getUrlParameter('class');
     
     // If no class is selected, show class selection screen
     if (!currentClassId) {
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
         showClassSelection();
         return;
     }
@@ -794,7 +797,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load welcome title and show welcome section
     loadWelcomeTitle();
 
-    // Ensure welcome section is visible on initial load
+    // Hide loading indicator and show welcome section
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
     const welcomeSection = document.querySelector('.welcome-section');
     if (welcomeSection) {
         welcomeSection.style.display = 'block';

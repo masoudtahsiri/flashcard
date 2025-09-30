@@ -1332,6 +1332,37 @@ input:checked + .toggle-slider:before {
     font-family: 'Fredoka', 'Comic Sans MS', 'Trebuchet MS', cursive, sans-serif;
 }
 
+/* Loading Indicator */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 6px solid #f3f4f6;
+    border-top: 6px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+    font-size: 1.2rem;
+    color: #667eea;
+    font-weight: 500;
+}
+
 .student-interface .welcome-section h1 {
     font-family: 'Arial Black', 'Impact', 'Comic Sans MS', 'Fredoka', 'Bungee', 'Chewy', 'Boogaloo', 'Luckiest Guy', 'Permanent Marker', 'Schoolbell', Arial, sans-serif !important;
 }
