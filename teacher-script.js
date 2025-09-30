@@ -493,6 +493,8 @@ function showTab(tabName) {
     } else if (tabName === 'settings') {
         document.getElementById('settingsContent').classList.add('active');
         document.getElementById('settingsTab').classList.add('active');
+        // Update class management info when settings tab is opened
+        updateSettingsTab();
     }
 }
 
@@ -3673,8 +3675,8 @@ async function selectClass(classId, className) {
     updateGroupSelect();
     updateParentGroupSelect();
     
-    // Update manage classes tab with current class info
-    updateManageClassesTab();
+    // Update settings tab with current class info
+    updateSettingsTab();
     
     console.log(`Selected class: ${className} (${classId})`);
 }
@@ -3792,8 +3794,8 @@ function copyClassLink() {
     }
 }
 
-// Update manage classes tab with current class information
-async function updateManageClassesTab() {
+// Update settings tab with current class information
+async function updateSettingsTab() {
     // Update class name input
     const editClassNameInput = document.getElementById('editClassName');
     if (editClassNameInput && currentClassName) {
@@ -3850,36 +3852,8 @@ async function updateManageClassesTab() {
             migrationSection.style.display = 'none';
         }
     }
-    
-    // Update all classes list
-    renderAllClassesList();
 }
 
-// Render all classes list in manage classes tab
-function renderAllClassesList() {
-    const allClassesList = document.getElementById('allClassesList');
-    
-    if (!allClassesList) return;
-    
-    if (availableClasses.length === 0) {
-        allClassesList.innerHTML = `
-            <div class="empty-classes">
-                <p>No classes created yet.</p>
-            </div>
-        `;
-        return;
-    }
-    
-    allClassesList.innerHTML = availableClasses.map(classInfo => `
-        <div class="class-list-item">
-            <div class="class-list-name">${classInfo.name}</div>
-            <div class="class-list-actions">
-                <button onclick="selectClass('${classInfo.id}', '${classInfo.name.replace(/'/g, "\\'")}')">Select</button>
-                <button onclick="deleteClass('${classInfo.id}', '${classInfo.name.replace(/'/g, "\\'")}')" style="background: #dc3545; color: white;">Delete</button>
-            </div>
-        </div>
-    `).join('');
-}
 
 // Update current class name
 async function updateCurrentClass() {
@@ -3937,7 +3911,7 @@ async function updateCurrentClass() {
             
             // Update UI
             document.getElementById('currentClassName').textContent = newClassName;
-            updateManageClassesTab();
+            updateSettingsTab();
             
             alert('Class name updated successfully!');
         } else {
@@ -3997,50 +3971,6 @@ async function deleteCurrentClass() {
     }
 }
 
-// Delete a class from the all classes list
-async function deleteClass(classId, className) {
-    const confirmMessage = `Are you sure you want to delete the class "${className}"?\n\nThis will permanently delete all flashcards, units, and settings for this class.\n\nThis action cannot be undone.`;
-    
-    if (!confirm(confirmMessage)) {
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/classes', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ classId })
-        });
-        
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.error || 'Failed to delete class');
-        }
-        
-        if (result.success) {
-            // Remove from availableClasses array
-            availableClasses = availableClasses.filter(c => c.id !== classId);
-            
-            // If this was the current class, switch back to class selection
-            if (classId === currentClassId) {
-                switchClass();
-            } else {
-                // Just refresh the all classes list
-                renderAllClassesList();
-            }
-            
-            alert(`Class "${className}" deleted successfully.`);
-        } else {
-            throw new Error('Failed to delete class');
-        }
-    } catch (error) {
-        console.error('Error deleting class:', error);
-        alert(`Error deleting class: ${error.message}`);
-    }
-}
 
 // Copy current class link (for manage classes tab)
 function copyCurrentClassLink() {
@@ -4088,7 +4018,7 @@ async function migrateExistingData() {
         renderGroupedCardsView();
         updateGroupSelect();
         updateParentGroupSelect();
-        updateManageClassesTab();
+        updateSettingsTab();
         
         // Hide migration section
         const migrationSection = document.getElementById('migrationSection');

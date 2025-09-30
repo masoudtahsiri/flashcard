@@ -137,10 +137,6 @@
                     <span class="tab-icon">📁</span>
                     Manage Units
                 </button>
-                <button id="manageClassesTab" class="tab-btn" onclick="showTab('manageClasses')">
-                    <span class="tab-icon">🏫</span>
-                    Manage Classes
-                </button>
                 <button id="settingsTab" class="tab-btn" onclick="showTab('settings')">
                     <span class="tab-icon">⚙️</span>
                     Settings
@@ -202,65 +198,58 @@
                     </div>
                 </div>
 
-                <!-- Manage Classes Tab -->
-                <div id="manageClassesContent" class="tab-panel">
-                    <div class="manage-classes-form">
-                        <h3>Manage Classes</h3>
+                <!-- Settings Tab -->
+                <div id="settingsContent" class="tab-panel">
+                    <div class="settings-form">
+                        <h3>Class Settings</h3>
                         
-                        <div class="form-group">
-                            <label for="editClassName">Class Name:</label>
-                            <input type="text" id="editClassName" placeholder="Enter class name" maxlength="50">
-                            <button id="updateClassBtn" onclick="updateCurrentClass()" class="btn btn-primary">Update Class Name</button>
-                        </div>
-                        
-                        <div class="class-info-section">
-                            <h4>Current Class Information</h4>
-                            <div class="class-details">
-                                <div class="detail-item">
-                                    <strong>Class Name:</strong> <span id="displayClassName">Loading...</span>
+                        <!-- Class Management Section -->
+                        <div class="settings-section">
+                            <h4>Class Name & Link</h4>
+                            
+                            <div class="form-group">
+                                <label for="editClassName">Class Name:</label>
+                                <input type="text" id="editClassName" placeholder="Enter class name" maxlength="50">
+                                <button id="updateClassBtn" onclick="updateCurrentClass()" class="btn btn-primary">Update Class Name</button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Student Link:</label>
+                                <div class="link-display">
+                                    <span id="displayClassLink">Loading...</span>
+                                    <button onclick="copyCurrentClassLink()" class="copy-btn">Copy</button>
                                 </div>
-                                <div class="detail-item">
-                                    <strong>Student Link:</strong>
-                                    <div class="link-display">
-                                        <span id="displayClassLink">Loading...</span>
-                                        <button onclick="copyCurrentClassLink()" class="copy-btn">Copy</button>
-                                    </div>
-                                </div>
-                                <div class="detail-item">
-                                    <strong>Total Flashcards:</strong> <span id="classCardCount">0</span>
-                                </div>
-                                <div class="detail-item">
-                                    <strong>Total Units:</strong> <span id="classUnitCount">0</span>
+                                <small class="form-help">Share this link with your students to access this class's flashcards.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Class Statistics:</label>
+                                <div class="stats-display">
+                                    <span><strong>Total Flashcards:</strong> <span id="classCardCount">0</span></span>
+                                    <span><strong>Total Units:</strong> <span id="classUnitCount">0</span></span>
                                 </div>
                             </div>
                             
+                            <!-- Migration Section -->
                             <div id="migrationSection" class="migration-section" style="display: none;">
                                 <h5>Existing Data Migration</h5>
                                 <p>We found existing flashcards and groups that aren't assigned to any class. You can migrate them to this class to organize them properly.</p>
                                 <button onclick="migrateExistingData()" class="btn btn-primary">Migrate My Existing Data</button>
                                 <small class="form-help">This will assign your existing flashcards and groups to this class. This action is reversible.</small>
                             </div>
-                        </div>
-                        
-                        <div class="all-classes-section">
-                            <h4>All Classes</h4>
-                            <div class="classes-list" id="allClassesList">
-                                <!-- All classes will be listed here -->
+                            
+                            <!-- Delete Class Section -->
+                            <div class="danger-zone">
+                                <h5>Delete This Class</h5>
+                                <p>Permanently delete this class and all its flashcards, units, and settings.</p>
+                                <button onclick="deleteCurrentClass()" class="btn btn-danger">Delete Class & All Data</button>
+                                <small class="form-help">⚠️ Warning: This action cannot be undone!</small>
                             </div>
                         </div>
-                        
-                        <div class="danger-zone">
-                            <h4>Danger Zone</h4>
-                            <button onclick="deleteCurrentClass()" class="btn btn-danger">Delete This Class</button>
-                            <small class="form-help">This will permanently delete all flashcards, units, and settings for this class.</small>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Settings Tab -->
-                <div id="settingsContent" class="tab-panel">
-                    <div class="settings-form">
-                        <h3>Student Interface Settings</h3>
+                        <hr style="margin: 30px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                        <h4>Welcome Message</h4>
 
                         <div class="form-group">
                             <input type="text" id="welcomeTitleLine1" placeholder="Line 1: Welcome to">
