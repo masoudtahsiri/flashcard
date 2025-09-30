@@ -3248,29 +3248,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('backToGroupsBtn').addEventListener('click', goBackToGroups);
 
     // Set up settings form event listeners
-    document.getElementById('welcomeTitleLine1').addEventListener('input', updatePreview);
-    document.getElementById('welcomeTitleLine2').addEventListener('input', updatePreview);
-    document.getElementById('welcomeFontSelect').addEventListener('change', updatePreview);
+    const welcomeTitleLine1 = document.getElementById('welcomeTitleLine1');
+    const welcomeTitleLine2 = document.getElementById('welcomeTitleLine2');
+    const welcomeFontSelect = document.getElementById('welcomeFontSelect');
+    
+    if (welcomeTitleLine1) welcomeTitleLine1.addEventListener('input', updatePreview);
+    if (welcomeTitleLine2) welcomeTitleLine2.addEventListener('input', updatePreview);
+    if (welcomeFontSelect) welcomeFontSelect.addEventListener('change', updatePreview);
     
     // Set up modal image preview
-    document.getElementById('editCardImage').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('editImagePreview');
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" alt="New image preview" style="max-width: 200px; max-height: 150px; object-fit: contain;">`;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+    const editCardImage = document.getElementById('editCardImage');
+    if (editCardImage) {
+        editCardImage.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('editImagePreview');
+            if (file && preview) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="New image preview" style="max-width: 200px; max-height: 150px; object-fit: contain;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
     
     // Close modal when clicking outside
-    document.getElementById('cardEditModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeCardEditModal();
-        }
-    });
+    const cardEditModal = document.getElementById('cardEditModal');
+    if (cardEditModal) {
+        cardEditModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCardEditModal();
+            }
+        });
+    }
     
     // Set up navigation buttons (only if they exist)
     const prevBtn = document.getElementById('prevBtn');
@@ -3567,6 +3577,7 @@ async function selectClass(classId, className) {
     // Refresh views
     renderGridView();
     renderGroupedCardsView();
+    renderGroupsList();
     updateGroupSelect();
     updateParentGroupSelect();
     
