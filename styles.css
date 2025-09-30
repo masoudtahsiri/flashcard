@@ -927,7 +927,8 @@ input:checked + .toggle-slider:before {
 @media (max-width: 400px) {
     .flashcard-grid {
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(4, 1fr);
+        grid-template-rows: repeat(1, 1fr);
+        min-height: 200px; /* Reduced height for single row */
     }
 }
 
@@ -2706,15 +2707,20 @@ body:has(.group-selection), body:has(.flashcard-view) {
 }
 
 .student-interface .class-name {
-    font-size: 1.5rem;
+    font-family: 'Fredoka', 'Inter', sans-serif;
     font-weight: 600;
-    color: #333;
+    font-size: 1.2rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     margin-bottom: 10px;
 }
 
 .student-interface .class-info {
-    color: #666;
-    font-size: 1rem;
+    font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .existing-classes, .create-new-class {

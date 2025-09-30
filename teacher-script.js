@@ -46,7 +46,7 @@ function getResponsiveItemsPerPage() {
     } else if (screenWidth > 400) {
         return 12; // 3x4 grid
     } else {
-        return 8; // 2x4 grid
+        return 2; // 2x1 grid (mobile)
     }
 }
 
