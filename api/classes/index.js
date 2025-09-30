@@ -121,10 +121,43 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'A class with this name already exists' });
         }
 
+        // Generate new class ID based on new name
+        const newClassId = generateClassId(trimmedNewClassName);
+        
+        // Check if new class ID conflicts with existing class (excluding current class)
+        const conflictingId = await classesCollection.findOne({ 
+          id: newClassId, 
+          id: { $ne: updateClassId } 
+        });
+        
+        if (conflictingId) {
+          return res.status(400).json({ error: 'A class with this ID already exists. Please choose a different name.' });
+        }
+
+        // Update all flashcards with new class ID
+        const flashcardsUpdateResult = await flashcardsCollection.updateMany(
+          { classId: updateClassId },
+          { $set: { classId: newClassId } }
+        );
+
+        // Update all groups with new class ID
+        const groupsUpdateResult = await groupsCollection.updateMany(
+          { classId: updateClassId },
+          { $set: { classId: newClassId } }
+        );
+
+        // Update all settings with new class ID
+        const settingsUpdateResult = await settingsCollection.updateMany(
+          { classId: updateClassId },
+          { $set: { classId: newClassId } }
+        );
+
+        // Update the class record with new name and ID
         const updateResult = await classesCollection.updateOne(
           { id: updateClassId },
           { 
             $set: { 
+              id: newClassId,
               name: trimmedNewClassName, 
               updatedAt: new Date() 
             } 
@@ -135,7 +168,16 @@ export default async function handler(req, res) {
           return res.status(404).json({ error: 'Class not found' });
         }
 
-        res.status(200).json({ success: true, message: 'Class updated successfully' });
+        res.status(200).json({ 
+          success: true, 
+          message: 'Class updated successfully',
+          newClassId: newClassId,
+          updatedCounts: {
+            flashcards: flashcardsUpdateResult.modifiedCount,
+            groups: groupsUpdateResult.modifiedCount,
+            settings: settingsUpdateResult.modifiedCount
+          }
+        });
         break;
 
       case 'DELETE':

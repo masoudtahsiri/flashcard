@@ -3914,17 +3914,34 @@ async function updateCurrentClass() {
             // Update local data
             currentClassName = newClassName;
             
-            // Update in availableClasses array
-            const classIndex = availableClasses.findIndex(c => c.id === currentClassId);
-            if (classIndex !== -1) {
-                availableClasses[classIndex].name = newClassName;
+            // Update class ID if it changed
+            if (result.newClassId && result.newClassId !== currentClassId) {
+                const oldClassId = currentClassId;
+                currentClassId = result.newClassId;
+                
+                // Update in availableClasses array
+                const classIndex = availableClasses.findIndex(c => c.id === oldClassId);
+                if (classIndex !== -1) {
+                    availableClasses[classIndex].id = result.newClassId;
+                    availableClasses[classIndex].name = newClassName;
+                }
+                
+                console.log(`Class ID updated from ${oldClassId} to ${result.newClassId}`);
+                console.log(`Updated ${result.updatedCounts.flashcards} flashcards, ${result.updatedCounts.groups} groups, ${result.updatedCounts.settings} settings`);
+            } else {
+                // Update in availableClasses array (name only)
+                const classIndex = availableClasses.findIndex(c => c.id === currentClassId);
+                if (classIndex !== -1) {
+                    availableClasses[classIndex].name = newClassName;
+                }
             }
             
             // Update UI
             document.getElementById('currentClassName').textContent = newClassName;
             updateSettingsTab();
+            updateClassLink();
             
-            alert('Class name updated successfully!');
+            alert(`Class name updated successfully!${result.newClassId ? `\n\nNew student link: ${window.location.origin}/?class=${result.newClassId}` : ''}`);
         } else {
             throw new Error('Failed to update class');
         }
