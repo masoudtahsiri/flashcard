@@ -3244,6 +3244,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load classes first
     await loadClasses();
     
+    // Check if we need to create a default class for existing data
+    await ensureDefaultClassExists();
+    
     // Show class selection screen initially
     document.getElementById('classSelectionScreen').style.display = 'block';
     document.getElementById('managementInterface').style.display = 'none';
@@ -3456,6 +3459,134 @@ async function loadClasses() {
     }
 }
 
+// Ensure a default class exists for existing data
+async function ensureDefaultClassExists() {
+    try {
+        // Check if there's existing data without classId
+        const response = await fetch('/api/flashcards');
+        
+        if (!response.ok) {
+            console.log('Could not check for existing data');
+            return;
+        }
+
+        const result = await response.json();
+        
+        if (!result.success) {
+            console.log('No data found');
+            return;
+        }
+
+        // Check if there are flashcards or groups without classId
+        const flashcardsWithoutClass = result.flashcards ? result.flashcards.filter(card => !card.classId) : [];
+        const groupsWithoutClass = result.groups ? result.groups.filter(group => !group.classId) : [];
+        
+        if (flashcardsWithoutClass.length > 0 || groupsWithoutClass.length > 0) {
+            console.log(`Found ${flashcardsWithoutClass.length} flashcards and ${groupsWithoutClass.length} groups without class assignment`);
+            
+            // Check if default class already exists
+            const defaultClass = availableClasses.find(c => c.id === 'default' || c.name === 'My Class');
+            
+            if (!defaultClass) {
+                // Create default class
+                console.log('Creating default class for existing data...');
+                
+                const createResponse = await fetch('/api/classes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ className: 'My Class' })
+                });
+                
+                const createResult = await createResponse.json();
+                
+                if (createResponse.ok && createResult.success && createResult.class) {
+                    // Add new default class to the list
+                    availableClasses.unshift(createResult.class);
+                    
+                    console.log(`Default class "${createResult.class.name}" created with ID: ${createResult.class.id}`);
+                    
+                    // Now migrate the existing data to this default class
+                    await migrateExistingDataToDefaultClass(createResult.class.id);
+                } else {
+                    console.error('Failed to create default class:', createResult.error);
+                }
+            } else {
+                console.log('Default class already exists, migrating data...');
+                await migrateExistingDataToDefaultClass(defaultClass.id);
+            }
+        }
+    } catch (error) {
+        console.error('Error ensuring default class exists:', error);
+    }
+}
+
+// Migrate existing data without classId to the default class
+async function migrateExistingDataToDefaultClass(defaultClassId) {
+    try {
+        console.log('Migrating existing data to default class...');
+        
+        // Load current data
+        const response = await fetch('/api/flashcards');
+        if (!response.ok) return;
+        
+        const result = await response.json();
+        if (!result.success) return;
+        
+        const flashcards = result.flashcards || [];
+        const groups = result.groups || [];
+        const settings = result.settings || {};
+        
+        // Update flashcards without classId
+        let updatedFlashcards = flashcards.map(card => {
+            if (!card.classId) {
+                return { ...card, classId: defaultClassId };
+            }
+            return card;
+        });
+        
+        // Update groups without classId
+        let updatedGroups = groups.map(group => {
+            if (!group.classId) {
+                return { ...group, classId: defaultClassId };
+            }
+            return group;
+        });
+        
+        // Update settings if they don't have classId
+        let updatedSettings = settings;
+        if (settings && !settings.classId) {
+            updatedSettings = { ...settings, classId: defaultClassId };
+        }
+        
+        // Save updated data
+        const saveResponse = await fetch('/api/flashcards', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                flashcards: updatedFlashcards,
+                groups: updatedGroups,
+                settings: updatedSettings,
+                classId: defaultClassId
+            })
+        });
+        
+        const saveResult = await saveResponse.json();
+        
+        if (saveResponse.ok && saveResult.success) {
+            console.log('Successfully migrated existing data to default class');
+        } else {
+            console.error('Failed to migrate existing data:', saveResult.error);
+        }
+        
+    } catch (error) {
+        console.error('Error migrating existing data:', error);
+    }
+}
+
 // Render the class selection screen
 function renderClassSelection() {
     const classesGrid = document.getElementById('classesGrid');
@@ -3470,12 +3601,19 @@ function renderClassSelection() {
         return;
     }
     
-    classesGrid.innerHTML = availableClasses.map(classInfo => `
-        <div class="class-card" onclick="selectClass('${classInfo.id}', '${classInfo.name.replace(/'/g, "\\'")}')">
-            <div class="class-card-name">${classInfo.name}</div>
-            <div class="class-card-info">Created: ${new Date(classInfo.createdAt).toLocaleDateString()}</div>
-        </div>
-    `).join('');
+    classesGrid.innerHTML = availableClasses.map(classInfo => {
+        const isDefaultClass = classInfo.name === 'My Class' || classInfo.id.includes('my-class');
+        const cardClass = isDefaultClass ? 'class-card default-class-card' : 'class-card';
+        const badgeHtml = isDefaultClass ? '<div class="default-badge">Your existing data</div>' : '';
+        
+        return `
+            <div class="${cardClass}" onclick="selectClass('${classInfo.id}', '${classInfo.name.replace(/'/g, "\\'")}')">
+                ${badgeHtml}
+                <div class="class-card-name">${classInfo.name}</div>
+                <div class="class-card-info">Created: ${new Date(classInfo.createdAt).toLocaleDateString()}</div>
+            </div>
+        `;
+    }).join('');
 }
 
 // Select a class and show management interface

@@ -2577,6 +2577,25 @@ body:has(.group-selection), body:has(.flashcard-view) {
     transform: scale(0.98);
 }
 
+.default-class-card {
+    border: 2px solid #4CAF50;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.default-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #4CAF50;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .class-card-name {
     font-size: 1.1rem;
     font-weight: 600;

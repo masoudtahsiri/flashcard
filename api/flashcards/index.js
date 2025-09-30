@@ -47,8 +47,16 @@ export default async function handler(req, res) {
         // Get class parameter from query string (optional for backward compatibility)
         const classId = req.query.class;
         
-        // Build filter query - if no class specified, show all data (backward compatibility)
-        const filter = classId ? { classId: classId } : {};
+        // Build filter query
+        let filter = {};
+        if (classId) {
+          // Specific class requested
+          filter = { classId: classId };
+        } else {
+          // No class specified - for backward compatibility, return data without classId
+          // This allows the teacher interface to work with existing data
+          filter = { $or: [{ classId: { $exists: false } }, { classId: null }] };
+        }
         
         // Get flashcards, groups, and settings (filtered by class if specified)
         // Sort by custom order first, then by createdAt ascending (oldest first) for backwards compatibility
@@ -62,11 +70,17 @@ export default async function handler(req, res) {
           settings = await settingsCollection.findOne({ type: 'welcome', classId: classId });
           // Fall back to global settings if no class-specific settings found
           if (!settings) {
-            settings = await settingsCollection.findOne({ type: 'welcome', classId: { $exists: false } });
+            settings = await settingsCollection.findOne({ 
+              type: 'welcome', 
+              $or: [{ classId: { $exists: false } }, { classId: null }] 
+            });
           }
         } else {
-          // For backward compatibility, get global settings (no classId field)
-          settings = await settingsCollection.findOne({ type: 'welcome', classId: { $exists: false } });
+          // For backward compatibility, get settings without classId
+          settings = await settingsCollection.findOne({ 
+            type: 'welcome', 
+            $or: [{ classId: { $exists: false } }, { classId: null }] 
+          });
         }
         
         // Get all classes for management interface
