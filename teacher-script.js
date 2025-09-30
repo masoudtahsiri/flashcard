@@ -3599,6 +3599,7 @@ async function migrateExistingDataToDefaultClass(defaultClassId) {
         })() : null;
         
         console.log('Attempting safe migration with only unassigned data...');
+        console.log('Migration target classId:', defaultClassId);
         
         // Use a safer approach: only send the data that needs classId assignment
         const saveResponse = await fetch('/api/flashcards', {
