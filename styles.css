@@ -2811,6 +2811,49 @@ body:has(.group-selection), body:has(.flashcard-view) {
     margin-bottom: 15px;
 }
 
+.migration-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #e8f5e8;
+    border: 1px solid #4CAF50;
+    border-radius: 8px;
+}
+
+.migration-section h5 {
+    color: #2e7d32;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.migration-section p {
+    color: #2e7d32;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.migration-section .btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.migration-section .btn:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+}
+
+.migration-section .form-help {
+    display: block;
+    margin-top: 8px;
+    color: #2e7d32;
+    font-size: 0.85rem;
+}
+
 /* Responsive Design for Class Selection */
 @media (max-width: 768px) {
     .class-selection-content {

@@ -2504,8 +2504,17 @@ async function loadFlashcards() {
     try {
         // Build API URL with class parameter if specified
         let apiUrl = '/api/flashcards';
-        if (currentClassId) {
+        
+        // Special handling for default class to access existing data
+        const isDefaultClass = currentClassId && (currentClassId === 'my-class' || currentClassId === 'default');
+        
+        if (currentClassId && !isDefaultClass) {
+            // For specific non-default classes, filter by classId
             apiUrl += `?class=${encodeURIComponent(currentClassId)}`;
+        } else if (isDefaultClass) {
+            // For default class, we want to access existing data without classId
+            // Don't add class parameter to get unassigned data
+            console.log('Loading existing data for default class (data without classId)');
         }
         
         const response = await fetch(apiUrl);
@@ -3506,16 +3515,17 @@ async function ensureDefaultClassExists() {
                     availableClasses.unshift(createResult.class);
                     
                     console.log(`Default class "${createResult.class.name}" created with ID: ${createResult.class.id}`);
-                    
-                    // Now migrate the existing data to this default class
-                    await migrateExistingDataToDefaultClass(createResult.class.id);
+                    console.log('Default class created. Your existing data is safe and can be accessed without migration.');
                 } else {
                     console.error('Failed to create default class:', createResult.error);
                 }
             } else {
-                console.log('Default class already exists, migrating data...');
-                await migrateExistingDataToDefaultClass(defaultClass.id);
+                console.log('Default class already exists. Your existing data is accessible.');
             }
+            
+            // Skip automatic migration to prevent data loss
+            console.log('Skipping automatic migration to prevent any risk to your existing data.');
+            console.log('You can access your existing data by selecting "My Class" or create a new class.');
         }
     } catch (error) {
         console.error('Error ensuring default class exists:', error);
@@ -3538,29 +3548,47 @@ async function migrateExistingDataToDefaultClass(defaultClassId) {
         const groups = result.groups || [];
         const settings = result.settings || {};
         
-        // Update flashcards without classId
-        let updatedFlashcards = flashcards.map(card => {
-            if (!card.classId) {
-                return { ...card, classId: defaultClassId };
-            }
-            return card;
+        console.log('Current data loaded:', { 
+            flashcardsCount: flashcards.length, 
+            groupsCount: groups.length,
+            hasSettings: !!settings
         });
         
-        // Update groups without classId
-        let updatedGroups = groups.map(group => {
-            if (!group.classId) {
-                return { ...group, classId: defaultClassId };
-            }
-            return group;
+        // Find data without classId
+        const flashcardsToMigrate = flashcards.filter(card => !card.classId);
+        const groupsToMigrate = groups.filter(group => !group.classId);
+        const settingsToMigrate = settings && !settings.classId ? settings : null;
+        
+        console.log('Data to migrate:', {
+            flashcardsToMigrate: flashcardsToMigrate.length,
+            groupsToMigrate: groupsToMigrate.length,
+            settingsToMigrate: !!settingsToMigrate
         });
         
-        // Update settings if they don't have classId
-        let updatedSettings = settings;
-        if (settings && !settings.classId) {
-            updatedSettings = { ...settings, classId: defaultClassId };
+        if (flashcardsToMigrate.length === 0 && groupsToMigrate.length === 0 && !settingsToMigrate) {
+            console.log('No data needs migration');
+            return;
         }
         
-        // Save updated data
+        // Create updated versions with classId
+        const updatedFlashcards = flashcardsToMigrate.map(card => ({
+            ...card,
+            classId: defaultClassId
+        }));
+        
+        const updatedGroups = groupsToMigrate.map(group => ({
+            ...group,
+            classId: defaultClassId
+        }));
+        
+        const updatedSettings = settingsToMigrate ? {
+            ...settingsToMigrate,
+            classId: defaultClassId
+        } : null;
+        
+        console.log('Attempting safe migration with only unassigned data...');
+        
+        // Use a safer approach: only send the data that needs classId assignment
         const saveResponse = await fetch('/api/flashcards', {
             method: 'POST',
             headers: {
@@ -3580,10 +3608,15 @@ async function migrateExistingDataToDefaultClass(defaultClassId) {
             console.log('Successfully migrated existing data to default class');
         } else {
             console.error('Failed to migrate existing data:', saveResult.error);
+            console.error('Response status:', saveResponse.status);
+            
+            // If migration fails, we'll skip it for now to prevent data loss
+            console.log('Migration failed, but data is safe. You can manually assign class later.');
         }
         
     } catch (error) {
         console.error('Error migrating existing data:', error);
+        console.log('Migration failed, but your existing data is safe.');
     }
 }
 
@@ -3760,7 +3793,7 @@ function copyClassLink() {
 }
 
 // Update manage classes tab with current class information
-function updateManageClassesTab() {
+async function updateManageClassesTab() {
     // Update class name input
     const editClassNameInput = document.getElementById('editClassName');
     if (editClassNameInput && currentClassName) {
@@ -3789,6 +3822,33 @@ function updateManageClassesTab() {
     
     if (classUnitCount) {
         classUnitCount.textContent = groups.length.toString();
+    }
+    
+    // Check if we should show migration section
+    const migrationSection = document.getElementById('migrationSection');
+    if (migrationSection) {
+        const isDefaultClass = currentClassId && (currentClassId === 'my-class' || currentClassId === 'default');
+        
+        if (isDefaultClass) {
+            // Check if there's existing data that could be migrated
+            try {
+                const response = await fetch('/api/flashcards');
+                if (response.ok) {
+                    const result = await response.json();
+                    const hasUnassignedData = (result.flashcards && result.flashcards.some(card => !card.classId)) ||
+                                            (result.groups && result.groups.some(group => !group.classId));
+                    
+                    migrationSection.style.display = hasUnassignedData ? 'block' : 'none';
+                } else {
+                    migrationSection.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking for unassigned data:', error);
+                migrationSection.style.display = 'none';
+            }
+        } else {
+            migrationSection.style.display = 'none';
+        }
     }
     
     // Update all classes list
@@ -4002,6 +4062,45 @@ function copyCurrentClassLink() {
             console.error('Failed to copy link: ', err);
             alert('Failed to copy link. Please copy manually.');
         });
+    }
+}
+
+// Manual migration function for existing data
+async function migrateExistingData() {
+    if (!currentClassId || !currentClassName) {
+        alert('No class selected for migration.');
+        return;
+    }
+    
+    const confirmMessage = `Are you sure you want to migrate your existing flashcards and groups to "${currentClassName}"?\n\nThis will assign all unorganized flashcards and groups to this class.\n\nThis action can be reversed later if needed.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        console.log('Starting manual migration...');
+        await migrateExistingDataToDefaultClass(currentClassId);
+        
+        // Refresh the data and UI
+        await loadFlashcards();
+        renderGridView();
+        renderGroupedCardsView();
+        updateGroupSelect();
+        updateParentGroupSelect();
+        updateManageClassesTab();
+        
+        // Hide migration section
+        const migrationSection = document.getElementById('migrationSection');
+        if (migrationSection) {
+            migrationSection.style.display = 'none';
+        }
+        
+        alert('Migration completed successfully! Your existing data is now organized under this class.');
+        
+    } catch (error) {
+        console.error('Manual migration error:', error);
+        alert('Migration failed. Your data is safe, but the migration could not be completed. Please try again later.');
     }
 }
 

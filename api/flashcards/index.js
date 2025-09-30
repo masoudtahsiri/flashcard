@@ -94,11 +94,20 @@ export default async function handler(req, res) {
         // Save flashcards, groups, and settings (replace all existing ones)
         const { flashcards: newFlashcards, groups: newGroups, settings: newSettings, classId: postClassId } = req.body;
         
+        console.log('POST request received:', {
+          flashcardsCount: newFlashcards ? newFlashcards.length : 'undefined',
+          groupsCount: newGroups ? newGroups.length : 'undefined',
+          hasSettings: !!newSettings,
+          classId: postClassId
+        });
+        
         if (!newFlashcards || !Array.isArray(newFlashcards)) {
+          console.error('Invalid flashcards data:', typeof newFlashcards, Array.isArray(newFlashcards));
           return res.status(400).json({ error: 'Missing flashcards data' });
         }
 
         if (!newGroups || !Array.isArray(newGroups)) {
+          console.error('Invalid groups data:', typeof newGroups, Array.isArray(newGroups));
           return res.status(400).json({ error: 'Missing groups data' });
         }
 
@@ -111,32 +120,62 @@ export default async function handler(req, res) {
           deleteFilter = { $or: [{ classId: { $exists: false } }, { classId: null }] };
         }
         
-        // Clear existing flashcards and groups for this class (or unassigned data if no class specified)
-        await collection.deleteMany(deleteFilter);
-        await groupsCollection.deleteMany(deleteFilter);
-        
-        if (newFlashcards.length > 0) {
-          // Add timestamps and classId to each flashcard
-          const flashcardsWithTimestamps = newFlashcards.map(card => ({
-            ...card,
-            classId: postClassId || undefined, // Only add classId if specified
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }));
+        try {
+          console.log('Deleting existing data with filter:', deleteFilter);
+          // Clear existing flashcards and groups for this class (or unassigned data if no class specified)
+          const deleteFlashcardsResult = await collection.deleteMany(deleteFilter);
+          const deleteGroupsResult = await groupsCollection.deleteMany(deleteFilter);
+          console.log('Deletion results:', { 
+            deletedFlashcards: deleteFlashcardsResult.deletedCount, 
+            deletedGroups: deleteGroupsResult.deletedCount 
+          });
           
-          await collection.insertMany(flashcardsWithTimestamps);
-        }
+          if (newFlashcards.length > 0) {
+            // Add timestamps and classId to each flashcard
+            console.log('Processing flashcards for insertion...');
+            const flashcardsWithTimestamps = newFlashcards.map((card, index) => {
+              try {
+                return {
+                  ...card,
+                  classId: postClassId || undefined, // Only add classId if specified
+                  createdAt: new Date(),
+                  updatedAt: new Date()
+                };
+              } catch (error) {
+                console.error(`Error processing flashcard ${index}:`, error, card);
+                throw error;
+              }
+            });
+            
+            console.log(`Inserting ${flashcardsWithTimestamps.length} flashcards...`);
+            await collection.insertMany(flashcardsWithTimestamps);
+            console.log('Flashcards inserted successfully');
+          }
 
-        if (newGroups.length > 0) {
-          // Add timestamps and classId to each group
-          const groupsWithTimestamps = newGroups.map(group => ({
-            ...group,
-            classId: postClassId || undefined, // Only add classId if specified
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }));
-          
-          await groupsCollection.insertMany(groupsWithTimestamps);
+          if (newGroups.length > 0) {
+            // Add timestamps and classId to each group
+            console.log('Processing groups for insertion...');
+            const groupsWithTimestamps = newGroups.map((group, index) => {
+              try {
+                return {
+                  ...group,
+                  classId: postClassId || undefined, // Only add classId if specified
+                  createdAt: new Date(),
+                  updatedAt: new Date()
+                };
+              } catch (error) {
+                console.error(`Error processing group ${index}:`, error, group);
+                throw error;
+              }
+            });
+            
+            console.log(`Inserting ${groupsWithTimestamps.length} groups...`);
+            await groupsCollection.insertMany(groupsWithTimestamps);
+            console.log('Groups inserted successfully');
+          }
+        } catch (dbError) {
+          console.error('Database operation error:', dbError);
+          throw dbError;
         }
 
         // Save settings if provided
