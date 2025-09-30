@@ -1,5 +1,5 @@
 // Default flashcard data - empty array, all data comes from database
-let defaultFlashcards = [];
+let defaultFlashcards = [];welcome-section
 
 // Current flashcards and groups (starts with defaults, can be modified)
 let flashcards = [...defaultFlashcards];
@@ -667,7 +667,7 @@ let voices = [];
 // Load welcome title from localStorage or use default
 function loadWelcomeTitle() {
     const line1 = localStorage.getItem('welcomeTitleLine1') || 'Welcome to';
-    const line2 = localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class';
+    const line2 = localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf\'s Class';
     const font = localStorage.getItem('welcomeFont') || 'Arial Black';
 
     const titleLine1Element = document.getElementById('welcomeTitleLine1');

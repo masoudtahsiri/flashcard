@@ -24,15 +24,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px;
-    padding: 25px 30px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
+    margin: 0;
+    padding: 16px 40px;
+    background: white;
+    border-radius: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #e5e7eb;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 16px;
 }
 
 .display-controls {
@@ -319,37 +318,39 @@ input:checked + .toggle-slider:before {
 /* Tab Controls */
 .tab-controls {
     display: flex;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 2px solid #e0e0e0;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 20px 30px;
-    background: none;
+    padding: 16px 24px;
+    background: transparent;
     border: none;
-    font-size: 1.1rem;
+    border-bottom: 3px solid transparent;
+    font-size: 0.95rem;
     font-weight: 500;
-    color: #666;
+    color: #6b7280;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     position: relative;
-    letter-spacing: -0.01em;
 }
 
 .tab-btn:hover {
-    background: rgba(76, 175, 80, 0.1);
-    color: #4CAF50;
+    background: #f3f4f6;
+    color: #667eea;
 }
 
 .tab-btn.active {
     background: white;
-    color: #4CAF50;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    color: #667eea;
+    border-bottom-color: #667eea;
+    font-weight: 600;
 }
 
 
@@ -359,7 +360,8 @@ input:checked + .toggle-slider:before {
 
 /* Tab Content */
 .tab-content {
-    padding: 30px;
+    padding: 32px;
+    background: white;
 }
 
 .tab-panel {
@@ -2700,7 +2702,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 10px;
     justify-items: center;
-    margin: 30px 0;
     padding: 25px;
     background: #f8f9fa;
     border-radius: 15px;
@@ -2769,8 +2770,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
     font-size: 1.2rem;
     color: white;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    margin-bottom: 10px;
 }
 
 .class-card-info {
@@ -2874,82 +2873,115 @@ body:has(.group-selection), body:has(.flashcard-view) {
 
 /* Management Interface Container */
 .management-interface {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: #f5f7fa;
     min-height: 100vh;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-.management-interface::before {
-    content: '';
-    position: absolute;
+/* Dashboard Layout */
+.management-interface .current-class-header {
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
-    pointer-events: none;
+    z-index: 100;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.management-interface > * {
-    position: relative;
-    z-index: 1;
+.management-interface .header-controls {
+    position: sticky;
+    top: 100px;
+    z-index: 90;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Dashboard Content Area */
+.dashboard-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 40px;
+    width: 100%;
+}
+
+/* Create grid layout for dashboard */
+.grid-view {
+    margin-bottom: 32px;
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.view-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.view-control-btn {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-control-btn:hover {
+    background: #f9fafb;
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.view-control-btn.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.management-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 /* Management Interface Header */
 .current-class-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 30px 40px;
-    border-radius: 20px;
-    margin-bottom: 40px;
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-}
-
-.current-class-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-    border-radius: 20px;
-    pointer-events: none;
-}
-
-.current-class-header > * {
-    position: relative;
-    z-index: 1;
+    padding: 24px 40px;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .current-class-info h2 {
-    margin: 0 0 20px 0;
-    font-size: 2.2rem;
-    font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 0 0 16px 0;
+    font-size: 1.75rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .current-class-info h2::before {
     content: "🎓";
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 .class-actions {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 20px;
     flex-wrap: wrap;
-    margin-top: 20px;
 }
 
 .switch-class-btn {
