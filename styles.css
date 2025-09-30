@@ -16,7 +16,6 @@ body {
 
 .container {
     text-align: center;
-    max-width: 800px;
     width: 100%;
 }
 
@@ -310,7 +309,7 @@ input:checked + .toggle-slider:before {
     background: white;
     border-radius: 20px;
     padding: 0;
-    margin: 30px 0;
+    margin: 0;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
@@ -2946,7 +2945,6 @@ body:has(.group-selection), body:has(.flashcard-view) {
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    height: fit-content;
 }
 
 .view-controls {
@@ -2991,6 +2989,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
     height: fit-content;
     max-height: calc(100vh - 220px);
     overflow-y: auto;
+    margin: 0;
 }
 
 /* Responsive: Stack on smaller screens */
