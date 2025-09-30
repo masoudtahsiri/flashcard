@@ -1,5 +1,5 @@
 // Default flashcard data - empty array, all data comes from database
-let defaultFlashcards = [];welcome-section
+let defaultFlashcards = [];
 
 // Current flashcards and groups (starts with defaults, can be modified)
 let flashcards = [...defaultFlashcards];
