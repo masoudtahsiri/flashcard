@@ -2507,16 +2507,9 @@ async function loadFlashcards() {
         // Build API URL with class parameter if specified
         let apiUrl = '/api/flashcards';
         
-        // Special handling for default class to access existing data
-        const isDefaultClass = currentClassId && (currentClassId === 'my-class' || currentClassId === 'default');
-        
-        if (currentClassId && !isDefaultClass) {
-            // For specific non-default classes, filter by classId
+        if (currentClassId) {
+            // Filter by classId for specific classes
             apiUrl += `?class=${encodeURIComponent(currentClassId)}`;
-        } else if (isDefaultClass) {
-            // For default class, we want to access existing data without classId
-            // Don't add class parameter to get unassigned data
-            console.log('Loading existing data for default class (data without classId)');
         }
         
         const response = await fetch(apiUrl);
@@ -3255,9 +3248,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load classes first
     await loadClasses();
     
-    // Check if we need to create a default class for existing data
-    await ensureDefaultClassExists();
-    
     // Show class selection screen initially
     document.getElementById('classSelectionScreen').style.display = 'block';
     document.getElementById('managementInterface').style.display = 'none';
@@ -3470,69 +3460,6 @@ async function loadClasses() {
     }
 }
 
-// Ensure a default class exists for existing data
-async function ensureDefaultClassExists() {
-    try {
-        // Check if there's existing data without classId
-        const response = await fetch('/api/flashcards');
-        
-        if (!response.ok) {
-            console.log('Could not check for existing data');
-            return;
-        }
-
-        const result = await response.json();
-        
-        if (!result.success) {
-            console.log('No data found');
-            return;
-        }
-
-        // Check if there are flashcards or groups without classId
-        const flashcardsWithoutClass = result.flashcards ? result.flashcards.filter(card => !card.classId) : [];
-        const groupsWithoutClass = result.groups ? result.groups.filter(group => !group.classId) : [];
-        
-        if (flashcardsWithoutClass.length > 0 || groupsWithoutClass.length > 0) {
-            console.log(`Found ${flashcardsWithoutClass.length} flashcards and ${groupsWithoutClass.length} groups without class assignment`);
-            
-            // Check if default class already exists
-            const defaultClass = availableClasses.find(c => c.id === 'default' || c.name === 'My Class');
-            
-            if (!defaultClass) {
-                // Create default class
-                console.log('Creating default class for existing data...');
-                
-                const createResponse = await fetch('/api/classes', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ className: 'My Class' })
-                });
-                
-                const createResult = await createResponse.json();
-                
-                if (createResponse.ok && createResult.success && createResult.class) {
-                    // Add new default class to the list
-                    availableClasses.unshift(createResult.class);
-                    
-                    console.log(`Default class "${createResult.class.name}" created with ID: ${createResult.class.id}`);
-                    console.log('Default class created. Your existing data is safe and can be accessed without migration.');
-                } else {
-                    console.error('Failed to create default class:', createResult.error);
-                }
-            } else {
-                console.log('Default class already exists. Your existing data is accessible.');
-            }
-            
-            // Skip automatic migration to prevent data loss
-            console.log('Skipping automatic migration to prevent any risk to your existing data.');
-            console.log('You can access your existing data by selecting "My Class" or create a new class.');
-        }
-    } catch (error) {
-        console.error('Error ensuring default class exists:', error);
-    }
-}
 
 // Migrate existing data without classId to the default class
 async function migrateExistingDataToDefaultClass(defaultClassId) {
@@ -3840,27 +3767,21 @@ async function updateSettingsTab() {
     // Check if we should show migration section
     const migrationSection = document.getElementById('migrationSection');
     if (migrationSection) {
-        const isDefaultClass = currentClassId && (currentClassId === 'my-class' || currentClassId === 'default');
-        
-        if (isDefaultClass) {
-            // Check if there's existing data that could be migrated
-            // We need to check for data WITHOUT any classId (unassigned data)
-            try {
-                const response = await fetch('/api/flashcards?unassigned=true');
-                if (response.ok) {
-                    const result = await response.json();
-                    const hasUnassignedData = (result.flashcards && result.flashcards.length > 0) ||
-                                            (result.groups && result.groups.length > 0);
-                    
-                    migrationSection.style.display = hasUnassignedData ? 'block' : 'none';
-                } else {
-                    migrationSection.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error checking for unassigned data:', error);
+        // Check if there's existing data that could be migrated
+        // We need to check for data WITHOUT any classId (unassigned data)
+        try {
+            const response = await fetch('/api/flashcards?unassigned=true');
+            if (response.ok) {
+                const result = await response.json();
+                const hasUnassignedData = (result.flashcards && result.flashcards.length > 0) ||
+                                        (result.groups && result.groups.length > 0);
+                
+                migrationSection.style.display = hasUnassignedData ? 'block' : 'none';
+            } else {
                 migrationSection.style.display = 'none';
             }
-        } else {
+        } catch (error) {
+            console.error('Error checking for unassigned data:', error);
             migrationSection.style.display = 'none';
         }
     }
