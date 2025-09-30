@@ -103,9 +103,15 @@ export default async function handler(req, res) {
         }
 
         // Build filter for deletion - if class specified, only delete that class's data
-        const deleteFilter = postClassId ? { classId: postClassId } : {};
+        let deleteFilter;
+        if (postClassId) {
+          deleteFilter = { classId: postClassId };
+        } else {
+          // For backward compatibility, delete data without classId
+          deleteFilter = { $or: [{ classId: { $exists: false } }, { classId: null }] };
+        }
         
-        // Clear existing flashcards and groups for this class (or all if no class specified)
+        // Clear existing flashcards and groups for this class (or unassigned data if no class specified)
         await collection.deleteMany(deleteFilter);
         await groupsCollection.deleteMany(deleteFilter);
         
@@ -136,9 +142,15 @@ export default async function handler(req, res) {
         // Save settings if provided
         if (newSettings) {
           // Delete existing settings for this class (or global if no class)
-          const settingsDeleteFilter = postClassId 
-            ? { type: 'welcome', classId: postClassId }
-            : { type: 'welcome', classId: { $exists: false } };
+          let settingsDeleteFilter;
+          if (postClassId) {
+            settingsDeleteFilter = { type: 'welcome', classId: postClassId };
+          } else {
+            settingsDeleteFilter = { 
+              type: 'welcome', 
+              $or: [{ classId: { $exists: false } }, { classId: null }] 
+            };
+          }
           
           await settingsCollection.deleteMany(settingsDeleteFilter);
           

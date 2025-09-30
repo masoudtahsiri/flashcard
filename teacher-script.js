@@ -3637,7 +3637,8 @@ async function selectClass(classId, className) {
     // Refresh views
     renderGridView();
     renderGroupedCardsView();
-    updateGroupSelects();
+    updateGroupSelect();
+    updateParentGroupSelect();
     
     // Update manage classes tab with current class info
     updateManageClassesTab();
