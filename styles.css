@@ -2495,3 +2495,323 @@ body:has(.group-selection), body:has(.flashcard-view) {
         grid-template-columns: 1fr;
     }
 }
+
+/* Class Selection Screen Styles */
+.class-selection-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 40px 20px;
+}
+
+.class-selection-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.class-selection-header h1 {
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.class-selection-header p {
+    color: #666;
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+.class-selection-content {
+    width: 100%;
+    max-width: 800px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.existing-classes, .create-new-class {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid #f0f0f0;
+}
+
+.existing-classes h3, .create-new-class h3 {
+    color: #333;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.classes-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    min-height: 200px;
+}
+
+.class-card {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.class-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.class-card:active {
+    transform: scale(0.98);
+}
+
+.class-card-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.class-card-info {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.new-class-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.new-class-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.new-class-form input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.new-class-form button {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.new-class-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.new-class-form button:active {
+    transform: scale(0.98);
+}
+
+.empty-classes {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.empty-classes p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+/* Management Interface Header */
+.current-class-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.current-class-info h2 {
+    margin: 0 0 15px 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.class-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.switch-class-btn {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.switch-class-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.class-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.class-link span {
+    font-family: 'Courier New', monospace;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+/* Manage Classes Tab Styles */
+.class-info-section, .all-classes-section, .danger-zone {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.class-details {
+    display: grid;
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item strong {
+    min-width: 120px;
+    color: #495057;
+    font-weight: 600;
+}
+
+.link-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.link-display span {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #495057;
+    background: white;
+    padding: 6px 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    flex: 1;
+}
+
+.classes-list {
+    display: grid;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.class-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+
+.class-list-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.class-list-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.class-list-actions button {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.danger-zone {
+    border-color: #dc3545;
+    background: #fff5f5;
+}
+
+.danger-zone h4 {
+    color: #dc3545;
+    margin-bottom: 15px;
+}
+
+/* Responsive Design for Class Selection */
+@media (max-width: 768px) {
+    .class-selection-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .class-selection-header h1 {
+        font-size: 2rem;
+    }
+    
+    .class-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .class-link {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

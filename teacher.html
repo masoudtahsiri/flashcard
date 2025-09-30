@@ -11,13 +11,53 @@
 </head>
 <body>
     <div class="container">
-        <div class="header-controls">
-            <div class="display-controls">
-                <button id="selectAllBtn" class="select-all-btn" onclick="toggleSelectAll()">Select All</button>
-                <button id="deleteSelectedBtn" class="delete-selected-btn" onclick="deleteSelectedCards()" disabled>Delete Selected (0)</button>
-                <button id="clearStorageBtn" class="clear-storage-btn" onclick="clearAllStorage()">Clear All</button>
+        <!-- Class Selection Screen -->
+        <div id="classSelectionScreen" class="class-selection-screen">
+            <div class="class-selection-header">
+                <h1>Welcome Teacher!</h1>
+                <p>Please select or create a class to manage</p>
+            </div>
+            
+            <div class="class-selection-content">
+                <div class="existing-classes" id="existingClasses">
+                    <h3>Select Existing Class</h3>
+                    <div class="classes-grid" id="classesGrid">
+                        <!-- Existing classes will be rendered here -->
+                    </div>
+                </div>
+                
+                <div class="create-new-class">
+                    <h3>Create New Class</h3>
+                    <div class="new-class-form">
+                        <input type="text" id="newClassName" placeholder="Enter class name (e.g., Mrs Smith 1A, Grade 2 Blue)" maxlength="50">
+                        <button id="createClassBtn" onclick="createNewClass()">Create Class</button>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Main Management Interface (hidden initially) -->
+        <div id="managementInterface" class="management-interface" style="display: none;">
+            <div class="current-class-header">
+                <div class="current-class-info">
+                    <h2 id="currentClassName">Class Name</h2>
+                    <div class="class-actions">
+                        <button id="switchClassBtn" onclick="switchClass()" class="switch-class-btn">Switch Class</button>
+                        <span class="class-link">
+                            Student Link: <span id="currentClassLink">Loading...</span>
+                            <button onclick="copyClassLink()" class="copy-btn">Copy</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <div class="display-controls">
+                    <button id="selectAllBtn" class="select-all-btn" onclick="toggleSelectAll()">Select All</button>
+                    <button id="deleteSelectedBtn" class="delete-selected-btn" onclick="deleteSelectedCards()" disabled>Delete Selected (0)</button>
+                    <button id="clearStorageBtn" class="clear-storage-btn" onclick="clearAllStorage()">Clear All</button>
+                </div>
+            </div>
         
         <div class="grid-view" id="gridView">
             <div class="view-controls">
@@ -97,6 +137,10 @@
                     <span class="tab-icon">📁</span>
                     Manage Units
                 </button>
+                <button id="manageClassesTab" class="tab-btn" onclick="showTab('manageClasses')">
+                    <span class="tab-icon">🏫</span>
+                    Manage Classes
+                </button>
                 <button id="settingsTab" class="tab-btn" onclick="showTab('settings')">
                     <span class="tab-icon">⚙️</span>
                     Settings
@@ -158,28 +202,58 @@
                     </div>
                 </div>
 
+                <!-- Manage Classes Tab -->
+                <div id="manageClassesContent" class="tab-panel">
+                    <div class="manage-classes-form">
+                        <h3>Manage Classes</h3>
+                        
+                        <div class="form-group">
+                            <label for="editClassName">Class Name:</label>
+                            <input type="text" id="editClassName" placeholder="Enter class name" maxlength="50">
+                            <button id="updateClassBtn" onclick="updateCurrentClass()" class="btn btn-primary">Update Class Name</button>
+                        </div>
+                        
+                        <div class="class-info-section">
+                            <h4>Current Class Information</h4>
+                            <div class="class-details">
+                                <div class="detail-item">
+                                    <strong>Class Name:</strong> <span id="displayClassName">Loading...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Student Link:</strong>
+                                    <div class="link-display">
+                                        <span id="displayClassLink">Loading...</span>
+                                        <button onclick="copyCurrentClassLink()" class="copy-btn">Copy</button>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Total Flashcards:</strong> <span id="classCardCount">0</span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Total Units:</strong> <span id="classUnitCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="all-classes-section">
+                            <h4>All Classes</h4>
+                            <div class="classes-list" id="allClassesList">
+                                <!-- All classes will be listed here -->
+                            </div>
+                        </div>
+                        
+                        <div class="danger-zone">
+                            <h4>Danger Zone</h4>
+                            <button onclick="deleteCurrentClass()" class="btn btn-danger">Delete This Class</button>
+                            <small class="form-help">This will permanently delete all flashcards, units, and settings for this class.</small>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Settings Tab -->
                 <div id="settingsContent" class="tab-panel">
                     <div class="settings-form">
-                        <h3>Class & Student Interface Settings</h3>
-
-                        <div class="form-group">
-                            <label for="classSelect">Select Class:</label>
-                            <select id="classSelect">
-                                <option value="">All Classes (Default)</option>
-                                <option value="1A">Class 1A</option>
-                                <option value="1B">Class 1B</option>
-                                <option value="2A">Class 2A</option>
-                                <option value="2B">Class 2B</option>
-                                <option value="3A">Class 3A</option>
-                                <option value="3B">Class 3B</option>
-                                <option value="4A">Class 4A</option>
-                                <option value="4B">Class 4B</option>
-                                <option value="5A">Class 5A</option>
-                                <option value="5B">Class 5B</option>
-                            </select>
-                            <small class="form-help">Select a class to manage class-specific content, or leave as "All Classes" for global content.</small>
-                        </div>
+                        <h3>Student Interface Settings</h3>
 
                         <div class="form-group">
                             <input type="text" id="welcomeTitleLine1" placeholder="Line 1: Welcome to">
@@ -219,25 +293,11 @@
                             </div>
                         </div>
 
-                        <div class="student-links-section">
-                            <h4>Student Access Links:</h4>
-                            <div class="links-container">
-                                <div class="link-item">
-                                    <strong>All Classes (Default):</strong>
-                                    <div class="link-box">
-                                        <span id="defaultLink">Loading...</span>
-                                        <button onclick="copyToClipboard('defaultLink')" class="copy-btn">Copy</button>
-                                    </div>
-                                </div>
-                                <div class="class-links" id="classLinks">
-                                    <!-- Class-specific links will be generated here -->
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        </div> <!-- Close managementInterface -->
     </div>
     
     <script src="teacher-script.js"></script>

@@ -5,6 +5,7 @@ const DB_NAME = 'flashcard';
 const COLLECTION_NAME = 'flashcards';
 const GROUPS_COLLECTION_NAME = 'groups';
 const SETTINGS_COLLECTION_NAME = 'settings';
+const CLASSES_COLLECTION_NAME = 'classes';
 
 let client;
 let db;
@@ -39,6 +40,7 @@ export default async function handler(req, res) {
     const collection = db.collection(COLLECTION_NAME);
     const groupsCollection = db.collection(GROUPS_COLLECTION_NAME);
     const settingsCollection = db.collection(SETTINGS_COLLECTION_NAME);
+    const classesCollection = db.collection(CLASSES_COLLECTION_NAME);
 
     switch (method) {
       case 'GET':
@@ -67,8 +69,11 @@ export default async function handler(req, res) {
           settings = await settingsCollection.findOne({ type: 'welcome', classId: { $exists: false } });
         }
         
+        // Get all classes for management interface
+        const classes = await classesCollection.find({}).sort({ createdAt: -1 }).toArray();
+        
         settings = settings || {};
-        res.status(200).json({ success: true, flashcards, groups, settings, classId });
+        res.status(200).json({ success: true, flashcards, groups, settings, classes, classId });
         break;
 
       case 'POST':

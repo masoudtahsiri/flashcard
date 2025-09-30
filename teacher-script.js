@@ -65,6 +65,8 @@ let flashcards = [...defaultFlashcards];
 let groups = [...defaultGroups];
 let nextGroupId = 3;
 let currentClassId = null; // Currently selected class for management
+let currentClassName = null; // Currently selected class name
+let availableClasses = []; // List of all available classes
 
 // Pagination variables
 let currentPage = 1;
@@ -3239,8 +3241,15 @@ function goToNext() {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load saved flashcards
-    await loadFlashcards();
+    // Load classes first
+    await loadClasses();
+    
+    // Show class selection screen initially
+    document.getElementById('classSelectionScreen').style.display = 'block';
+    document.getElementById('managementInterface').style.display = 'none';
+    
+    // Render class selection
+    renderClassSelection();
     
     // Load voices immediately
     loadVoices();
@@ -3249,14 +3258,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = loadVoices;
     }
-    
-    // Initialize with grid view only
-    renderGridView();
-    
-    // Initialize groups
-    renderGroupsList();
-    updateGroupSelect();
-    updateParentGroupSelect();
     
     // Set up image preview
     document.getElementById('imageInput').addEventListener('change', function(e) {
@@ -3330,15 +3331,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             goToNext();
         }
     });
-    
-    // Set up class selection change handler
-    const classSelect = document.getElementById('classSelect');
-    if (classSelect) {
-        classSelect.addEventListener('change', handleClassChange);
-    }
-    
-    // Generate student links on page load
-    generateStudentLinks();
 });
 
 // Bulk selection and deletion functions
@@ -3440,81 +3432,437 @@ async function deleteSelectedCards() {
     }
 }
 
-// Handle class selection change
-async function handleClassChange() {
-    const classSelect = document.getElementById('classSelect');
-    const selectedClass = classSelect.value;
-    
-    if (selectedClass !== currentClassId) {
-        currentClassId = selectedClass || null;
+// Load all classes from the API
+async function loadClasses() {
+    try {
+        const response = await fetch('/api/classes');
         
-        // Reload data for the selected class
-        await loadFlashcards();
+        if (!response.ok) {
+            throw new Error(`Load classes failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
         
-        // Refresh views
-        renderGridView();
-        renderGroupedCardsView();
-        updateGroupSelects();
-        
-        // Update the interface to show which class is selected
-        updateClassIndicator();
-        
-        console.log(`Switched to class: ${currentClassId || 'All Classes'}`);
+        if (result.success && result.classes) {
+            availableClasses = result.classes;
+        } else {
+            availableClasses = [];
+        }
+
+        console.log('Classes loaded:', availableClasses.length);
+    } catch (error) {
+        console.error('Error loading classes:', error);
+        availableClasses = [];
     }
 }
 
-// Update class indicator in the interface
-function updateClassIndicator() {
-    const indicator = document.querySelector('.class-indicator');
-    if (indicator) {
-        indicator.textContent = currentClassId ? `Class: ${currentClassId}` : 'All Classes';
-    }
-}
-
-// Generate student access links
-function generateStudentLinks() {
-    const baseUrl = window.location.origin;
-    const defaultLinkElement = document.getElementById('defaultLink');
-    const classLinksContainer = document.getElementById('classLinks');
+// Render the class selection screen
+function renderClassSelection() {
+    const classesGrid = document.getElementById('classesGrid');
     
-    if (defaultLinkElement) {
-        defaultLinkElement.textContent = baseUrl;
-    }
-    
-    if (classLinksContainer) {
-        const classes = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B'];
-        
-        classLinksContainer.innerHTML = classes.map(classId => `
-            <div class="link-item">
-                <strong>Class ${classId}:</strong>
-                <div class="link-box">
-                    <span id="link${classId}">${baseUrl}/?class=${classId}</span>
-                    <button onclick="copyToClipboard('link${classId}')" class="copy-btn">Copy</button>
-                </div>
+    if (availableClasses.length === 0) {
+        classesGrid.innerHTML = `
+            <div class="empty-classes">
+                <p>No classes created yet.</p>
+                <p>Create your first class below!</p>
             </div>
-        `).join('');
+        `;
+        return;
+    }
+    
+    classesGrid.innerHTML = availableClasses.map(classInfo => `
+        <div class="class-card" onclick="selectClass('${classInfo.id}', '${classInfo.name.replace(/'/g, "\\'")}')">
+            <div class="class-card-name">${classInfo.name}</div>
+            <div class="class-card-info">Created: ${new Date(classInfo.createdAt).toLocaleDateString()}</div>
+        </div>
+    `).join('');
+}
+
+// Select a class and show management interface
+async function selectClass(classId, className) {
+    currentClassId = classId;
+    currentClassName = className;
+    
+    // Hide class selection screen
+    document.getElementById('classSelectionScreen').style.display = 'none';
+    
+    // Show management interface
+    document.getElementById('managementInterface').style.display = 'block';
+    
+    // Update current class header
+    document.getElementById('currentClassName').textContent = className;
+    updateClassLink();
+    
+    // Load class-specific data
+    await loadFlashcards();
+    
+    // Refresh views
+    renderGridView();
+    renderGroupedCardsView();
+    updateGroupSelects();
+    
+    // Update manage classes tab with current class info
+    updateManageClassesTab();
+    
+    console.log(`Selected class: ${className} (${classId})`);
+}
+
+// Create a new class
+async function createNewClass() {
+    const newClassNameInput = document.getElementById('newClassName');
+    const className = newClassNameInput.value.trim();
+    
+    if (!className) {
+        alert('Please enter a class name.');
+        return;
+    }
+    
+    if (className.length > 50) {
+        alert('Class name must be 50 characters or less.');
+        return;
+    }
+    
+    const createBtn = document.getElementById('createClassBtn');
+    const originalText = createBtn.textContent;
+    
+    try {
+        createBtn.textContent = 'Creating...';
+        createBtn.disabled = true;
+        
+        const response = await fetch('/api/classes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ className })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to create class');
+        }
+        
+        if (result.success && result.class) {
+            // Add new class to the list
+            availableClasses.unshift(result.class);
+            
+            // Clear input
+            newClassNameInput.value = '';
+            
+            // Refresh class selection
+            renderClassSelection();
+            
+            // Automatically select the new class
+            await selectClass(result.class.id, result.class.name);
+            
+            alert(`Class "${className}" created successfully!`);
+        } else {
+            throw new Error('Failed to create class');
+        }
+    } catch (error) {
+        console.error('Error creating class:', error);
+        alert(`Error creating class: ${error.message}`);
+    } finally {
+        createBtn.textContent = originalText;
+        createBtn.disabled = false;
     }
 }
 
-// Copy link to clipboard
-function copyToClipboard(elementId) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        const text = element.textContent;
-        navigator.clipboard.writeText(text).then(() => {
+// Switch back to class selection
+function switchClass() {
+    // Show class selection screen
+    document.getElementById('classSelectionScreen').style.display = 'block';
+    
+    // Hide management interface
+    document.getElementById('managementInterface').style.display = 'none';
+    
+    // Reset current class
+    currentClassId = null;
+    currentClassName = null;
+    
+    // Refresh class selection
+    renderClassSelection();
+}
+
+// Update class link display
+function updateClassLink() {
+    const baseUrl = window.location.origin;
+    const classLink = currentClassId ? `${baseUrl}/?class=${currentClassId}` : baseUrl;
+    
+    const currentClassLinkElement = document.getElementById('currentClassLink');
+    if (currentClassLinkElement) {
+        currentClassLinkElement.textContent = classLink;
+    }
+}
+
+// Copy class link to clipboard
+function copyClassLink() {
+    const classLinkElement = document.getElementById('currentClassLink');
+    if (classLinkElement) {
+        const link = classLinkElement.textContent;
+        navigator.clipboard.writeText(link).then(() => {
             // Show feedback
-            const button = element.nextElementSibling;
-            const originalText = button.textContent;
-            button.textContent = 'Copied!';
-            button.style.background = '#4CAF50';
+            const originalText = classLinkElement.textContent;
+            classLinkElement.textContent = 'Copied!';
+            classLinkElement.style.background = '#4CAF50';
+            classLinkElement.style.color = 'white';
             
             setTimeout(() => {
-                button.textContent = originalText;
-                button.style.background = '';
+                classLinkElement.textContent = originalText;
+                classLinkElement.style.background = '';
+                classLinkElement.style.color = '';
             }, 2000);
         }).catch(err => {
-            console.error('Failed to copy text: ', err);
+            console.error('Failed to copy link: ', err);
             alert('Failed to copy link. Please copy manually.');
         });
     }
 }
+
+// Update manage classes tab with current class information
+function updateManageClassesTab() {
+    // Update class name input
+    const editClassNameInput = document.getElementById('editClassName');
+    if (editClassNameInput && currentClassName) {
+        editClassNameInput.value = currentClassName;
+    }
+    
+    // Update class information display
+    const displayClassName = document.getElementById('displayClassName');
+    const displayClassLink = document.getElementById('displayClassLink');
+    const classCardCount = document.getElementById('classCardCount');
+    const classUnitCount = document.getElementById('classUnitCount');
+    
+    if (displayClassName) {
+        displayClassName.textContent = currentClassName || 'No class selected';
+    }
+    
+    if (displayClassLink) {
+        const baseUrl = window.location.origin;
+        const classLink = currentClassId ? `${baseUrl}/?class=${currentClassId}` : baseUrl;
+        displayClassLink.textContent = classLink;
+    }
+    
+    if (classCardCount) {
+        classCardCount.textContent = flashcards.length.toString();
+    }
+    
+    if (classUnitCount) {
+        classUnitCount.textContent = groups.length.toString();
+    }
+    
+    // Update all classes list
+    renderAllClassesList();
+}
+
+// Render all classes list in manage classes tab
+function renderAllClassesList() {
+    const allClassesList = document.getElementById('allClassesList');
+    
+    if (!allClassesList) return;
+    
+    if (availableClasses.length === 0) {
+        allClassesList.innerHTML = `
+            <div class="empty-classes">
+                <p>No classes created yet.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    allClassesList.innerHTML = availableClasses.map(classInfo => `
+        <div class="class-list-item">
+            <div class="class-list-name">${classInfo.name}</div>
+            <div class="class-list-actions">
+                <button onclick="selectClass('${classInfo.id}', '${classInfo.name.replace(/'/g, "\\'")}')">Select</button>
+                <button onclick="deleteClass('${classInfo.id}', '${classInfo.name.replace(/'/g, "\\'")}')" style="background: #dc3545; color: white;">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Update current class name
+async function updateCurrentClass() {
+    const editClassNameInput = document.getElementById('editClassName');
+    const newClassName = editClassNameInput.value.trim();
+    
+    if (!newClassName) {
+        alert('Please enter a class name.');
+        return;
+    }
+    
+    if (newClassName.length > 50) {
+        alert('Class name must be 50 characters or less.');
+        return;
+    }
+    
+    if (newClassName === currentClassName) {
+        alert('Class name is already up to date.');
+        return;
+    }
+    
+    const updateBtn = document.getElementById('updateClassBtn');
+    const originalText = updateBtn.textContent;
+    
+    try {
+        updateBtn.textContent = 'Updating...';
+        updateBtn.disabled = true;
+        
+        const response = await fetch('/api/classes', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                classId: currentClassId, 
+                className: newClassName 
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to update class');
+        }
+        
+        if (result.success) {
+            // Update local data
+            currentClassName = newClassName;
+            
+            // Update in availableClasses array
+            const classIndex = availableClasses.findIndex(c => c.id === currentClassId);
+            if (classIndex !== -1) {
+                availableClasses[classIndex].name = newClassName;
+            }
+            
+            // Update UI
+            document.getElementById('currentClassName').textContent = newClassName;
+            updateManageClassesTab();
+            
+            alert('Class name updated successfully!');
+        } else {
+            throw new Error('Failed to update class');
+        }
+    } catch (error) {
+        console.error('Error updating class:', error);
+        alert(`Error updating class: ${error.message}`);
+    } finally {
+        updateBtn.textContent = originalText;
+        updateBtn.disabled = false;
+    }
+}
+
+// Delete current class
+async function deleteCurrentClass() {
+    if (!currentClassId || !currentClassName) {
+        alert('No class selected.');
+        return;
+    }
+    
+    const confirmMessage = `Are you sure you want to delete the class "${currentClassName}"?\n\nThis will permanently delete:\n- ${flashcards.length} flashcards\n- ${groups.length} units\n- All class settings\n\nThis action cannot be undone.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/classes', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ classId: currentClassId })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to delete class');
+        }
+        
+        if (result.success) {
+            // Remove from availableClasses array
+            availableClasses = availableClasses.filter(c => c.id !== currentClassId);
+            
+            alert(`Class "${currentClassName}" and all associated data deleted successfully.`);
+            
+            // Switch back to class selection
+            switchClass();
+        } else {
+            throw new Error('Failed to delete class');
+        }
+    } catch (error) {
+        console.error('Error deleting class:', error);
+        alert(`Error deleting class: ${error.message}`);
+    }
+}
+
+// Delete a class from the all classes list
+async function deleteClass(classId, className) {
+    const confirmMessage = `Are you sure you want to delete the class "${className}"?\n\nThis will permanently delete all flashcards, units, and settings for this class.\n\nThis action cannot be undone.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/classes', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ classId })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to delete class');
+        }
+        
+        if (result.success) {
+            // Remove from availableClasses array
+            availableClasses = availableClasses.filter(c => c.id !== classId);
+            
+            // If this was the current class, switch back to class selection
+            if (classId === currentClassId) {
+                switchClass();
+            } else {
+                // Just refresh the all classes list
+                renderAllClassesList();
+            }
+            
+            alert(`Class "${className}" deleted successfully.`);
+        } else {
+            throw new Error('Failed to delete class');
+        }
+    } catch (error) {
+        console.error('Error deleting class:', error);
+        alert(`Error deleting class: ${error.message}`);
+    }
+}
+
+// Copy current class link (for manage classes tab)
+function copyCurrentClassLink() {
+    const displayClassLink = document.getElementById('displayClassLink');
+    if (displayClassLink) {
+        const link = displayClassLink.textContent;
+        navigator.clipboard.writeText(link).then(() => {
+            // Show feedback
+            const copyBtn = displayClassLink.nextElementSibling;
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = '';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy link: ', err);
+            alert('Failed to copy link. Please copy manually.');
+        });
+    }
+}
+
