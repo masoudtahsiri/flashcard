@@ -3573,20 +3573,30 @@ async function migrateExistingDataToDefaultClass(defaultClassId) {
         }
         
         // Create updated versions with classId
-        const updatedFlashcards = flashcardsToMigrate.map(card => ({
-            ...card,
-            classId: defaultClassId
-        }));
+        // Remove MongoDB _id field to avoid conflicts
+        const updatedFlashcards = flashcardsToMigrate.map(card => {
+            const { _id, ...cardWithoutId } = card;
+            return {
+                ...cardWithoutId,
+                classId: defaultClassId
+            };
+        });
         
-        const updatedGroups = groupsToMigrate.map(group => ({
-            ...group,
-            classId: defaultClassId
-        }));
+        const updatedGroups = groupsToMigrate.map(group => {
+            const { _id, ...groupWithoutId } = group;
+            return {
+                ...groupWithoutId,
+                classId: defaultClassId
+            };
+        });
         
-        const updatedSettings = settingsToMigrate ? {
-            ...settingsToMigrate,
-            classId: defaultClassId
-        } : null;
+        const updatedSettings = settingsToMigrate ? (() => {
+            const { _id, ...settingsWithoutId } = settingsToMigrate;
+            return {
+                ...settingsWithoutId,
+                classId: defaultClassId
+            };
+        })() : null;
         
         console.log('Attempting safe migration with only unassigned data...');
         
