@@ -261,6 +261,47 @@
         </div> <!-- Close managementInterface -->
     </div>
     
+    <!-- Edit Card Modal -->
+    <div id="cardEditModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Flashcard</h2>
+                <span class="close" onclick="closeCardEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editCardForm">
+                    <div class="form-group">
+                        <label for="editCardWord">Word/Text:</label>
+                        <input type="text" id="editCardWord" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editCardCategory">Category:</label>
+                        <select id="editCardCategory">
+                            <option value="">No Category</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editCardOrder">Order in Category:</label>
+                        <input type="number" id="editCardOrder" min="1" value="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editCardImage">Change Image:</label>
+                        <input type="file" id="editCardImage" accept="image/*">
+                        <div id="editImagePreview" class="image-preview"></div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" onclick="closeCardEditModal()" class="btn btn-secondary">Cancel</button>
+                        <button type="button" onclick="saveCardEdits()" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
     <script src="teacher-script.js"></script>
 </body>
 </html>
