@@ -1,48 +1,5 @@
-// Default flashcard data
-let defaultFlashcards = [
-    {
-        id: 1,
-        word: "animals",
-        image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        categoryId: 2  // Animals category
-    },
-    {
-        id: 2,
-        word: "elephant",
-        image: "https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        categoryId: 2  // Animals category
-    },
-    {
-        id: 3,
-        word: "lion",
-        image: "https://images.unsplash.com/photo-1552410260-0fd9b577afa6?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        categoryId: 2  // Animals category
-    },
-    {
-        id: 4,
-        word: "tiger",
-        image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        categoryId: 2  // Animals category
-    },
-    {
-        id: 5,
-        word: "giraffe",
-        image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        categoryId: 2  // Animals category
-    },
-    {
-        id: 6,
-        word: "panda",
-        image: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop",
-        audioUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.wav",
-        categoryId: 2  // Animals category
-    }
-];
+// Default flashcard data - empty array, all data comes from database
+let defaultFlashcards = [];
 
 // Default groups data with hierarchical structure
 let defaultGroups = [
