@@ -2269,29 +2269,39 @@ function openCardEditModal(cardId) {
     const card = flashcards.find(c => c.id === cardId);
     if (!card) return;
     
+    // Check if modal elements exist before trying to access them
+    const editCardWord = document.getElementById('editCardWord');
+    const editCardCategory = document.getElementById('editCardCategory');
+    const editCardOrder = document.getElementById('editCardOrder');
+    const editImagePreview = document.getElementById('editImagePreview');
+    const cardEditModal = document.getElementById('cardEditModal');
+    
+    if (!editCardWord || !editCardCategory || !editCardOrder || !editImagePreview || !cardEditModal) {
+        console.warn('Edit modal elements not found in DOM');
+        return;
+    }
+    
     // Populate modal with current card data
-    document.getElementById('editCardWord').value = card.word;
-    document.getElementById('editCardCategory').value = card.categoryId || '';
+    editCardWord.value = card.word;
+    editCardCategory.value = card.categoryId || '';
     
     // Set the current order position within the category
     const cardsInSameCategory = flashcards
         .filter(c => c.categoryId === card.categoryId)
         .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
     const currentPositionInCategory = cardsInSameCategory.findIndex(c => c.id === cardId) + 1;
-    document.getElementById('editCardOrder').value = currentPositionInCategory;
-    document.getElementById('editCardOrder').max = cardsInSameCategory.length;
+    editCardOrder.value = currentPositionInCategory;
+    editCardOrder.max = cardsInSameCategory.length;
     
     // Show current image
-    const imagePreview = document.getElementById('editImagePreview');
     if (card.image) {
-        imagePreview.innerHTML = `<img src="${getImageUrl(card.image)}" alt="Current image" style="max-width: 200px; max-height: 150px; object-fit: contain;">`;
+        editImagePreview.innerHTML = `<img src="${getImageUrl(card.image)}" alt="Current image" style="max-width: 200px; max-height: 150px; object-fit: contain;">`;
     } else {
-        imagePreview.innerHTML = '<p>No image</p>';
+        editImagePreview.innerHTML = '<p>No image</p>';
     }
     
     // Populate category dropdown with hierarchical names
-    const categorySelect = document.getElementById('editCardCategory');
-    categorySelect.innerHTML = '<option value="">No Category</option>';
+    editCardCategory.innerHTML = '<option value="">No Category</option>';
     groups.forEach(group => {
         let displayName = group.name;
         if (group.parentId) {
@@ -2302,16 +2312,19 @@ function openCardEditModal(cardId) {
         option.value = group.id;
         option.textContent = displayName;
         option.selected = card.categoryId === group.id;
-        categorySelect.appendChild(option);
+        editCardCategory.appendChild(option);
     });
     
     // Show modal
-    document.getElementById('cardEditModal').style.display = 'flex';
+    cardEditModal.style.display = 'flex';
 }
 
 function closeCardEditModal() {
-    document.getElementById('cardEditModal').style.display = 'none';
-    document.getElementById('editCardImage').value = '';
+    const cardEditModal = document.getElementById('cardEditModal');
+    const editCardImage = document.getElementById('editCardImage');
+    
+    if (cardEditModal) cardEditModal.style.display = 'none';
+    if (editCardImage) editCardImage.value = '';
     currentEditingCardId = null;
 }
 
@@ -2321,11 +2334,22 @@ async function saveCardEdits() {
     const card = flashcards.find(c => c.id === currentEditingCardId);
     if (!card) return;
     
+    // Check if modal elements exist
+    const editCardWord = document.getElementById('editCardWord');
+    const editCardCategory = document.getElementById('editCardCategory');
+    const editCardOrder = document.getElementById('editCardOrder');
+    const editCardImage = document.getElementById('editCardImage');
+    
+    if (!editCardWord || !editCardCategory || !editCardOrder || !editCardImage) {
+        console.warn('Edit modal elements not found in DOM');
+        return;
+    }
+    
     // Get new values
-    const newWord = document.getElementById('editCardWord').value.trim();
-    const newCategoryId = document.getElementById('editCardCategory').value;
-    const newOrder = parseInt(document.getElementById('editCardOrder').value);
-    const imageFile = document.getElementById('editCardImage').files[0];
+    const newWord = editCardWord.value.trim();
+    const newCategoryId = editCardCategory.value;
+    const newOrder = parseInt(editCardOrder.value);
+    const imageFile = editCardImage.files[0];
     
     if (!newWord) {
         alert('Please enter a word/text for the flashcard.');
