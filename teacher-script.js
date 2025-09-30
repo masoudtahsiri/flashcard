@@ -31,6 +31,30 @@ let itemsPerPage = 12;
 let currentView = 'allCards'; // 'allCards', 'groupFolders', 'groupDetail'
 let currentGroupIdForDetail = null;
 
+// Function to calculate responsive items per page based on screen size
+function getResponsiveItemsPerPage() {
+    const screenWidth = window.innerWidth;
+    
+    if (screenWidth > 1200) {
+        return 28; // 7x4 grid
+    } else if (screenWidth > 900) {
+        return 24; // 6x4 grid
+    } else if (screenWidth > 700) {
+        return 20; // 5x4 grid
+    } else if (screenWidth > 500) {
+        return 16; // 4x4 grid
+    } else if (screenWidth > 400) {
+        return 12; // 3x4 grid
+    } else {
+        return 8; // 2x4 grid
+    }
+}
+
+// Function to update itemsPerPage based on current screen size
+function updateItemsPerPage() {
+    itemsPerPage = getResponsiveItemsPerPage();
+}
+
 // Display mode functionality
 let currentViewMode = 'single'; // 'single' or 'grid'
 
@@ -3293,6 +3317,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Initialize with grid view
     renderGridView();
+    
+    // Initialize responsive pagination
+    updateItemsPerPage();
+    
+    // Add window resize listener for responsive pagination
+    window.addEventListener('resize', () => {
+        updateItemsPerPage();
+        // Re-render current view to update pagination
+        if (currentView === 'allCards') {
+            renderGridView();
+        } else if (currentView === 'groupFolders') {
+            renderGroupedCardsView();
+        } else if (currentView === 'groupDetail') {
+            renderGroupDetailView(currentGroupIdForDetail);
+        }
+    });
     
     // Add keyboard navigation
     document.addEventListener('keydown', (event) => {

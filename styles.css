@@ -780,7 +780,7 @@ input:checked + .toggle-slider:before {
     width: 100%;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 10px;
+    margin-top: 145px;
 }
 
 .add-card-btn:hover {
@@ -3053,7 +3053,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
     overflow: visible;
     position: sticky;
     top: 190px;
-    height: fit-content;
+    height: 100%;
     max-height: calc(100vh - 220px);
     overflow-y: auto;
     margin: 0;
