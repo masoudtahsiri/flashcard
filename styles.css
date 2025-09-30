@@ -2647,11 +2647,12 @@ body:has(.group-selection), body:has(.flashcard-view) {
 
 .class-selection-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
+    margin-top: 70px;
 }
 
 .class-selection-header h2 {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     margin: 0 0 20px 0;
@@ -2709,7 +2710,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
 .student-interface .class-name {
     font-family: 'Fredoka', 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 1.2rem;
+    font-size: 2rem;
     color: white;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     margin-bottom: 10px;
@@ -2718,7 +2719,7 @@ body:has(.group-selection), body:has(.flashcard-view) {
 .student-interface .class-info {
     font-family: 'Fredoka', 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: white;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
