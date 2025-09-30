@@ -2518,12 +2518,42 @@ body:has(.group-selection), body:has(.flashcard-view) {
     padding: 40px 20px;
 }
 
-/* Class Selection Screen Welcome Section */
-.class-selection-screen .welcome-section {
-    margin-bottom: 30px;
+/* Class Selection Screen Welcome Section - Static */
+.welcome-section-static {
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 30px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
 }
 
-.class-selection-screen .welcome-section h1 {
+.welcome-section-static::before {
+    content: '⭐ ✦ ★ ✦ ⭐ ✦ ★ ✦ ⭐ ✦ ★ ✦ ⭐';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 15px;
+    z-index: 1;
+}
+
+.welcome-section-static::after {
+    content: '⭐ ✦ ★ ✦ ⭐ ✦ ★ ✦ ⭐ ✦ ★ ✦ ⭐';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 15px;
+    z-index: 1;
+}
+
+.welcome-section-static h1 {
     font-family: 'Arial Black', 'Impact', Arial, sans-serif;
     font-size: 2.8rem;
     font-weight: 900;
@@ -2556,6 +2586,18 @@ body:has(.group-selection), body:has(.flashcard-view) {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     margin: 0 0 20px 0;
     text-align: center;
+}
+
+.class-selection-header h2::before {
+    content: "🌟";
+    margin-right: 15px;
+    font-size: 2rem;
+}
+
+.class-selection-header h2::after {
+    content: "🌟";
+    margin-left: 15px;
+    font-size: 2rem;
 }
 
 .class-selection-content {
@@ -2722,25 +2764,23 @@ body:has(.group-selection), body:has(.flashcard-view) {
 }
 
 .class-card-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    text-align: center;
-    margin-bottom: 8px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     font-family: 'Fredoka', 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .class-card-info {
-    font-size: 0.9rem;
-    color: white;
-    text-align: center;
+    font-family: 'Fredoka', 'Inter', sans-serif;
     font-weight: 500;
+    color: white;
     background: rgba(255, 255, 255, 0.3);
     border: 2px solid white;
     border-radius: 20px;
     padding: 4px 12px;
-    font-family: 'Fredoka', 'Inter', sans-serif;
 }
 
 .new-class-form {
