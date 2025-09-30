@@ -2296,9 +2296,10 @@ body:has(.group-selection), body:has(.flashcard-view) {
 /* Flashcard view for kids */
 .flashcard-view {
     text-align: center;
-    max-width: 1200px;
+    max-width: 800px;
     width: 100%;
     font-family: 'Fredoka', 'Inter', sans-serif;
+    margin: auto;
 }
 
 @keyframes shimmerTitle {
