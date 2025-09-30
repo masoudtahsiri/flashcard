@@ -161,7 +161,25 @@
                 <!-- Settings Tab -->
                 <div id="settingsContent" class="tab-panel">
                     <div class="settings-form">
-                        <h3>Student Interface Settings</h3>
+                        <h3>Class & Student Interface Settings</h3>
+
+                        <div class="form-group">
+                            <label for="classSelect">Select Class:</label>
+                            <select id="classSelect">
+                                <option value="">All Classes (Default)</option>
+                                <option value="1A">Class 1A</option>
+                                <option value="1B">Class 1B</option>
+                                <option value="2A">Class 2A</option>
+                                <option value="2B">Class 2B</option>
+                                <option value="3A">Class 3A</option>
+                                <option value="3B">Class 3B</option>
+                                <option value="4A">Class 4A</option>
+                                <option value="4B">Class 4B</option>
+                                <option value="5A">Class 5A</option>
+                                <option value="5B">Class 5B</option>
+                            </select>
+                            <small class="form-help">Select a class to manage class-specific content, or leave as "All Classes" for global content.</small>
+                        </div>
 
                         <div class="form-group">
                             <input type="text" id="welcomeTitleLine1" placeholder="Line 1: Welcome to">
@@ -197,6 +215,22 @@
                                 <div class="welcome-section">
                                     <h1 id="previewTitleLine1">Welcome to</h1>
                                     <h1 id="previewTitleLine2">Mrs Sadaf 1B Class</h1>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="student-links-section">
+                            <h4>Student Access Links:</h4>
+                            <div class="links-container">
+                                <div class="link-item">
+                                    <strong>All Classes (Default):</strong>
+                                    <div class="link-box">
+                                        <span id="defaultLink">Loading...</span>
+                                        <button onclick="copyToClipboard('defaultLink')" class="copy-btn">Copy</button>
+                                    </div>
+                                </div>
+                                <div class="class-links" id="classLinks">
+                                    <!-- Class-specific links will be generated here -->
                                 </div>
                             </div>
                         </div>

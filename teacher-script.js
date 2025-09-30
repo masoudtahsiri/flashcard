@@ -64,6 +64,7 @@ let defaultGroups = [
 let flashcards = [...defaultFlashcards];
 let groups = [...defaultGroups];
 let nextGroupId = 3;
+let currentClassId = null; // Currently selected class for management
 
 // Pagination variables
 let currentPage = 1;
@@ -2475,6 +2476,7 @@ async function saveFlashcards() {
                     welcomeTitleLine2: localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class',
                     welcomeFont: localStorage.getItem('welcomeFont') || 'Arial Black'
                 },
+                classId: currentClassId, // Include current class ID
                 nextId: nextId
             })
         });
@@ -2498,7 +2500,13 @@ async function saveFlashcards() {
 // Function to load flashcards and groups from API (shared storage)
 async function loadFlashcards() {
     try {
-        const response = await fetch('/api/flashcards');
+        // Build API URL with class parameter if specified
+        let apiUrl = '/api/flashcards';
+        if (currentClassId) {
+            apiUrl += `?class=${encodeURIComponent(currentClassId)}`;
+        }
+        
+        const response = await fetch(apiUrl);
         
         if (!response.ok) {
             throw new Error(`Load failed: ${response.statusText}`);
@@ -3322,6 +3330,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             goToNext();
         }
     });
+    
+    // Set up class selection change handler
+    const classSelect = document.getElementById('classSelect');
+    if (classSelect) {
+        classSelect.addEventListener('change', handleClassChange);
+    }
+    
+    // Generate student links on page load
+    generateStudentLinks();
 });
 
 // Bulk selection and deletion functions
@@ -3420,5 +3437,84 @@ async function deleteSelectedCards() {
     } catch (error) {
         console.error('Error deleting cards:', error);
         alert('Error deleting cards. Please try again.');
+    }
+}
+
+// Handle class selection change
+async function handleClassChange() {
+    const classSelect = document.getElementById('classSelect');
+    const selectedClass = classSelect.value;
+    
+    if (selectedClass !== currentClassId) {
+        currentClassId = selectedClass || null;
+        
+        // Reload data for the selected class
+        await loadFlashcards();
+        
+        // Refresh views
+        renderGridView();
+        renderGroupedCardsView();
+        updateGroupSelects();
+        
+        // Update the interface to show which class is selected
+        updateClassIndicator();
+        
+        console.log(`Switched to class: ${currentClassId || 'All Classes'}`);
+    }
+}
+
+// Update class indicator in the interface
+function updateClassIndicator() {
+    const indicator = document.querySelector('.class-indicator');
+    if (indicator) {
+        indicator.textContent = currentClassId ? `Class: ${currentClassId}` : 'All Classes';
+    }
+}
+
+// Generate student access links
+function generateStudentLinks() {
+    const baseUrl = window.location.origin;
+    const defaultLinkElement = document.getElementById('defaultLink');
+    const classLinksContainer = document.getElementById('classLinks');
+    
+    if (defaultLinkElement) {
+        defaultLinkElement.textContent = baseUrl;
+    }
+    
+    if (classLinksContainer) {
+        const classes = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B'];
+        
+        classLinksContainer.innerHTML = classes.map(classId => `
+            <div class="link-item">
+                <strong>Class ${classId}:</strong>
+                <div class="link-box">
+                    <span id="link${classId}">${baseUrl}/?class=${classId}</span>
+                    <button onclick="copyToClipboard('link${classId}')" class="copy-btn">Copy</button>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// Copy link to clipboard
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            // Show feedback
+            const button = element.nextElementSibling;
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = '';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+            alert('Failed to copy link. Please copy manually.');
+        });
     }
 }

@@ -2389,3 +2389,109 @@ body:has(.group-selection), body:has(.flashcard-view) {
         padding: 12px 24px;
     }
 }
+
+/* Student Links Section Styles */
+.student-links-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.student-links-section h4 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.link-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+}
+
+.link-item strong {
+    color: #495057;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.link-box {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.link-box span {
+    flex: 1;
+    padding: 10px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #495057;
+    background: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    word-break: break-all;
+}
+
+.copy-btn {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.copy-btn:hover {
+    background: #0056b3;
+}
+
+.copy-btn:active {
+    transform: scale(0.98);
+}
+
+.class-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+/* Responsive adjustments for student links */
+@media (max-width: 768px) {
+    .student-links-section {
+        padding: 15px;
+    }
+    
+    .link-box {
+        flex-direction: column;
+    }
+    
+    .link-box span {
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+        text-align: center;
+    }
+    
+    .copy-btn {
+        border-radius: 0 0 6px 6px;
+    }
+    
+    .class-links {
+        grid-template-columns: 1fr;
+    }
+}

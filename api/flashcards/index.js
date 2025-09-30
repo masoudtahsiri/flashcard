@@ -42,17 +42,38 @@ export default async function handler(req, res) {
 
     switch (method) {
       case 'GET':
-        // Get all flashcards, groups, and settings
+        // Get class parameter from query string (optional for backward compatibility)
+        const classId = req.query.class;
+        
+        // Build filter query - if no class specified, show all data (backward compatibility)
+        const filter = classId ? { classId: classId } : {};
+        
+        // Get flashcards, groups, and settings (filtered by class if specified)
         // Sort by custom order first, then by createdAt ascending (oldest first) for backwards compatibility
-        const flashcards = await collection.find({}).sort({ sortOrder: 1, createdAt: 1 }).toArray();
-        const groups = await groupsCollection.find({}).sort({ createdAt: -1 }).toArray();
-        const settings = await settingsCollection.findOne({ type: 'welcome' }) || {};
-        res.status(200).json({ success: true, flashcards, groups, settings });
+        const flashcards = await collection.find(filter).sort({ sortOrder: 1, createdAt: 1 }).toArray();
+        const groups = await groupsCollection.find(filter).sort({ createdAt: -1 }).toArray();
+        
+        // Settings can be class-specific or global
+        let settings;
+        if (classId) {
+          // Try to get class-specific settings first
+          settings = await settingsCollection.findOne({ type: 'welcome', classId: classId });
+          // Fall back to global settings if no class-specific settings found
+          if (!settings) {
+            settings = await settingsCollection.findOne({ type: 'welcome', classId: { $exists: false } });
+          }
+        } else {
+          // For backward compatibility, get global settings (no classId field)
+          settings = await settingsCollection.findOne({ type: 'welcome', classId: { $exists: false } });
+        }
+        
+        settings = settings || {};
+        res.status(200).json({ success: true, flashcards, groups, settings, classId });
         break;
 
       case 'POST':
         // Save flashcards, groups, and settings (replace all existing ones)
-        const { flashcards: newFlashcards, groups: newGroups, settings: newSettings } = req.body;
+        const { flashcards: newFlashcards, groups: newGroups, settings: newSettings, classId: postClassId } = req.body;
         
         if (!newFlashcards || !Array.isArray(newFlashcards)) {
           return res.status(400).json({ error: 'Missing flashcards data' });
@@ -62,14 +83,18 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'Missing groups data' });
         }
 
-        // Clear existing flashcards and groups, then insert new ones
-        await collection.deleteMany({});
-        await groupsCollection.deleteMany({});
+        // Build filter for deletion - if class specified, only delete that class's data
+        const deleteFilter = postClassId ? { classId: postClassId } : {};
+        
+        // Clear existing flashcards and groups for this class (or all if no class specified)
+        await collection.deleteMany(deleteFilter);
+        await groupsCollection.deleteMany(deleteFilter);
         
         if (newFlashcards.length > 0) {
-          // Add timestamps to each flashcard
+          // Add timestamps and classId to each flashcard
           const flashcardsWithTimestamps = newFlashcards.map(card => ({
             ...card,
+            classId: postClassId || undefined, // Only add classId if specified
             createdAt: new Date(),
             updatedAt: new Date()
           }));
@@ -78,9 +103,10 @@ export default async function handler(req, res) {
         }
 
         if (newGroups.length > 0) {
-          // Add timestamps to each group
+          // Add timestamps and classId to each group
           const groupsWithTimestamps = newGroups.map(group => ({
             ...group,
+            classId: postClassId || undefined, // Only add classId if specified
             createdAt: new Date(),
             updatedAt: new Date()
           }));
@@ -90,13 +116,26 @@ export default async function handler(req, res) {
 
         // Save settings if provided
         if (newSettings) {
-          await settingsCollection.deleteMany({ type: 'welcome' });
-          await settingsCollection.insertOne({
+          // Delete existing settings for this class (or global if no class)
+          const settingsDeleteFilter = postClassId 
+            ? { type: 'welcome', classId: postClassId }
+            : { type: 'welcome', classId: { $exists: false } };
+          
+          await settingsCollection.deleteMany(settingsDeleteFilter);
+          
+          const settingsToSave = {
             type: 'welcome',
             ...newSettings,
             createdAt: new Date(),
             updatedAt: new Date()
-          });
+          };
+          
+          // Only add classId to settings if specified
+          if (postClassId) {
+            settingsToSave.classId = postClassId;
+          }
+          
+          await settingsCollection.insertOne(settingsToSave);
         }
 
         res.status(200).json({ 
@@ -104,7 +143,8 @@ export default async function handler(req, res) {
           message: 'Flashcards, groups, and settings saved successfully',
           flashcardsCount: newFlashcards.length,
           groupsCount: newGroups.length,
-          settingsSaved: !!newSettings
+          settingsSaved: !!newSettings,
+          classId: postClassId
         });
         break;
 

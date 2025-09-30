@@ -48,6 +48,15 @@ let currentCardIndex = 0;
 // Track navigation history for back button
 let navigationHistory = [];
 
+// Get class ID from URL parameter for class-specific content
+let currentClassId = null;
+
+// Function to get URL parameters
+function getUrlParameter(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
 // Function to get emoji for category based on name
 function getCategoryEmoji(categoryName) {
     if (!categoryName) return '📚';
@@ -199,8 +208,14 @@ function getNumberEmoji(number) {
 // Function to load flashcards from API (shared storage)
 async function loadFlashcards() {
     try {
+        // Build API URL with class parameter if specified
+        let apiUrl = `/api/flashcards?t=${Date.now()}`;
+        if (currentClassId) {
+            apiUrl += `&class=${encodeURIComponent(currentClassId)}`;
+        }
+        
         // Add timestamp to prevent caching
-        const response = await fetch(`/api/flashcards?t=${Date.now()}`, {
+        const response = await fetch(apiUrl, {
             cache: 'no-cache',
             headers: {
                 'Cache-Control': 'no-cache'
@@ -636,78 +651,33 @@ function loadWelcomeTitle() {
 function loadVoices() {
     voices = speechSynthesis.getVoices();
 
-    // Detect iOS devices (iPhone/iPad don't support Google voices)
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    
-    console.log('🔍 Device detection:', {
-        userAgent: navigator.userAgent.substring(0, 50) + '...',
-        platform: navigator.platform,
-        isIOS: isIOS,
-        totalVoices: voices.length
-    });
+    // Look specifically for Google US English voices
+    const googleVoices = voices.filter(voice =>
+        voice.name.includes('Google') &&
+        (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))
+    );
 
-    // Priority 1: Google US English voices (highest priority for consistency across devices)
-    // Skip Google voices on iOS since they're not available
-    if (!isIOS) {
-        const googleUSVoices = voices.filter(voice =>
-            voice.name.includes('Google') &&
-            (voice.lang === 'en-US' || voice.lang.startsWith('en-US'))
-        );
-
-        if (googleUSVoices.length > 0) {
-            selectedVoice = googleUSVoices[0];
-            console.log('🎯 Using Google US English voice:', selectedVoice.name);
-            return;
-        }
-    }
-
-    // Priority 2: Any Google English voice (online, high quality) - Skip on iOS
-    if (!isIOS) {
-        const googleEnglishVoices = voices.filter(voice => 
+    if (googleVoices.length > 0) {
+        // Prefer Google US English voices
+        selectedVoice = googleVoices[0];
+        console.log('Using Google US English voice:', selectedVoice.name);
+    } else {
+        // Fallback to any Google English voice
+        const anyGoogleEnglish = voices.filter(voice => 
             voice.name.includes('Google') && voice.lang.startsWith('en')
         );
         
-        if (googleEnglishVoices.length > 0) {
-            selectedVoice = googleEnglishVoices[0];
-            console.log('🎯 Using Google English voice:', selectedVoice.name);
-            return;
+        if (anyGoogleEnglish.length > 0) {
+            selectedVoice = anyGoogleEnglish[0];
+            console.log('Using Google English voice:', selectedVoice.name);
+        } else {
+            // Final fallback to any English voice
+            const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
+            if (englishVoices.length > 0) {
+                selectedVoice = englishVoices[0];
+                console.log('Using fallback English voice:', selectedVoice.name);
+            }
         }
-    }
-
-    // Priority 3: Best offline voices (for when Google is not available)
-    const offlineVoices = voices.filter(v => v.localService && v.lang.startsWith('en'));
-    
-    // iOS/iPhone specific voice preferences (most natural sounding)
-    const iosPreferredNames = ['Samantha', 'Alex', 'Susan', 'Daniel', 'Karen', 'Moira'];
-    // Windows specific voice preferences
-    const windowsPreferredNames = ['Microsoft Zira', 'Microsoft David', 'Microsoft Mark'];
-    // Combined preferences with iOS first (since it's more common on mobile)
-    const preferredOfflineNames = [...iosPreferredNames, ...windowsPreferredNames];
-    
-    for (const name of preferredOfflineNames) {
-        const found = offlineVoices.find(v => v.name.includes(name));
-        if (found) {
-            selectedVoice = found;
-            console.log('🎯 Using offline voice:', found.name);
-            return;
-        }
-    }
-
-    // Priority 4: Any offline English voice
-    if (offlineVoices.length > 0) {
-        selectedVoice = offlineVoices[0];
-        console.log('🎯 Using first offline English voice:', offlineVoices[0].name);
-        return;
-    }
-
-    // Final fallback: Any English voice
-    const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
-    if (englishVoices.length > 0) {
-        selectedVoice = englishVoices[0];
-        console.log('🎯 Using fallback English voice:', englishVoices[0].name);
-    } else {
-        console.warn('❌ No English voice found');
     }
 }
 
@@ -770,7 +740,10 @@ function goToNext() {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load saved flashcards
+    // Get class ID from URL parameter
+    currentClassId = getUrlParameter('class');
+    
+    // Load saved flashcards (will be filtered by class if specified)
     await loadFlashcards();
 
     // Load welcome title and show welcome section
