@@ -46,10 +46,14 @@ export default async function handler(req, res) {
       case 'GET':
         // Get class parameter from query string (optional for backward compatibility)
         const classId = req.query.class;
+        const unassignedOnly = req.query.unassigned === 'true';
         
         // Build filter query
         let filter = {};
-        if (classId) {
+        if (unassignedOnly) {
+          // Only return data without classId (unassigned data)
+          filter = { $or: [{ classId: { $exists: false } }, { classId: null }] };
+        } else if (classId) {
           // Specific class requested
           filter = { classId: classId };
         } else {

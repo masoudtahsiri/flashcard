@@ -3843,12 +3843,13 @@ async function updateSettingsTab() {
         
         if (isDefaultClass) {
             // Check if there's existing data that could be migrated
+            // We need to check for data WITHOUT any classId (unassigned data)
             try {
-                const response = await fetch('/api/flashcards');
+                const response = await fetch('/api/flashcards?unassigned=true');
                 if (response.ok) {
                     const result = await response.json();
-                    const hasUnassignedData = (result.flashcards && result.flashcards.some(card => !card.classId)) ||
-                                            (result.groups && result.groups.some(group => !group.classId));
+                    const hasUnassignedData = (result.flashcards && result.flashcards.length > 0) ||
+                                            (result.groups && result.groups.length > 0);
                     
                     migrationSection.style.display = hasUnassignedData ? 'block' : 'none';
                 } else {
