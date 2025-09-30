@@ -71,8 +71,10 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'Class name must be 50 characters or less' });
         }
 
-        // Check if class name already exists
-        const existingClass = await classesCollection.findOne({ name: trimmedClassName });
+        // Check if class name already exists - case insensitive
+        const existingClass = await classesCollection.findOne({ 
+          name: { $regex: new RegExp(`^${trimmedClassName}$`, 'i') } 
+        });
         if (existingClass) {
           return res.status(400).json({ error: 'A class with this name already exists' });
         }
@@ -81,8 +83,10 @@ export default async function handler(req, res) {
         let classId = generateClassId(trimmedClassName);
         let counter = 1;
         
-        // Ensure class ID is unique
-        while (await classesCollection.findOne({ id: classId })) {
+        // Ensure class ID is unique - case insensitive
+        while (await classesCollection.findOne({ 
+          id: { $regex: new RegExp(`^${classId}$`, 'i') } 
+        })) {
           classId = generateClassId(trimmedClassName) + '-' + counter;
           counter++;
         }
@@ -111,9 +115,9 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'Class name must be between 1 and 50 characters' });
         }
 
-        // Check if new name conflicts with existing class (excluding current class)
+        // Check if new name conflicts with existing class (excluding current class) - case insensitive
         const conflictingClass = await classesCollection.findOne({ 
-          name: trimmedNewClassName, 
+          name: { $regex: new RegExp(`^${trimmedNewClassName}$`, 'i') }, 
           id: { $ne: updateClassId } 
         });
         
@@ -124,9 +128,9 @@ export default async function handler(req, res) {
         // Generate new class ID based on new name
         const newClassId = generateClassId(trimmedNewClassName);
         
-        // Check if new class ID conflicts with existing class (excluding current class)
+        // Check if new class ID conflicts with existing class (excluding current class) - case insensitive
         const conflictingId = await classesCollection.findOne({ 
-          id: newClassId, 
+          id: { $regex: new RegExp(`^${newClassId}$`, 'i') }, 
           id: { $ne: updateClassId } 
         });
         

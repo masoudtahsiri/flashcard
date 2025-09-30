@@ -54,8 +54,9 @@ export default async function handler(req, res) {
           // Only return data without classId (unassigned data)
           filter = { $or: [{ classId: { $exists: false } }, { classId: null }] };
         } else if (classId) {
-          // Specific class requested
-          filter = { classId: classId };
+          // Specific class requested - case insensitive matching
+          // Use regex to match classId case-insensitively
+          filter = { classId: { $regex: new RegExp(`^${classId}$`, 'i') } };
         } else {
           // No class specified - for backward compatibility, return data without classId
           // This allows the teacher interface to work with existing data
