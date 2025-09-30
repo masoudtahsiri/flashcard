@@ -2932,19 +2932,23 @@ body:has(.group-selection), body:has(.flashcard-view) {
 
 /* Dashboard Content Area */
 .dashboard-content {
-    max-width: 1400px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     padding: 32px 40px;
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 500px;
+    gap: 32px;
+    align-items: start;
 }
 
 /* Create grid layout for dashboard */
 .grid-view {
-    margin-bottom: 32px;
     background: white;
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: fit-content;
 }
 
 .view-controls {
@@ -2984,6 +2988,33 @@ body:has(.group-selection), body:has(.flashcard-view) {
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    position: sticky;
+    top: 200px;
+    height: fit-content;
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 1200px) {
+    .dashboard-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .management-section {
+        position: relative;
+        top: 0;
+    }
+    
+    .class-header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .current-class-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 /* Management Interface Header */
@@ -2996,8 +3027,22 @@ body:has(.group-selection), body:has(.flashcard-view) {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+.current-class-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 30px;
+}
+
+.class-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
 .current-class-info h2 {
-    margin: 0 0 16px 0;
+    margin: 0;
     font-size: 1.75rem;
     font-weight: 600;
     display: flex;

@@ -40,9 +40,11 @@
         <div id="managementInterface" class="management-interface" style="display: none;">
             <div class="current-class-header">
                 <div class="current-class-info">
-                    <h2 id="currentClassName">Class Name</h2>
-                    <div class="class-actions">
+                    <div class="class-header-left">
+                        <h2 id="currentClassName">Class Name</h2>
                         <button id="switchClassBtn" onclick="switchClass()" class="switch-class-btn">Switch Class</button>
+                    </div>
+                    <div class="class-actions">
                         <span class="class-link">
                             Student Link: <span id="currentClassLink">Loading...</span>
                             <button onclick="copyClassLink()" class="copy-btn">Copy</button>
