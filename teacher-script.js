@@ -27,7 +27,7 @@ let availableClasses = []; // List of all available classes
 
 // Pagination variables
 let currentPage = 1;
-let itemsPerPage = 12;
+let itemsPerPage = getResponsiveItemsPerPage(); // Initialize with responsive value
 let currentView = 'allCards'; // 'allCards', 'groupFolders', 'groupDetail'
 let currentGroupIdForDetail = null;
 
@@ -35,24 +35,31 @@ let currentGroupIdForDetail = null;
 function getResponsiveItemsPerPage() {
     const screenWidth = window.innerWidth;
     
-    if (screenWidth > 1200) {
-        return 28; // 7x4 grid
-    } else if (screenWidth > 900) {
-        return 24; // 6x4 grid
-    } else if (screenWidth > 700) {
-        return 20; // 5x4 grid
-    } else if (screenWidth > 500) {
-        return 16; // 4x4 grid
-    } else if (screenWidth > 400) {
-        return 12; // 3x4 grid
+    // Match the exact CSS breakpoints and card counts
+    if (screenWidth >= 1920) {
+        return 28; // 7x4 grid - Large screens (24+ inch)
+    } else if (screenWidth >= 1600) {
+        return 24; // 6x4 grid - Medium-large screens (20-24 inch)
+    } else if (screenWidth >= 1400) {
+        return 20; // 5x4 grid - Medium screens (17-20 inch)
+    } else if (screenWidth >= 1200) {
+        return 10; // 5x2 grid - 13-inch laptops
+    } else if (screenWidth >= 900) {
+        return 8; // 4x2 grid - Smaller laptops
+    } else if (screenWidth >= 600) {
+        return 6; // 3x2 grid - Tablets
     } else {
-        return 2; // 2x1 grid (mobile)
+        return 4; // 2x2 grid - Mobile
     }
 }
 
 // Function to update itemsPerPage based on current screen size
 function updateItemsPerPage() {
-    itemsPerPage = getResponsiveItemsPerPage();
+    const newItemsPerPage = getResponsiveItemsPerPage();
+    if (newItemsPerPage !== itemsPerPage) {
+        itemsPerPage = newItemsPerPage;
+        currentPage = 1; // Reset to first page when items per page changes
+    }
 }
 
 // Display mode functionality
