@@ -964,8 +964,8 @@ input:checked + .toggle-slider:before {
 /* Large screens (24+ inch) - 7 columns x 4 rows = 28 cards */
 @media (min-width: 1920px) {
     .flashcard-grid {
-        grid-template-columns: repeat(7, 1fr);
-        grid-template-rows: repeat(4, 1fr);
+        grid-template-columns: repeat(7, 1fr) !important;
+        grid-template-rows: repeat(4, 1fr) !important;
         height: clamp(350px, 45vh, 450px);
     }
 }
@@ -973,8 +973,8 @@ input:checked + .toggle-slider:before {
 /* Medium-large screens (20-24 inch) - 6 columns x 4 rows = 24 cards */
 @media (max-width: 1919px) and (min-width: 1600px) {
     .flashcard-grid {
-        grid-template-columns: repeat(6, 1fr);
-        grid-template-rows: repeat(4, 1fr);
+        grid-template-columns: repeat(6, 1fr) !important;
+        grid-template-rows: repeat(4, 1fr) !important;
         height: clamp(300px, 40vh, 400px);
     }
 }
@@ -982,8 +982,8 @@ input:checked + .toggle-slider:before {
 /* Medium screens (17-20 inch) - 5 columns x 4 rows = 20 cards */
 @media (max-width: 1599px) and (min-width: 1400px) {
     .flashcard-grid {
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr) !important;
+        grid-template-rows: repeat(4, 1fr) !important;
         height: clamp(250px, 35vh, 350px);
     }
 }
@@ -991,8 +991,8 @@ input:checked + .toggle-slider:before {
 /* 13-inch laptops - 5 columns x 2 rows = 10 cards */
 @media (max-width: 1399px) and (min-width: 1200px) {
     .flashcard-grid {
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(5, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
         height: clamp(150px, 25vh, 200px);
     }
 }
@@ -1000,8 +1000,8 @@ input:checked + .toggle-slider:before {
 /* Smaller laptops - 4 columns x 2 rows = 8 cards */
 @media (max-width: 1199px) and (min-width: 900px) {
     .flashcard-grid {
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
         height: clamp(120px, 20vh, 180px);
     }
 }
@@ -1009,8 +1009,8 @@ input:checked + .toggle-slider:before {
 /* Tablets - 3 columns x 2 rows = 6 cards */
 @media (max-width: 899px) and (min-width: 600px) {
     .flashcard-grid {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
         height: clamp(100px, 18vh, 150px);
     }
 }
@@ -1018,8 +1018,8 @@ input:checked + .toggle-slider:before {
 /* Mobile - 2 columns x 2 rows = 4 cards */
 @media (max-width: 599px) {
     .flashcard-grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
         height: clamp(80px, 15vh, 120px);
     }
 }
