@@ -43,7 +43,7 @@ function getResponsiveItemsPerPage() {
     } else if (screenWidth >= 1600) {
         return 18; // 6 columns x 3 rows = 18 cards - Medium-large screens (20-24 inch)
     } else if (screenWidth >= 1400) {
-        return 15; // 5 columns x 3 rows = 15 cards - Medium screens (17-20 inch)
+        return 10; // 5 columns x 2 rows = 10 cards - Medium screens (17-20 inch)
     } else if (screenWidth >= 1200) {
         return 10; // 5 columns x 2 rows = 10 cards - 13-inch laptops
     } else if (screenWidth >= 900) {
