@@ -961,73 +961,477 @@ input:checked + .toggle-slider:before {
 }
 
 /* Responsive breakpoints - fixed card counts per screen size */
-/* Large screens (24+ inch) - 7 columns, flexible rows */
-@media (min-width: 1920px) {
+/* Ultra-wide screens (27+ inch) - fully responsive */
+@media (min-width: 2560px) {
+    .main-content-layout {
+        grid-template-columns: 1fr minmax(500px, 800px);
+        gap: clamp(30px, 4vw, 50px);
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
+    .flashcard-grid {
+        grid-template-columns: repeat(7, 1fr) !important;
+        grid-auto-rows: minmax(120px, auto) !important;
+        height: auto;
+        max-height: clamp(500px, 55vh, 600px);
+    }
+    
+    .management-section {
+        max-width: 800px;
+        min-width: 500px;
+        padding: clamp(25px, 3vw, 40px);
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section h3 {
+        font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+        margin-bottom: clamp(20px, 3vw, 30px);
+    }
+    
+    .management-section label {
+        font-size: clamp(1rem, 1.8vw, 1.2rem);
+        margin-bottom: clamp(8px, 1.5vw, 12px);
+    }
+    
+    .management-section input,
+    .management-section textarea,
+    .management-section select {
+        font-size: clamp(1rem, 1.8vw, 1.2rem);
+        padding: clamp(12px, 2vw, 18px);
+        margin-bottom: clamp(15px, 2.5vw, 20px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(120px, 15vh, 200px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        font-size: clamp(1.1rem, 2vw, 1.4rem);
+        padding: clamp(15px, 2.5vw, 20px) clamp(25px, 4vw, 35px);
+        width: 100%;
+        margin-top: clamp(20px, 3vh, 30px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls {
+        padding: clamp(15px, 2vw, 25px);
+        gap: clamp(15px, 2.5vw, 25px);
+    }
+    
+    .header-controls button {
+        font-size: clamp(1rem, 1.8vw, 1.3rem);
+        padding: clamp(10px, 1.5vw, 15px) clamp(20px, 3vw, 30px);
+    }
+    
+    /* Tab controls responsive */
+    .display-controls {
+        gap: clamp(15px, 2vw, 25px);
+        padding: clamp(15px, 2vw, 25px);
+    }
+    
+    .tab-btn {
+        font-size: clamp(1rem, 1.8vw, 1.3rem);
+        padding: clamp(12px, 2vw, 18px) clamp(20px, 3vw, 30px);
+    }
+    
+    /* Pagination responsive */
+    .pagination {
+        padding: clamp(15px, 2vw, 25px);
+        gap: clamp(10px, 1.5vw, 20px);
+    }
+    
+    .pagination button {
+        font-size: clamp(1rem, 1.8vw, 1.3rem);
+        padding: clamp(8px, 1.2vw, 12px) clamp(15px, 2.5vw, 20px);
+    }
+    
+    .pagination span {
+        font-size: clamp(1rem, 1.8vw, 1.3rem);
+    }
+}
+
+/* Large screens (24+ inch) - fully responsive */
+@media (max-width: 2559px) and (min-width: 1920px) {
+    .main-content-layout {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
     .flashcard-grid {
         grid-template-columns: repeat(7, 1fr) !important;
         grid-auto-rows: minmax(100px, auto) !important;
         height: auto;
         max-height: clamp(350px, 45vh, 450px);
     }
+    
+    .management-section {
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(100px, 12vh, 150px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        width: 100%;
+        margin-top: clamp(15px, 2vh, 25px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls button {
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        padding: clamp(8px, 1.2vw, 12px) clamp(15px, 2.5vw, 25px);
+    }
+    
+    /* Tab controls responsive */
+    .tab-btn {
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        padding: clamp(10px, 1.5vw, 15px) clamp(15px, 2.5vw, 25px);
+    }
+    
+    /* Pagination responsive */
+    .pagination button {
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        padding: clamp(6px, 1vw, 10px) clamp(12px, 2vw, 18px);
+    }
+    
+    .pagination span {
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    }
 }
 
-/* Medium-large screens (20-24 inch) - 6 columns, flexible rows */
+/* Medium-large screens (20-24 inch) - fully responsive */
 @media (max-width: 1919px) and (min-width: 1600px) {
+    .main-content-layout {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
     .flashcard-grid {
         grid-template-columns: repeat(6, 1fr) !important;
         grid-auto-rows: minmax(100px, auto) !important;
         height: auto;
         max-height: clamp(300px, 40vh, 400px);
     }
+    
+    .management-section {
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(90px, 10vh, 130px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        width: 100%;
+        margin-top: clamp(12px, 1.8vh, 20px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls button {
+        font-size: clamp(0.85rem, 1.3vw, 1rem);
+        padding: clamp(7px, 1vw, 10px) clamp(12px, 2vw, 20px);
+    }
+    
+    /* Tab controls responsive */
+    .tab-btn {
+        font-size: clamp(0.85rem, 1.3vw, 1rem);
+        padding: clamp(8px, 1.2vw, 12px) clamp(12px, 2vw, 20px);
+    }
+    
+    /* Pagination responsive */
+    .pagination button {
+        font-size: clamp(0.85rem, 1.3vw, 1rem);
+        padding: clamp(5px, 0.8vw, 8px) clamp(10px, 1.5vw, 15px);
+    }
+    
+    .pagination span {
+        font-size: clamp(0.85rem, 1.3vw, 1rem);
+    }
 }
 
-/* Medium screens (17-20 inch) - 5 columns, flexible rows */
+/* Medium screens (17-20 inch) - fully responsive */
 @media (max-width: 1599px) and (min-width: 1400px) {
+    .main-content-layout {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
     .flashcard-grid {
         grid-template-columns: repeat(5, 1fr) !important;
         grid-auto-rows: minmax(100px, auto) !important;
         height: auto;
         max-height: clamp(250px, 35vh, 350px);
     }
+    
+    .management-section {
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(80px, 8vh, 120px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        width: 100%;
+        margin-top: clamp(10px, 1.5vh, 18px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls button {
+        font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+        padding: clamp(6px, 0.9vw, 9px) clamp(10px, 1.5vw, 18px);
+    }
+    
+    /* Tab controls responsive */
+    .tab-btn {
+        font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+        padding: clamp(7px, 1vw, 10px) clamp(10px, 1.5vw, 18px);
+    }
+    
+    /* Pagination responsive */
+    .pagination button {
+        font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+        padding: clamp(4px, 0.7vw, 7px) clamp(8px, 1.2vw, 12px);
+    }
+    
+    .pagination span {
+        font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+    }
 }
 
-/* 13-inch laptops - 5 columns, flexible rows */
+/* 13-inch laptops - fully responsive */
 @media (max-width: 1399px) and (min-width: 1200px) {
+    .main-content-layout {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
     .flashcard-grid {
         grid-template-columns: repeat(5, 1fr) !important;
         grid-auto-rows: minmax(100px, auto) !important;
         height: auto;
         max-height: clamp(150px, 25vh, 200px);
     }
+    
+    .management-section {
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(70px, 6vh, 100px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        width: 100%;
+        margin-top: clamp(8px, 1.2vh, 15px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls button {
+        font-size: clamp(0.75rem, 1vw, 0.9rem);
+        padding: clamp(5px, 0.8vw, 8px) clamp(8px, 1.2vw, 15px);
+    }
+    
+    /* Tab controls responsive */
+    .tab-btn {
+        font-size: clamp(0.75rem, 1vw, 0.9rem);
+        padding: clamp(6px, 0.9vw, 8px) clamp(8px, 1.2vw, 15px);
+    }
+    
+    /* Pagination responsive */
+    .pagination button {
+        font-size: clamp(0.75rem, 1vw, 0.9rem);
+        padding: clamp(3px, 0.6vw, 6px) clamp(6px, 1vw, 10px);
+    }
+    
+    .pagination span {
+        font-size: clamp(0.75rem, 1vw, 0.9rem);
+    }
 }
 
-/* Smaller laptops - 4 columns, flexible rows */
+/* Smaller laptops - fully responsive */
 @media (max-width: 1199px) and (min-width: 900px) {
+    .main-content-layout {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
     .flashcard-grid {
         grid-template-columns: repeat(4, 1fr) !important;
         grid-auto-rows: minmax(100px, auto) !important;
         height: auto;
         max-height: clamp(120px, 20vh, 180px);
     }
+    
+    .management-section {
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(60px, 5vh, 90px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        width: 100%;
+        margin-top: clamp(6px, 1vh, 12px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls button {
+        font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+        padding: clamp(4px, 0.7vw, 7px) clamp(6px, 1vw, 12px);
+    }
+    
+    /* Tab controls responsive */
+    .tab-btn {
+        font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+        padding: clamp(5px, 0.8vw, 7px) clamp(6px, 1vw, 12px);
+    }
+    
+    /* Pagination responsive */
+    .pagination button {
+        font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+        padding: clamp(2px, 0.5vw, 5px) clamp(4px, 0.8vw, 8px);
+    }
+    
+    .pagination span {
+        font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+    }
 }
 
-/* Tablets - 3 columns, flexible rows */
+/* Tablets - fully responsive */
 @media (max-width: 899px) and (min-width: 600px) {
+    .main-content-layout {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
     .flashcard-grid {
         grid-template-columns: repeat(3, 1fr) !important;
         grid-auto-rows: minmax(100px, auto) !important;
         height: auto;
         max-height: clamp(100px, 18vh, 150px);
     }
+    
+    .management-section {
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(50px, 4vh, 80px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        width: 100%;
+        margin-top: clamp(5px, 0.8vh, 10px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls button {
+        font-size: clamp(0.65rem, 0.8vw, 0.8rem);
+        padding: clamp(3px, 0.6vw, 6px) clamp(4px, 0.8vw, 10px);
+    }
+    
+    /* Tab controls responsive */
+    .tab-btn {
+        font-size: clamp(0.65rem, 0.8vw, 0.8rem);
+        padding: clamp(4px, 0.7vw, 6px) clamp(4px, 0.8vw, 10px);
+    }
+    
+    /* Pagination responsive */
+    .pagination button {
+        font-size: clamp(0.65rem, 0.8vw, 0.8rem);
+        padding: clamp(2px, 0.4vw, 4px) clamp(3px, 0.6vw, 6px);
+    }
+    
+    .pagination span {
+        font-size: clamp(0.65rem, 0.8vw, 0.8rem);
+    }
 }
 
-/* Mobile - 2 columns, flexible rows */
+/* Mobile - fully responsive */
 @media (max-width: 599px) {
+    .main-content-layout {
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    
     .flashcard-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         grid-auto-rows: minmax(100px, auto) !important;
         height: auto;
         max-height: clamp(80px, 15vh, 120px);
+    }
+    
+    .management-section {
+        height: 100vh;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    
+    .management-section textarea {
+        height: clamp(40px, 3vh, 70px);
+        resize: vertical;
+    }
+    
+    .add-card-btn {
+        width: 100%;
+        margin-top: clamp(4px, 0.6vh, 8px);
+    }
+    
+    /* Header controls responsive */
+    .header-controls button {
+        font-size: clamp(0.6rem, 0.7vw, 0.75rem);
+        padding: clamp(2px, 0.5vw, 5px) clamp(3px, 0.6vw, 8px);
+    }
+    
+    /* Tab controls responsive */
+    .tab-btn {
+        font-size: clamp(0.6rem, 0.7vw, 0.75rem);
+        padding: clamp(3px, 0.6vw, 5px) clamp(3px, 0.6vw, 8px);
+    }
+    
+    /* Pagination responsive */
+    .pagination button {
+        font-size: clamp(0.6rem, 0.7vw, 0.75rem);
+        padding: clamp(1px, 0.3vw, 3px) clamp(2px, 0.4vw, 5px);
+    }
+    
+    .pagination span {
+        font-size: clamp(0.6rem, 0.7vw, 0.75rem);
     }
 }
 
