@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI || "MONGODB_URI_ENVIRONMENT_VARIABLE";
+const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = 'flashcard';
 const CLASSES_COLLECTION_NAME = 'classes';
 const COLLECTION_NAME = 'flashcards';

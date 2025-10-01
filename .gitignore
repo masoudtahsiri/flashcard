@@ -1,2 +1,36 @@
+# Vercel
 .vercel
 .vercel-token.txt
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+credentials.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
