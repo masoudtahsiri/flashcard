@@ -35,21 +35,23 @@ let currentGroupIdForDetail = null;
 function getResponsiveItemsPerPage() {
     const screenWidth = window.innerWidth;
     
-    // Match the CSS breakpoints with flexible rows (no longer limited by fixed row counts)
-    if (screenWidth >= 1920) {
-        return 35; // 7 columns, flexible rows - Large screens (24+ inch)
+    // Match the actual visual display - what users actually see on screen
+    if (screenWidth >= 2560) {
+        return 28; // 7 columns x 4 rows = 28 cards - Ultra-wide screens (27+ inch)
+    } else if (screenWidth >= 1920) {
+        return 21; // 7 columns x 3 rows = 21 cards - Large screens (24+ inch)
     } else if (screenWidth >= 1600) {
-        return 30; // 6 columns, flexible rows - Medium-large screens (20-24 inch)
+        return 18; // 6 columns x 3 rows = 18 cards - Medium-large screens (20-24 inch)
     } else if (screenWidth >= 1400) {
-        return 25; // 5 columns, flexible rows - Medium screens (17-20 inch)
+        return 15; // 5 columns x 3 rows = 15 cards - Medium screens (17-20 inch)
     } else if (screenWidth >= 1200) {
-        return 20; // 5 columns, flexible rows - 13-inch laptops
+        return 10; // 5 columns x 2 rows = 10 cards - 13-inch laptops
     } else if (screenWidth >= 900) {
-        return 16; // 4 columns, flexible rows - Smaller laptops
+        return 8; // 4 columns x 2 rows = 8 cards - Smaller laptops
     } else if (screenWidth >= 600) {
-        return 12; // 3 columns, flexible rows - Tablets
+        return 6; // 3 columns x 2 rows = 6 cards - Tablets
     } else {
-        return 8; // 2 columns, flexible rows - Mobile
+        return 4; // 2 columns x 2 rows = 4 cards - Mobile
     }
 }
 
