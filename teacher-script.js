@@ -56,10 +56,14 @@ function getResponsiveItemsPerPage() {
 // Function to update itemsPerPage based on current screen size
 function updateItemsPerPage() {
     const newItemsPerPage = getResponsiveItemsPerPage();
-    if (newItemsPerPage !== itemsPerPage) {
-        itemsPerPage = newItemsPerPage;
+    const wasChanged = newItemsPerPage !== itemsPerPage;
+    itemsPerPage = newItemsPerPage;
+    
+    if (wasChanged) {
         currentPage = 1; // Reset to first page when items per page changes
     }
+    
+    console.log(`Screen width: ${window.innerWidth}px, Items per page: ${itemsPerPage}, Current page: ${currentPage}`);
 }
 
 // Display mode functionality
@@ -626,7 +630,13 @@ function createPaginationControls(containerId, totalItems, onPageChange) {
 function getPaginatedItems(items) {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return items.slice(startIndex, endIndex);
+    const paginatedItems = items.slice(startIndex, endIndex);
+    
+    console.log(`Total items: ${items.length}, Items per page: ${itemsPerPage}, Current page: ${currentPage}`);
+    console.log(`Showing items ${startIndex + 1} to ${Math.min(endIndex, items.length)} of ${items.length}`);
+    console.log(`Paginated items count: ${paginatedItems.length}`);
+    
+    return paginatedItems;
 }
 
 // View control functions
@@ -3346,11 +3356,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (nextBtn) nextBtn.addEventListener('click', goToNext);
     if (deleteBtn) deleteBtn.addEventListener('click', deleteCurrentCard);
     
+    // Initialize responsive pagination first
+    updateItemsPerPage();
+    
     // Initialize with grid view
     renderGridView();
-    
-    // Initialize responsive pagination
-    updateItemsPerPage();
     
     // Add window resize listener for responsive pagination
     window.addEventListener('resize', () => {

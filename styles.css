@@ -844,7 +844,7 @@ input:checked + .toggle-slider:before {
     width: 100%;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 145px;
+    margin-top: clamp(20px, 3vh, 40px);
 }
 
 .add-card-btn:hover {
@@ -3134,6 +3134,12 @@ body:has(.group-selection), body:has(.flashcard-view) {
         padding: 10px 15px;
         gap: 15px;
     }
+    
+    .add-card-btn {
+        margin-top: clamp(15px, 2vh, 25px);
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
 }
 
 /* Create grid layout for dashboard */
@@ -3187,8 +3193,8 @@ body:has(.group-selection), body:has(.flashcard-view) {
     overflow: visible;
     position: sticky;
     top: 190px;
-    height: 100%;
-    max-height: calc(100vh - 220px);
+    height: auto;
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
     margin: 0;
     width: 100%;
@@ -3199,28 +3205,28 @@ body:has(.group-selection), body:has(.flashcard-view) {
 @media (max-width: 1600px) {
     .management-section {
         top: 180px;
-        max-height: calc(100vh - 200px);
+        max-height: calc(100vh - 180px);
     }
 }
 
 @media (max-width: 1400px) {
     .management-section {
         top: 170px;
-        max-height: calc(100vh - 190px);
+        max-height: calc(100vh - 170px);
     }
 }
 
 @media (max-width: 1200px) {
     .management-section {
         top: 160px;
-        max-height: calc(100vh - 180px);
+        max-height: calc(100vh - 160px);
     }
 }
 
 @media (max-width: 1024px) {
     .management-section {
         top: 150px;
-        max-height: calc(100vh - 170px);
+        max-height: calc(100vh - 150px);
     }
 }
 
