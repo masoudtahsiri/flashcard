@@ -961,11 +961,11 @@ input:checked + .toggle-slider:before {
 }
 
 /* Responsive breakpoints - fixed card counts per screen size */
-/* Ultra-wide screens (27+ inch) - fully responsive */
+/* Ultra-wide screens (27+ inch) - aligned like 24-inch but scaled up */
 @media (min-width: 2560px) {
     .main-content-layout {
-        grid-template-columns: 1fr minmax(500px, 800px);
-        gap: clamp(30px, 4vw, 50px);
+        grid-template-columns: 1fr minmax(450px, 600px);
+        gap: clamp(25px, 3vw, 40px);
         min-height: 100vh;
         max-height: 100vh;
         overflow: hidden;
@@ -979,44 +979,44 @@ input:checked + .toggle-slider:before {
     }
     
     .management-section {
-        max-width: 800px;
-        min-width: 500px;
-        padding: clamp(25px, 3vw, 40px);
+        max-width: 600px;
+        min-width: 450px;
+        padding: clamp(20px, 2.5vw, 30px);
         height: 100vh;
         overflow-y: auto;
         box-sizing: border-box;
     }
     
     .management-section h3 {
-        font-size: clamp(1.4rem, 2.5vw, 1.8rem);
-        margin-bottom: clamp(20px, 3vw, 30px);
+        font-size: clamp(1.2rem, 2vw, 1.5rem);
+        margin-bottom: clamp(15px, 2vh, 25px);
     }
     
     .management-section label {
-        font-size: clamp(1rem, 1.8vw, 1.2rem);
-        margin-bottom: clamp(8px, 1.5vw, 12px);
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        margin-bottom: clamp(6px, 1vh, 10px);
     }
     
     .management-section input,
     .management-section textarea,
     .management-section select {
-        font-size: clamp(1rem, 1.8vw, 1.2rem);
-        padding: clamp(12px, 2vw, 18px);
-        margin-bottom: clamp(15px, 2.5vw, 20px);
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        padding: clamp(10px, 1.5vw, 15px);
+        margin-bottom: clamp(10px, 1.5vh, 15px);
         width: 100%;
         box-sizing: border-box;
     }
     
     .management-section textarea {
-        height: clamp(120px, 15vh, 200px);
+        height: clamp(100px, 12vh, 150px);
         resize: vertical;
     }
     
     .add-card-btn {
-        font-size: clamp(1.1rem, 2vw, 1.4rem);
-        padding: clamp(15px, 2.5vw, 20px) clamp(25px, 4vw, 35px);
+        font-size: clamp(1rem, 1.8vw, 1.2rem);
+        padding: clamp(12px, 2vw, 18px) clamp(20px, 3vw, 30px);
         width: 100%;
-        margin-top: clamp(20px, 3vh, 30px);
+        margin-top: clamp(15px, 2vh, 25px);
     }
     
     /* Header controls responsive */
@@ -1219,57 +1219,96 @@ input:checked + .toggle-slider:before {
     }
 }
 
-/* 13-inch laptops - fully responsive */
+/* 13-inch laptops - compact to eliminate scrolling */
 @media (max-width: 1399px) and (min-width: 1200px) {
     .main-content-layout {
         min-height: 100vh;
         max-height: 100vh;
         overflow: hidden;
+        gap: clamp(15px, 2vw, 25px);
     }
     
     .flashcard-grid {
         grid-template-columns: repeat(5, 1fr) !important;
-        grid-auto-rows: minmax(100px, auto) !important;
+        grid-auto-rows: minmax(80px, auto) !important;
         height: auto;
-        max-height: clamp(150px, 25vh, 200px);
+        max-height: clamp(120px, 20vh, 160px);
     }
     
     .management-section {
         height: 100vh;
         overflow-y: auto;
         box-sizing: border-box;
+        padding: clamp(15px, 2vw, 25px);
+        max-width: 400px;
+        min-width: 300px;
+    }
+    
+    .management-section h3 {
+        font-size: clamp(1rem, 1.5vw, 1.2rem);
+        margin-bottom: clamp(10px, 1.5vh, 15px);
+    }
+    
+    .management-section label {
+        font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+        margin-bottom: clamp(4px, 0.8vh, 8px);
+    }
+    
+    .management-section input,
+    .management-section textarea,
+    .management-section select {
+        font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+        padding: clamp(6px, 1vw, 10px);
+        margin-bottom: clamp(8px, 1.2vh, 12px);
     }
     
     .management-section textarea {
-        height: clamp(70px, 6vh, 100px);
+        height: clamp(50px, 4vh, 70px);
         resize: vertical;
     }
     
     .add-card-btn {
         width: 100%;
-        margin-top: clamp(8px, 1.2vh, 15px);
+        margin-top: clamp(5px, 0.8vh, 10px);
+        font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+        padding: clamp(8px, 1.2vw, 12px) clamp(15px, 2vw, 20px);
     }
     
-    /* Header controls responsive */
+    /* Header controls compact */
+    .header-controls {
+        padding: clamp(8px, 1.2vw, 15px);
+        gap: clamp(8px, 1.2vw, 15px);
+    }
+    
     .header-controls button {
-        font-size: clamp(0.75rem, 1vw, 0.9rem);
-        padding: clamp(5px, 0.8vw, 8px) clamp(8px, 1.2vw, 15px);
+        font-size: clamp(0.7rem, 1vw, 0.85rem);
+        padding: clamp(4px, 0.8vw, 7px) clamp(6px, 1vw, 12px);
     }
     
-    /* Tab controls responsive */
+    /* Tab controls compact */
+    .display-controls {
+        gap: clamp(8px, 1.2vw, 15px);
+        padding: clamp(8px, 1.2vw, 15px);
+    }
+    
     .tab-btn {
-        font-size: clamp(0.75rem, 1vw, 0.9rem);
-        padding: clamp(6px, 0.9vw, 8px) clamp(8px, 1.2vw, 15px);
+        font-size: clamp(0.7rem, 1vw, 0.85rem);
+        padding: clamp(5px, 0.8vw, 7px) clamp(6px, 1vw, 12px);
     }
     
-    /* Pagination responsive */
+    /* Pagination compact */
+    .pagination {
+        padding: clamp(8px, 1.2vw, 15px);
+        gap: clamp(5px, 0.8vw, 10px);
+    }
+    
     .pagination button {
-        font-size: clamp(0.75rem, 1vw, 0.9rem);
-        padding: clamp(3px, 0.6vw, 6px) clamp(6px, 1vw, 10px);
+        font-size: clamp(0.7rem, 1vw, 0.85rem);
+        padding: clamp(2px, 0.5vw, 5px) clamp(4px, 0.8vw, 8px);
     }
     
     .pagination span {
-        font-size: clamp(0.75rem, 1vw, 0.9rem);
+        font-size: clamp(0.7rem, 1vw, 0.85rem);
     }
 }
 
