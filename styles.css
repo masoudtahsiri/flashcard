@@ -961,66 +961,73 @@ input:checked + .toggle-slider:before {
 }
 
 /* Responsive breakpoints - fixed card counts per screen size */
-/* Large screens (24+ inch) - 7 columns x 4 rows = 28 cards */
+/* Large screens (24+ inch) - 7 columns, flexible rows */
 @media (min-width: 1920px) {
     .flashcard-grid {
         grid-template-columns: repeat(7, 1fr) !important;
-        grid-template-rows: repeat(4, 1fr) !important;
-        height: clamp(350px, 45vh, 450px);
+        grid-auto-rows: minmax(100px, auto) !important;
+        height: auto;
+        max-height: clamp(350px, 45vh, 450px);
     }
 }
 
-/* Medium-large screens (20-24 inch) - 6 columns x 4 rows = 24 cards */
+/* Medium-large screens (20-24 inch) - 6 columns, flexible rows */
 @media (max-width: 1919px) and (min-width: 1600px) {
     .flashcard-grid {
         grid-template-columns: repeat(6, 1fr) !important;
-        grid-template-rows: repeat(4, 1fr) !important;
-        height: clamp(300px, 40vh, 400px);
+        grid-auto-rows: minmax(100px, auto) !important;
+        height: auto;
+        max-height: clamp(300px, 40vh, 400px);
     }
 }
 
-/* Medium screens (17-20 inch) - 5 columns x 4 rows = 20 cards */
+/* Medium screens (17-20 inch) - 5 columns, flexible rows */
 @media (max-width: 1599px) and (min-width: 1400px) {
     .flashcard-grid {
         grid-template-columns: repeat(5, 1fr) !important;
-        grid-template-rows: repeat(4, 1fr) !important;
-        height: clamp(250px, 35vh, 350px);
+        grid-auto-rows: minmax(100px, auto) !important;
+        height: auto;
+        max-height: clamp(250px, 35vh, 350px);
     }
 }
 
-/* 13-inch laptops - 5 columns x 2 rows = 10 cards */
+/* 13-inch laptops - 5 columns, flexible rows */
 @media (max-width: 1399px) and (min-width: 1200px) {
     .flashcard-grid {
         grid-template-columns: repeat(5, 1fr) !important;
-        grid-template-rows: repeat(2, 1fr) !important;
-        height: clamp(150px, 25vh, 200px);
+        grid-auto-rows: minmax(100px, auto) !important;
+        height: auto;
+        max-height: clamp(150px, 25vh, 200px);
     }
 }
 
-/* Smaller laptops - 4 columns x 2 rows = 8 cards */
+/* Smaller laptops - 4 columns, flexible rows */
 @media (max-width: 1199px) and (min-width: 900px) {
     .flashcard-grid {
         grid-template-columns: repeat(4, 1fr) !important;
-        grid-template-rows: repeat(2, 1fr) !important;
-        height: clamp(120px, 20vh, 180px);
+        grid-auto-rows: minmax(100px, auto) !important;
+        height: auto;
+        max-height: clamp(120px, 20vh, 180px);
     }
 }
 
-/* Tablets - 3 columns x 2 rows = 6 cards */
+/* Tablets - 3 columns, flexible rows */
 @media (max-width: 899px) and (min-width: 600px) {
     .flashcard-grid {
         grid-template-columns: repeat(3, 1fr) !important;
-        grid-template-rows: repeat(2, 1fr) !important;
-        height: clamp(100px, 18vh, 150px);
+        grid-auto-rows: minmax(100px, auto) !important;
+        height: auto;
+        max-height: clamp(100px, 18vh, 150px);
     }
 }
 
-/* Mobile - 2 columns x 2 rows = 4 cards */
+/* Mobile - 2 columns, flexible rows */
 @media (max-width: 599px) {
     .flashcard-grid {
         grid-template-columns: repeat(2, 1fr) !important;
-        grid-template-rows: repeat(2, 1fr) !important;
-        height: clamp(80px, 15vh, 120px);
+        grid-auto-rows: minmax(100px, auto) !important;
+        height: auto;
+        max-height: clamp(80px, 15vh, 120px);
     }
 }
 
