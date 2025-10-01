@@ -1,5 +1,10 @@
 import { MongoClient } from 'mongodb';
 
+// Load environment variables for local development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = 'flashcard';
 const COLLECTION_NAME = 'flashcards';

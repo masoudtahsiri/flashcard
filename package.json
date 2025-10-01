@@ -18,6 +18,7 @@
   "homepage": "https://github.com/masoudtahsiri/flashcard#readme",
   "description": "",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "mongodb": "^6.20.0"
   }
 }
