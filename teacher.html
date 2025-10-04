@@ -187,8 +187,20 @@
                         
                         <div id="multiUploadPreview" class="multi-upload-preview" style="display: none;">
                             <h4>Enter Details for Each Image</h4>
-                            <div id="multiUploadItems" class="multi-upload-items">
-                                <!-- Items will be rendered here -->
+                            <div class="table-container">
+                                <table id="multiUploadTable" class="multi-upload-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Word/Text</th>
+                                            <th>Unit</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="multiUploadTableBody">
+                                        <!-- Items will be rendered here -->
+                                    </tbody>
+                                </table>
                             </div>
                             
                             <div class="multi-upload-actions">

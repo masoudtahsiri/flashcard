@@ -3386,32 +3386,36 @@ function handleMultiImageSelection() {
 // Function to render multi upload form
 function renderMultiUploadForm() {
     const previewSection = document.getElementById('multiUploadPreview');
-    const itemsContainer = document.getElementById('multiUploadItems');
+    const tableBody = document.getElementById('multiUploadTableBody');
     
     // Clear previous content
-    itemsContainer.innerHTML = '';
+    tableBody.innerHTML = '';
     
-    // Create form for each image
+    // Create table row for each image
     multiUploadFiles.forEach((file, index) => {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'multi-upload-item';
-            itemDiv.innerHTML = `
-                <img src="${e.target.result}" alt="${file.name}" class="multi-upload-item-image">
-                <div class="multi-upload-item-filename">${file.name}</div>
-                
-                <label for="word_${index}">Word/Text:</label>
-                <input type="text" id="word_${index}" placeholder="Enter word or text" required>
-                
-                <label for="category_${index}">Unit:</label>
-                <select id="category_${index}">
-                    <option value="">Use default unit</option>
-                </select>
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="multi-upload-image-cell">
+                    <img src="${e.target.result}" alt="${file.name}" class="multi-upload-image">
+                    <div class="multi-upload-filename">${file.name}</div>
+                </td>
+                <td>
+                    <input type="text" id="word_${index}" placeholder="Enter word or text" class="multi-upload-input" required>
+                </td>
+                <td>
+                    <select id="category_${index}" class="multi-upload-select">
+                        <option value="">Use default unit</option>
+                    </select>
+                </td>
+                <td class="multi-upload-actions-cell">
+                    <button type="button" class="remove-row-btn" onclick="removeMultiUploadRow(${index})">Remove</button>
+                </td>
             `;
             
             // Populate category dropdown for this item
-            const categorySelect = itemDiv.querySelector(`#category_${index}`);
+            const categorySelect = row.querySelector(`#category_${index}`);
             groups.forEach(group => {
                 const option = document.createElement('option');
                 option.value = group.id;
@@ -3419,7 +3423,7 @@ function renderMultiUploadForm() {
                 categorySelect.appendChild(option);
             });
             
-            itemsContainer.appendChild(itemDiv);
+            tableBody.appendChild(row);
         };
         reader.readAsDataURL(file);
     });
@@ -3428,16 +3432,27 @@ function renderMultiUploadForm() {
     previewSection.style.display = 'block';
 }
 
+// Function to remove a row from multi upload table
+function removeMultiUploadRow(index) {
+    // Remove from files array
+    multiUploadFiles.splice(index, 1);
+    
+    // Re-render the form with updated indices
+    renderMultiUploadForm();
+}
+
 // Function to preview multi upload
 function previewMultiUpload() {
-    const items = document.querySelectorAll('.multi-upload-item');
+    const rows = document.querySelectorAll('#multiUploadTableBody tr');
     multiUploadData = [];
     
     let hasErrors = false;
     
-    items.forEach((item, index) => {
-        const wordInput = item.querySelector(`#word_${index}`);
-        const categorySelect = item.querySelector(`#category_${index}`);
+    rows.forEach((row, index) => {
+        const wordInput = row.querySelector(`#word_${index}`);
+        const categorySelect = row.querySelector(`#category_${index}`);
+        
+        if (!wordInput || !categorySelect) return; // Skip if elements don't exist
         
         const word = wordInput.value.trim();
         const categoryId = categorySelect.value;
