@@ -49,62 +49,6 @@ export default async function handler(req, res) {
 
     switch (method) {
       case 'GET':
-        // Check if this is a stats request
-        if (req.query.stats === 'true') {
-          // Get database statistics
-          const stats = await db.stats();
-          const flashcardsCount = await collection.countDocuments();
-          const groupsCount = await groupsCollection.countDocuments();
-          const settingsCount = await settingsCollection.countDocuments();
-          const classesCount = await classesCollection.countDocuments();
-          
-          // Get collection sizes
-          const flashcardsStats = await collection.stats();
-          const groupsStats = await groupsCollection.stats();
-          const settingsStats = await settingsCollection.stats();
-          const classesStats = await classesCollection.stats();
-          
-          res.status(200).json({
-            success: true,
-            database: {
-              name: stats.db,
-              size: stats.dataSize,
-              storageSize: stats.storageSize,
-              totalSize: stats.totalSize,
-              collections: stats.collections,
-              indexes: stats.indexes,
-              objects: stats.objects
-            },
-            collections: {
-              flashcards: {
-                count: flashcardsCount,
-                size: flashcardsStats.size,
-                storageSize: flashcardsStats.storageSize,
-                avgObjSize: flashcardsStats.avgObjSize
-              },
-              groups: {
-                count: groupsCount,
-                size: groupsStats.size,
-                storageSize: groupsStats.storageSize,
-                avgObjSize: groupsStats.avgObjSize
-              },
-              settings: {
-                count: settingsCount,
-                size: settingsStats.size,
-                storageSize: settingsStats.storageSize,
-                avgObjSize: settingsStats.avgObjSize
-              },
-              classes: {
-                count: classesCount,
-                size: classesStats.size,
-                storageSize: classesStats.storageSize,
-                avgObjSize: classesStats.avgObjSize
-              }
-            }
-          });
-          break;
-        }
-        
         // Get class parameter from query string (optional for backward compatibility)
         const classId = req.query.class;
         const unassignedOnly = req.query.unassigned === 'true';
