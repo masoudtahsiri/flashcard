@@ -101,6 +101,14 @@
                     <span class="tab-icon">📁</span>
                     Manage Units
                 </button>
+                <button id="bulkImportTab" class="tab-btn" onclick="showTab('bulkImport')">
+                    <span class="tab-icon">📥</span>
+                    Bulk Import
+                </button>
+                <button id="multiUploadTab" class="tab-btn" onclick="showTab('multiUpload')">
+                    <span class="tab-icon">📤</span>
+                    Multi Upload
+                </button>
                 <button id="settingsTab" class="tab-btn" onclick="showTab('settings')">
                     <span class="tab-icon">⚙️</span>
                     Settings
@@ -158,6 +166,133 @@
                             <div id="noGroupsMessage" class="no-groups-message" style="display: none;">
                                 <p>No units created yet. Add your first unit above.</p>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Import Tab -->
+                <div id="bulkImportContent" class="tab-panel">
+                    <div class="bulk-import-form">
+                        <h3>Bulk Import Flashcards</h3>
+                        <p>Import multiple flashcards at once using CSV or JSON format.</p>
+                        
+                        <div class="form-group">
+                            <label for="bulkImportFile">Import File:</label>
+                            <input type="file" id="bulkImportFile" accept=".csv,.json" class="file-input">
+                            <small class="form-help">Supported formats: CSV, JSON</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bulkImportCategory">Default Unit (for cards without unit specified):</label>
+                            <select id="bulkImportCategory" class="group-select">
+                                <option value="">No default unit</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="bulkImportOverwrite" checked>
+                                Overwrite existing flashcards with same text
+                            </label>
+                        </div>
+                        
+                        <button id="previewImportBtn" class="btn btn-secondary" disabled>Preview Import</button>
+                        <button id="executeImportBtn" class="btn btn-primary" disabled>Import Flashcards</button>
+                        
+                        <div id="importPreview" class="import-preview" style="display: none;">
+                            <h4>Import Preview</h4>
+                            <div id="previewContent"></div>
+                            <div class="import-stats">
+                                <span id="totalCardsPreview">0</span> cards ready to import
+                            </div>
+                        </div>
+                        
+                        <div id="importProgress" class="import-progress" style="display: none;">
+                            <div class="progress-bar">
+                                <div id="progressFill" class="progress-fill"></div>
+                            </div>
+                            <div id="progressText">Importing...</div>
+                        </div>
+                        
+                        <div id="importResults" class="import-results" style="display: none;">
+                            <h4>Import Results</h4>
+                            <div id="resultsContent"></div>
+                        </div>
+                        
+                        <div class="import-help">
+                            <h4>📋 Sample CSV Format:</h4>
+                            <pre class="csv-sample">word,image_url,category
+Apple,https://example.com/apple.jpg,Fruits
+Banana,https://example.com/banana.jpg,Fruits
+Car,https://example.com/car.jpg,Transport</pre>
+                            
+                            <h4>📋 Sample JSON Format:</h4>
+                            <pre class="json-sample">[
+  {
+    "word": "Apple",
+    "image_url": "https://example.com/apple.jpg",
+    "category": "Fruits"
+  },
+  {
+    "word": "Banana", 
+    "image_url": "https://example.com/banana.jpg",
+    "category": "Fruits"
+  }
+]</pre>
+                            
+                            <h4>📝 Instructions:</h4>
+                            <ul>
+                                <li><strong>word:</strong> The text that appears on the flashcard (required)</li>
+                                <li><strong>image_url:</strong> URL to the image (optional - can be base64 data URL)</li>
+                                <li><strong>category:</strong> Unit name (optional - will use default unit if not specified)</li>
+                            </ul>
+                            
+                            <p><strong>Note:</strong> Images can be provided as URLs or base64 data URLs. If no image is provided, a placeholder will be used.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi Upload Tab -->
+                <div id="multiUploadContent" class="tab-panel">
+                    <div class="multi-upload-form">
+                        <h3>Multi Image Upload</h3>
+                        <p>Select multiple images and enter details for each flashcard.</p>
+                        
+                        <div class="form-group">
+                            <label for="multiImageInput">Select Images:</label>
+                            <input type="file" id="multiImageInput" accept="image/*" multiple class="file-input">
+                            <small class="form-help">You can select multiple images at once (Ctrl+Click or Cmd+Click)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="multiUploadDefaultCategory">Default Unit (for cards without unit specified):</label>
+                            <select id="multiUploadDefaultCategory" class="group-select">
+                                <option value="">No default unit</option>
+                            </select>
+                        </div>
+                        
+                        <div id="multiUploadPreview" class="multi-upload-preview" style="display: none;">
+                            <h4>Enter Details for Each Image</h4>
+                            <div id="multiUploadItems" class="multi-upload-items">
+                                <!-- Items will be rendered here -->
+                            </div>
+                            
+                            <div class="multi-upload-actions">
+                                <button id="previewMultiUploadBtn" class="btn btn-secondary">Preview All</button>
+                                <button id="executeMultiUploadBtn" class="btn btn-primary" disabled>Create Flashcards</button>
+                            </div>
+                        </div>
+                        
+                        <div id="multiUploadProgress" class="multi-upload-progress" style="display: none;">
+                            <div class="progress-bar">
+                                <div id="multiProgressFill" class="progress-fill"></div>
+                            </div>
+                            <div id="multiProgressText">Creating flashcards...</div>
+                        </div>
+                        
+                        <div id="multiUploadResults" class="multi-upload-results" style="display: none;">
+                            <h4>Upload Results</h4>
+                            <div id="multiResultsContent"></div>
                         </div>
                     </div>
                 </div>
