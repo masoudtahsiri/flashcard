@@ -3435,51 +3435,59 @@ function renderMultiUploadForm() {
         return;
     }
     
-    // Create table row for each image
+    // Create table rows first to maintain order
     multiUploadFiles.forEach((file, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="multi-upload-image-cell">
+                <div class="multi-upload-loading">Loading...</div>
+                <div class="multi-upload-filename">${file.name}</div>
+            </td>
+            <td>
+                <input type="text" id="word_${index}" placeholder="Enter word or text" class="multi-upload-input" required>
+            </td>
+            <td>
+                <select id="category_${index}" class="multi-upload-select">
+                    <option value="">Use default unit</option>
+                </select>
+            </td>
+            <td class="multi-upload-actions-cell">
+                <button type="button" class="remove-row-btn" onclick="removeMultiUploadRow(${index})">Remove</button>
+            </td>
+        `;
+        
+        // Populate category dropdown for this item with hierarchy
+        const categorySelect = row.querySelector(`#category_${index}`);
+        groups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            
+            // Show hierarchy in dropdown
+            if (group.parentId) {
+                const parent = groups.find(g => g.id === group.parentId);
+                option.textContent = parent ? `${parent.name} > ${group.name}` : group.name;
+            } else {
+                option.textContent = group.name;
+            }
+            
+            categorySelect.appendChild(option);
+        });
+        
+        // Add event listener to word input to check button state
+        const wordInput = row.querySelector(`#word_${index}`);
+        wordInput.addEventListener('input', checkExecuteButtonState);
+        
+        // Append row immediately to maintain order
+        tableBody.appendChild(row);
+        
+        // Load image asynchronously and update the specific row
         const reader = new FileReader();
         reader.onload = function(e) {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="multi-upload-image-cell">
-                    <img src="${e.target.result}" alt="${file.name}" class="multi-upload-image">
-                    <div class="multi-upload-filename">${file.name}</div>
-                </td>
-                <td>
-                    <input type="text" id="word_${index}" placeholder="Enter word or text" class="multi-upload-input" required>
-                </td>
-                <td>
-                    <select id="category_${index}" class="multi-upload-select">
-                        <option value="">Use default unit</option>
-                    </select>
-                </td>
-                <td class="multi-upload-actions-cell">
-                    <button type="button" class="remove-row-btn" onclick="removeMultiUploadRow(${index})">Remove</button>
-                </td>
+            const imageCell = row.querySelector('.multi-upload-image-cell');
+            imageCell.innerHTML = `
+                <img src="${e.target.result}" alt="${file.name}" class="multi-upload-image">
+                <div class="multi-upload-filename">${file.name}</div>
             `;
-            
-            // Populate category dropdown for this item with hierarchy
-            const categorySelect = row.querySelector(`#category_${index}`);
-            groups.forEach(group => {
-                const option = document.createElement('option');
-                option.value = group.id;
-                
-                // Show hierarchy in dropdown
-                if (group.parentId) {
-                    const parent = groups.find(g => g.id === group.parentId);
-                    option.textContent = parent ? `${parent.name} > ${group.name}` : group.name;
-                } else {
-                    option.textContent = group.name;
-                }
-                
-                categorySelect.appendChild(option);
-            });
-            
-            // Add event listener to word input to check button state
-            const wordInput = row.querySelector(`#word_${index}`);
-            wordInput.addEventListener('input', checkExecuteButtonState);
-            
-            tableBody.appendChild(row);
         };
         reader.readAsDataURL(file);
     });

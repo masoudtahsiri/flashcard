@@ -4334,9 +4334,16 @@ body:has(.group-selection), body:has(.flashcard-view) {
     border-bottom: none;
 }
 
-.multi-upload-image-cell {
-    width: 100px;
-    text-align: center;
+.multi-upload-loading {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #6c757d;
 }
 
 .multi-upload-image {
