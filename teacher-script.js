@@ -3360,11 +3360,19 @@ function populateMultiUploadCategories() {
     // Clear existing options
     categorySelect.innerHTML = '<option value="">No default unit</option>';
     
-    // Add all groups as options (same as groupSelect in add card tab)
+    // Add all groups as options with hierarchy (same as groupSelect in add card tab)
     groups.forEach(group => {
         const option = document.createElement('option');
         option.value = group.id;
-        option.textContent = group.name;
+        
+        // Show hierarchy in dropdown
+        if (group.parentId) {
+            const parent = groups.find(g => g.id === group.parentId);
+            option.textContent = parent ? `${parent.name} > ${group.name}` : group.name;
+        } else {
+            option.textContent = group.name;
+        }
+        
         categorySelect.appendChild(option);
     });
 }
@@ -3414,12 +3422,20 @@ function renderMultiUploadForm() {
                 </td>
             `;
             
-            // Populate category dropdown for this item
+            // Populate category dropdown for this item with hierarchy
             const categorySelect = row.querySelector(`#category_${index}`);
             groups.forEach(group => {
                 const option = document.createElement('option');
                 option.value = group.id;
-                option.textContent = group.name;
+                
+                // Show hierarchy in dropdown
+                if (group.parentId) {
+                    const parent = groups.find(g => g.id === group.parentId);
+                    option.textContent = parent ? `${parent.name} > ${group.name}` : group.name;
+                } else {
+                    option.textContent = group.name;
+                }
+                
                 categorySelect.appendChild(option);
             });
             

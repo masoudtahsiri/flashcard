@@ -4337,12 +4337,11 @@ body:has(.group-selection), body:has(.flashcard-view) {
 }
 
 .multi-upload-image {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
+    /* width: 43px; */
+    height: 60px;
+    object-fit: cover;
     border-radius: 4px;
-    border: 1px solid #dee2e6;
-    background: #f8f9fa;
+    /* border: 1px solid #dee2e6; */
 }
 
 .multi-upload-filename {
