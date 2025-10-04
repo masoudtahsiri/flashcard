@@ -15,5 +15,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/flashcards",
+      "destination": "/api/flashcards/index.js"
+    }
   ]
 }

@@ -2450,7 +2450,7 @@ function deleteCardFromModal() {
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
-function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.9) {
+function compressImage(file, maxWidth = 600, maxHeight = 450, quality = 0.8) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -2488,28 +2488,73 @@ function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.9) {
     });
 }
 
+// Function to estimate payload size
+function estimatePayloadSize(data) {
+    return new Blob([JSON.stringify(data)]).size;
+}
+
 // Function to save flashcards and groups to API (shared storage)
 async function saveFlashcards() {
     try {
+        const payload = {
+            flashcards: flashcards,
+            groups: groups,
+            settings: {
+                welcomeTitleLine1: localStorage.getItem('welcomeTitleLine1') || 'Welcome to',
+                welcomeTitleLine2: localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class',
+                welcomeFont: localStorage.getItem('welcomeFont') || 'Arial Black'
+            },
+            classId: currentClassId, // Include current class ID
+            nextId: nextId
+        };
+
+        const payloadSize = estimatePayloadSize(payload);
+        console.log(`📦 Payload size: ${(payloadSize / 1024 / 1024).toFixed(2)} MB`);
+
+        // If payload is too large (>4MB), compress images more aggressively
+        if (payloadSize > 4 * 1024 * 1024) {
+            console.log('⚠️ Large payload detected, compressing images more aggressively...');
+            
+            // Re-compress all images with more aggressive settings
+            for (let i = 0; i < flashcards.length; i++) {
+                if (flashcards[i].image && flashcards[i].image.startsWith('data:image')) {
+                    try {
+                        // Convert base64 back to file-like object for recompression
+                        const base64Data = flashcards[i].image.split(',')[1];
+                        const byteCharacters = atob(base64Data);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let j = 0; j < byteCharacters.length; j++) {
+                            byteNumbers[j] = byteCharacters.charCodeAt(j);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+                        
+                        // Re-compress with more aggressive settings
+                        const compressedImage = await compressImage(blob, 400, 300, 0.7);
+                        flashcards[i].image = compressedImage;
+                    } catch (error) {
+                        console.warn(`Failed to re-compress image ${i}:`, error);
+                    }
+                }
+            }
+            
+            // Re-estimate payload size
+            const newPayloadSize = estimatePayloadSize(payload);
+            console.log(`📦 New payload size: ${(newPayloadSize / 1024 / 1024).toFixed(2)} MB`);
+        }
+
         const response = await fetch('/api/flashcards', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                flashcards: flashcards,
-                groups: groups,
-                settings: {
-                    welcomeTitleLine1: localStorage.getItem('welcomeTitleLine1') || 'Welcome to',
-                    welcomeTitleLine2: localStorage.getItem('welcomeTitleLine2') || 'Mrs Sadaf 1B Class',
-                    welcomeFont: localStorage.getItem('welcomeFont') || 'Arial Black'
-                },
-                classId: currentClassId, // Include current class ID
-                nextId: nextId
-            })
+            body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
+            if (response.status === 413) {
+                throw new Error('Payload too large. Please reduce image sizes or try again.');
+            }
             throw new Error(`Save failed: ${response.statusText}`);
         }
 
@@ -2521,7 +2566,7 @@ async function saveFlashcards() {
         console.log('Flashcards and groups saved to shared storage');
     } catch (error) {
         console.error('Error saving flashcards:', error);
-        alert('Error saving flashcards. Please try again.');
+        alert(`Error saving flashcards: ${error.message}`);
     }
 }
 
