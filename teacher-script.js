@@ -3397,6 +3397,25 @@ function handleMultiImageSelection() {
     renderMultiUploadForm();
 }
 
+// Function to check if execute button should be enabled
+function checkExecuteButtonState() {
+    const rows = document.querySelectorAll('#multiUploadTableBody tr');
+    const executeBtn = document.getElementById('executeMultiUploadBtn');
+    
+    if (!executeBtn) return;
+    
+    let hasValidEntries = false;
+    
+    rows.forEach((row, index) => {
+        const wordInput = row.querySelector(`#word_${index}`);
+        if (wordInput && wordInput.value.trim()) {
+            hasValidEntries = true;
+        }
+    });
+    
+    executeBtn.disabled = !hasValidEntries;
+}
+
 // Function to render multi upload form
 function renderMultiUploadForm() {
     const previewSection = document.getElementById('multiUploadPreview');
@@ -3445,6 +3464,10 @@ function renderMultiUploadForm() {
                 categorySelect.appendChild(option);
             });
             
+            // Add event listener to word input to check button state
+            const wordInput = row.querySelector(`#word_${index}`);
+            wordInput.addEventListener('input', checkExecuteButtonState);
+            
             tableBody.appendChild(row);
         };
         reader.readAsDataURL(file);
@@ -3452,6 +3475,9 @@ function renderMultiUploadForm() {
     
     // Show preview section
     previewSection.style.display = 'block';
+    
+    // Check button state after rendering
+    checkExecuteButtonState();
 }
 
 // Function to remove a row from multi upload table
@@ -3461,6 +3487,9 @@ function removeMultiUploadRow(index) {
     
     // Re-render the form with updated indices
     renderMultiUploadForm();
+    
+    // Check button state after removal
+    checkExecuteButtonState();
 }
 
 // Function to execute multi upload
