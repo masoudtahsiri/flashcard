@@ -2450,7 +2450,7 @@ function deleteCardFromModal() {
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
-function compressImage(file, maxWidth = 400, maxHeight = 300, quality = 0.9) {
+function compressImage(file, maxWidth = 600, maxHeight = 450, quality = 0.9) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
