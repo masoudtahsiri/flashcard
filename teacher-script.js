@@ -3357,10 +3357,10 @@ function populateMultiUploadCategories() {
     const categorySelect = document.getElementById('multiUploadDefaultCategory');
     if (!categorySelect) return;
     
-    // Clear existing options except the first one
+    // Clear existing options
     categorySelect.innerHTML = '<option value="">No default unit</option>';
     
-    // Add all groups as options
+    // Add all groups as options (same as groupSelect in add card tab)
     groups.forEach(group => {
         const option = document.createElement('option');
         option.value = group.id;
@@ -3441,8 +3441,8 @@ function removeMultiUploadRow(index) {
     renderMultiUploadForm();
 }
 
-// Function to preview multi upload
-function previewMultiUpload() {
+// Function to execute multi upload
+async function executeMultiUpload() {
     const rows = document.querySelectorAll('#multiUploadTableBody tr');
     multiUploadData = [];
     
@@ -3477,18 +3477,6 @@ function previewMultiUpload() {
         return;
     }
     
-    // Enable execute button
-    document.getElementById('executeMultiUploadBtn').disabled = false;
-    
-    // Show preview summary
-    const summary = `Ready to create ${multiUploadData.length} flashcards:\n\n` +
-        multiUploadData.map(item => `• ${item.word} (${item.categoryId ? groups.find(g => g.id === item.categoryId)?.name || 'Unknown' : 'Default unit'})`).join('\n');
-    
-    alert(summary);
-}
-
-// Function to execute multi upload
-async function executeMultiUpload() {
     if (multiUploadData.length === 0) {
         alert('No data to upload. Please select images and fill in details first.');
         return;
@@ -3650,7 +3638,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set up multi upload functionality
     document.getElementById('multiImageInput').addEventListener('change', handleMultiImageSelection);
-    document.getElementById('previewMultiUploadBtn').addEventListener('click', previewMultiUpload);
     document.getElementById('executeMultiUploadBtn').addEventListener('click', executeMultiUpload);
 
     // Set up add group button
