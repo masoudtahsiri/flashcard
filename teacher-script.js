@@ -2507,7 +2507,7 @@ async function saveSingleFlashcard(flashcard) {
         const payloadSize = estimatePayloadSize(payload);
         console.log(`📦 Single flashcard payload size: ${(payloadSize / 1024).toFixed(1)} KB`);
 
-        const response = await fetch('/api/flashcards', {
+        const response = await fetch('/api/flashcards?single=true', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

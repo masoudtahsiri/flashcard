@@ -101,7 +101,39 @@ export default async function handler(req, res) {
         break;
 
       case 'POST':
-        // Save flashcards, groups, and settings (replace all existing ones)
+        // Check if this is a single flashcard save
+        if (req.query.single === 'true') {
+          // Handle single flashcard save (add to existing, don't replace)
+          const { flashcards: newFlashcards, classId: postClassId } = req.body;
+          
+          if (!newFlashcards || !Array.isArray(newFlashcards) || newFlashcards.length !== 1) {
+            return res.status(400).json({ error: 'Single flashcard save requires exactly one flashcard' });
+          }
+          
+          const newCard = newFlashcards[0];
+          console.log('Single flashcard save:', { cardId: newCard.id, classId: postClassId });
+          
+          // Add timestamp and classId
+          const cardWithTimestamp = {
+            ...newCard,
+            classId: postClassId || undefined,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          
+          // Insert the single flashcard
+          await collection.insertOne(cardWithTimestamp);
+          console.log('Single flashcard inserted successfully');
+          
+          res.status(200).json({ 
+            success: true, 
+            message: 'Single flashcard saved successfully',
+            cardId: newCard.id
+          });
+          break;
+        }
+        
+        // Original bulk save logic (replace all existing ones)
         const { flashcards: newFlashcards, groups: newGroups, settings: newSettings, classId: postClassId } = req.body;
         
         console.log('POST request received:', {
