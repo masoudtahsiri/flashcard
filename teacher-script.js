@@ -3386,14 +3386,19 @@ function populateMultiUploadCategories() {
 // Function to handle multi image file selection
 function handleMultiImageSelection() {
     const fileInput = document.getElementById('multiImageInput');
-    const files = Array.from(fileInput.files);
+    const newFiles = Array.from(fileInput.files);
     
-    if (files.length === 0) {
-        document.getElementById('multiUploadPreview').style.display = 'none';
+    if (newFiles.length === 0) {
         return;
     }
     
-    multiUploadFiles = files;
+    // Add new files to existing list (maintain order)
+    multiUploadFiles = [...multiUploadFiles, ...newFiles];
+    
+    // Clear the file input so same files can be selected again
+    fileInput.value = '';
+    
+    // Re-render the form with all files
     renderMultiUploadForm();
 }
 
@@ -3423,6 +3428,12 @@ function renderMultiUploadForm() {
     
     // Clear previous content
     tableBody.innerHTML = '';
+    
+    // If no files, hide preview section
+    if (multiUploadFiles.length === 0) {
+        previewSection.style.display = 'none';
+        return;
+    }
     
     // Create table row for each image
     multiUploadFiles.forEach((file, index) => {
@@ -3490,6 +3501,13 @@ function removeMultiUploadRow(index) {
     
     // Check button state after removal
     checkExecuteButtonState();
+}
+
+// Function to clear all images
+function clearAllImages() {
+    multiUploadFiles = [];
+    document.getElementById('multiUploadPreview').style.display = 'none';
+    document.getElementById('executeMultiUploadBtn').disabled = true;
 }
 
 // Function to execute multi upload

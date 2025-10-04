@@ -4285,12 +4285,15 @@ body:has(.group-selection), body:has(.flashcard-view) {
     margin: 0 auto;
 }
 
-.multi-upload-preview {
-    margin-top: 20px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+.multi-upload-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.multi-upload-header h4 {
+    margin: 0;
 }
 
 .table-container {

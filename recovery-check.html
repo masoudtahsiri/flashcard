@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flashcard Recovery Check</title>
+</head>
+<body>
+    <h1>🔍 Flashcard Recovery Check</h1>
+    <div id="results"></div>
+    
+    <script>
+        function checkRecovery() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Checking for flashcard data...</p>';
+            
+            // Check if flashcards are loaded in memory
+            if (typeof flashcards !== 'undefined' && flashcards.length > 0) {
+                results.innerHTML = `
+                    <h2>✅ Found Flashcards in Memory!</h2>
+                    <p>Found ${flashcards.length} flashcards</p>
+                    <p>Sample: "${flashcards[0].word}"</p>
+                    <button onclick="exportFlashcards()">Export Flashcards</button>
+                `;
+            } else {
+                results.innerHTML = `
+                    <h2>❌ No Flashcards in Memory</h2>
+                    <p>Try opening the teacher interface first, then refresh this page</p>
+                `;
+            }
+        }
+        
+        function exportFlashcards() {
+            if (typeof flashcards !== 'undefined' && flashcards.length > 0) {
+                const data = {
+                    flashcards: flashcards,
+                    groups: typeof groups !== 'undefined' ? groups : [],
+                    settings: typeof settings !== 'undefined' ? settings : {},
+                    timestamp: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'flashcards-backup.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                alert('Flashcards exported! Check your downloads folder.');
+            }
+        }
+        
+        // Run check when page loads
+        checkRecovery();
+    </script>
+</body>
+</html>
+
