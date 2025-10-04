@@ -2450,7 +2450,7 @@ function deleteCardFromModal() {
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
-function compressImage(file, maxWidth = 1200, maxHeight = 900, quality = 1.0) {
+function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.9) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -2488,73 +2488,6 @@ function compressImage(file, maxWidth = 1200, maxHeight = 900, quality = 1.0) {
     });
 }
 
-// Function to save flashcards in batches to maintain quality
-async function saveFlashcardsInBatches(payload) {
-    try {
-        console.log('🔄 Saving flashcards in batches to maintain maximum quality...');
-        
-        // First, save groups and settings (small data)
-        const groupsAndSettingsPayload = {
-            flashcards: [], // Empty for this batch
-            groups: payload.groups,
-            settings: payload.settings,
-            classId: payload.classId,
-            nextId: payload.nextId
-        };
-        
-        console.log('📁 Saving groups and settings...');
-        let response = await fetch('/api/flashcards', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(groupsAndSettingsPayload)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Failed to save groups and settings: ${response.statusText}`);
-        }
-        
-        // Now save flashcards in batches of 5 (conservative for high quality)
-        const batchSize = 5;
-        const totalBatches = Math.ceil(payload.flashcards.length / batchSize);
-        
-        for (let i = 0; i < totalBatches; i++) {
-            const start = i * batchSize;
-            const end = Math.min(start + batchSize, payload.flashcards.length);
-            const batchFlashcards = payload.flashcards.slice(start, end);
-            
-            const batchPayload = {
-                flashcards: batchFlashcards,
-                groups: [], // Empty for flashcard batches
-                settings: {},
-                classId: payload.classId,
-                nextId: payload.nextId
-            };
-            
-            console.log(`📸 Saving flashcard batch ${i + 1}/${totalBatches} (${batchFlashcards.length} cards)...`);
-            
-            response = await fetch('/api/flashcards', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(batchPayload)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Failed to save batch ${i + 1}: ${response.statusText}`);
-            }
-            
-            // Small delay between batches to avoid overwhelming the server
-            if (i < totalBatches - 1) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-        }
-        
-        console.log('✅ All batches saved successfully with maximum quality!');
-        
-    } catch (error) {
-        console.error('Error saving flashcards in batches:', error);
-        alert(`Error saving flashcards: ${error.message}`);
-    }
-}
 
 // Function to estimate payload size
 function estimatePayloadSize(data) {
@@ -2578,13 +2511,6 @@ async function saveFlashcards() {
 
         const payloadSize = estimatePayloadSize(payload);
         console.log(`📦 Payload size: ${(payloadSize / 1024 / 1024).toFixed(2)} MB`);
-
-        // If payload is too large (>4MB), save in smaller batches to maintain quality
-        if (payloadSize > 4 * 1024 * 1024) {
-            console.log('⚠️ Large payload detected, saving in batches to maintain quality...');
-            await saveFlashcardsInBatches(payload);
-            return;
-        }
 
         const response = await fetch('/api/flashcards', {
             method: 'POST',
