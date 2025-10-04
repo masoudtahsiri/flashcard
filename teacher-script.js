@@ -2493,6 +2493,49 @@ function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.8) {
 }
 
 
+// Function to save a single flashcard
+async function saveSingleFlashcard(flashcard) {
+    try {
+        const payload = {
+            flashcards: [flashcard], // Only the new flashcard
+            groups: [], // Empty for single flashcard saves
+            settings: {}, // Empty for single flashcard saves
+            classId: currentClassId,
+            nextId: nextId
+        };
+
+        const payloadSize = estimatePayloadSize(payload);
+        console.log(`📦 Single flashcard payload size: ${(payloadSize / 1024).toFixed(1)} KB`);
+
+        const response = await fetch('/api/flashcards', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            if (response.status === 413) {
+                throw new Error('Single flashcard too large. Please reduce image size.');
+            }
+            throw new Error(`Save failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || 'Save failed');
+        }
+
+        console.log('✅ Single flashcard saved successfully');
+        return true;
+    } catch (error) {
+        console.error('Error saving single flashcard:', error);
+        alert(`Error saving flashcard: ${error.message}`);
+        return false;
+    }
+}
+
 // Function to estimate payload size
 function estimatePayloadSize(data) {
     return new Blob([JSON.stringify(data)]).size;
@@ -3051,9 +3094,15 @@ function addFlashcard(word, imageFile, categoryId) {
         
         flashcards.push(newCard);
         
-        // Wait for save to complete before proceeding
+        // Save only the new flashcard instead of all flashcards
         try {
-            await saveFlashcards();
+            const success = await saveSingleFlashcard(newCard);
+            if (!success) {
+                // Remove the card from local array if save failed
+                flashcards.pop();
+                nextId--; // Reset nextId
+                return;
+            }
             
             // Refresh both views
             renderGridView();
