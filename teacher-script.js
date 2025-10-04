@@ -2513,8 +2513,8 @@ async function saveFlashcardsInBatches(payload) {
             throw new Error(`Failed to save groups and settings: ${response.statusText}`);
         }
         
-        // Now save flashcards in batches of 10
-        const batchSize = 10;
+        // Now save flashcards in batches of 5 (conservative for high quality)
+        const batchSize = 5;
         const totalBatches = Math.ceil(payload.flashcards.length / batchSize);
         
         for (let i = 0; i < totalBatches; i++) {
@@ -2579,8 +2579,8 @@ async function saveFlashcards() {
         const payloadSize = estimatePayloadSize(payload);
         console.log(`📦 Payload size: ${(payloadSize / 1024 / 1024).toFixed(2)} MB`);
 
-        // If payload is too large, save in smaller batches to maintain quality
-        if (payloadSize > 8 * 1024 * 1024) {
+        // If payload is too large (>4MB), save in smaller batches to maintain quality
+        if (payloadSize > 4 * 1024 * 1024) {
             console.log('⚠️ Large payload detected, saving in batches to maintain quality...');
             await saveFlashcardsInBatches(payload);
             return;
