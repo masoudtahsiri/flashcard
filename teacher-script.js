@@ -695,6 +695,7 @@ async function clearAllStorage() {
             renderGroupsList();
             updateGroupSelect();
             updateParentGroupSelect();
+            populateMultiUploadCategories();
             
             // If grouped view is visible, refresh it too
             if (document.getElementById('groupedCardsView').style.display !== 'none') {
@@ -2717,6 +2718,7 @@ function addGroup() {
     renderGroupsList();
     updateGroupSelect();
     updateParentGroupSelect();
+    populateMultiUploadCategories();
     
     // Clear inputs
     document.getElementById('groupNameInput').value = '';
@@ -2748,6 +2750,7 @@ function deleteGroup(groupId) {
         renderGroupsList();
         updateGroupSelect();
         updateParentGroupSelect();
+        populateMultiUploadCategories();
         renderGridView();
         if (document.getElementById('groupedCardsView').style.display !== 'none') {
             renderGroupedCardsView();
@@ -2934,6 +2937,9 @@ function updateAllGroupReferences() {
     
     // Update the parent group select dropdown
     updateParentGroupSelect();
+    
+    // Update the multi upload category dropdown
+    populateMultiUploadCategories();
     
     // Update grid view if visible
     renderGridView();
@@ -4011,6 +4017,7 @@ async function selectClass(classId, className) {
     renderGroupsList();
     updateGroupSelect();
     updateParentGroupSelect();
+    populateMultiUploadCategories();
     
     // Update settings tab with current class info
     updateSettingsTab();
@@ -4367,6 +4374,7 @@ async function migrateExistingData() {
         renderGroupedCardsView();
         updateGroupSelect();
         updateParentGroupSelect();
+        populateMultiUploadCategories();
         updateSettingsTab();
         
         // Hide migration section
