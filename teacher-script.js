@@ -2449,8 +2449,8 @@ function deleteCardFromModal() {
 
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
-// Function to compress image before storing with target size optimization
-function compressImage(file, maxWidth = 600, maxHeight = 450, targetSizeKB = 30) {
+// Function to compress image before storing
+function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.8) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -2478,46 +2478,14 @@ function compressImage(file, maxWidth = 600, maxHeight = 450, targetSizeKB = 30)
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             
-            // Draw the image
+            // Draw and compress
             ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
             
-            // Binary search for optimal quality to achieve target size
-            let minQuality = 0.1;
-            let maxQuality = 1.0;
-            let bestQuality = 0.8;
-            let bestResult = null;
+            const finalSizeKB = ((compressedDataUrl.split(',')[1].length * 3) / 4) / 1024;
+            console.log(`📸 Image compressed: ${finalSizeKB.toFixed(1)}KB (${width}x${height}, quality: ${quality})`);
             
-            const targetSizeBytes = targetSizeKB * 1024;
-            
-            // Try to find the best quality that gets us close to target size
-            for (let attempts = 0; attempts < 8; attempts++) {
-                const testQuality = (minQuality + maxQuality) / 2;
-                const testDataUrl = canvas.toDataURL('image/jpeg', testQuality);
-                const testSizeBytes = (testDataUrl.split(',')[1].length * 3) / 4; // Base64 to bytes
-                
-                if (testSizeBytes <= targetSizeBytes) {
-                    bestQuality = testQuality;
-                    bestResult = testDataUrl;
-                    minQuality = testQuality;
-                } else {
-                    maxQuality = testQuality;
-                }
-                
-                // If we're close enough, break
-                if (Math.abs(testSizeBytes - targetSizeBytes) < targetSizeBytes * 0.1) {
-                    break;
-                }
-            }
-            
-            // If we didn't find a good result, use the best we found
-            if (!bestResult) {
-                bestResult = canvas.toDataURL('image/jpeg', bestQuality);
-            }
-            
-            const finalSizeKB = ((bestResult.split(',')[1].length * 3) / 4) / 1024;
-            console.log(`📸 Image compressed: ${finalSizeKB.toFixed(1)}KB (target: ${targetSizeKB}KB, quality: ${bestQuality.toFixed(2)})`);
-            
-            resolve(bestResult);
+            resolve(compressedDataUrl);
         };
         
         img.src = URL.createObjectURL(file);
