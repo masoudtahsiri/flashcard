@@ -2450,7 +2450,7 @@ function deleteCardFromModal() {
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
-function compressImage(file, maxWidth = 600, maxHeight = 450, quality = 0.8) {
+function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.95) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -2511,8 +2511,8 @@ async function saveFlashcards() {
         const payloadSize = estimatePayloadSize(payload);
         console.log(`📦 Payload size: ${(payloadSize / 1024 / 1024).toFixed(2)} MB`);
 
-        // If payload is too large (>4MB), compress images more aggressively
-        if (payloadSize > 4 * 1024 * 1024) {
+        // If payload is too large (>6MB), compress images more aggressively
+        if (payloadSize > 6 * 1024 * 1024) {
             console.log('⚠️ Large payload detected, compressing images more aggressively...');
             
             // Re-compress all images with more aggressive settings
@@ -2529,8 +2529,8 @@ async function saveFlashcards() {
                         const byteArray = new Uint8Array(byteNumbers);
                         const blob = new Blob([byteArray], { type: 'image/jpeg' });
                         
-                        // Re-compress with more aggressive settings
-                        const compressedImage = await compressImage(blob, 400, 300, 0.7);
+                        // Re-compress with more aggressive settings (but still good quality)
+                        const compressedImage = await compressImage(blob, 700, 525, 0.85);
                         flashcards[i].image = compressedImage;
                     } catch (error) {
                         console.warn(`Failed to re-compress image ${i}:`, error);
@@ -2541,6 +2541,35 @@ async function saveFlashcards() {
             // Re-estimate payload size
             const newPayloadSize = estimatePayloadSize(payload);
             console.log(`📦 New payload size: ${(newPayloadSize / 1024 / 1024).toFixed(2)} MB`);
+            
+            // If still too large, compress even more aggressively
+            if (newPayloadSize > 6 * 1024 * 1024) {
+                console.log('⚠️ Still too large, applying maximum compression...');
+                
+                for (let i = 0; i < flashcards.length; i++) {
+                    if (flashcards[i].image && flashcards[i].image.startsWith('data:image')) {
+                        try {
+                            const base64Data = flashcards[i].image.split(',')[1];
+                            const byteCharacters = atob(base64Data);
+                            const byteNumbers = new Array(byteCharacters.length);
+                            for (let j = 0; j < byteCharacters.length; j++) {
+                                byteNumbers[j] = byteCharacters.charCodeAt(j);
+                            }
+                            const byteArray = new Uint8Array(byteNumbers);
+                            const blob = new Blob([byteArray], { type: 'image/jpeg' });
+                            
+                            // Maximum compression as last resort
+                            const compressedImage = await compressImage(blob, 500, 375, 0.75);
+                            flashcards[i].image = compressedImage;
+                        } catch (error) {
+                            console.warn(`Failed to re-compress image ${i}:`, error);
+                        }
+                    }
+                }
+                
+                const finalPayloadSize = estimatePayloadSize(payload);
+                console.log(`📦 Final payload size: ${(finalPayloadSize / 1024 / 1024).toFixed(2)} MB`);
+            }
         }
 
         const response = await fetch('/api/flashcards', {
