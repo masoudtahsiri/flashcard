@@ -3392,6 +3392,21 @@ function handleMultiImageSelection() {
         return;
     }
     
+    // Check if there are upload results - if so, clear everything and start fresh
+    const resultsSection = document.getElementById('multiUploadResults');
+    if (resultsSection && resultsSection.style.display !== 'none') {
+        // Clear everything and start fresh
+        multiUploadFiles = [];
+        multiUploadData = [];
+        
+        // Hide results and progress sections
+        resultsSection.style.display = 'none';
+        document.getElementById('multiUploadProgress').style.display = 'none';
+        
+        // Reset execute button
+        document.getElementById('executeMultiUploadBtn').disabled = true;
+    }
+    
     // Add new files to existing list (maintain order)
     multiUploadFiles = [...multiUploadFiles, ...newFiles];
     
