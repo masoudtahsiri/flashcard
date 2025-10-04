@@ -2450,7 +2450,7 @@ function deleteCardFromModal() {
 // Note: Images are now stored as base64 directly in MongoDB, no separate upload needed
 
 // Function to compress image before storing
-function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 1.0) {
+function compressImage(file, maxWidth = 400, maxHeight = 300, quality = 0.7) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -3152,6 +3152,15 @@ let voices = [];
 function loadVoices() {
     voices = speechSynthesis.getVoices();
     
+    // If no voices are loaded yet, try again after a short delay
+    if (voices.length === 0) {
+        console.log('🔄 No voices loaded yet, retrying in 100ms...');
+        setTimeout(loadVoices, 100);
+        return;
+    }
+    
+    console.log(`🔊 Loaded ${voices.length} voices`);
+    
     // Priority 1: Google US English voices (highest priority for consistency across devices)
     const googleUSVoices = voices.filter(voice => 
         voice.name.includes('Google') && 
@@ -3286,6 +3295,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = loadVoices;
     }
+    
+    // Additional retry mechanism for voice loading
+    setTimeout(() => {
+        if (!selectedVoice) {
+            console.log('🔄 Retrying voice loading after 500ms...');
+            loadVoices();
+        }
+    }, 500);
+    
+    // Final retry after 2 seconds
+    setTimeout(() => {
+        if (!selectedVoice) {
+            console.log('🔄 Final voice loading retry after 2s...');
+            loadVoices();
+        }
+    }, 2000);
     
     // Set up image preview
     document.getElementById('imageInput').addEventListener('change', function(e) {
