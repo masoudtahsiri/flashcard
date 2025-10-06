@@ -3,11 +3,36 @@
     "api/flashcards/index.js": {
       "maxDuration": 30,
       "memory": 1024
+    },
+    "api/classes/index.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    },
+    "api/auth/index.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    },
+    "api/auth/google.js": {
+      "maxDuration": 30,
+      "memory": 1024
+    },
+    "api/auth/apple.js": {
+      "maxDuration": 30,
+      "memory": 1024
     }
   },
   "headers": [
     {
       "source": "/api/flashcards",
+      "headers": [
+        {
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
+        }
+      ]
+    },
+    {
+      "source": "/api/auth",
       "headers": [
         {
           "key": "Access-Control-Max-Age",
@@ -20,6 +45,22 @@
     {
       "source": "/api/flashcards",
       "destination": "/api/flashcards/index.js"
+    },
+    {
+      "source": "/api/classes",
+      "destination": "/api/classes/index.js"
+    },
+    {
+      "source": "/api/auth",
+      "destination": "/api/auth/index.js"
+    },
+    {
+      "source": "/api/auth/google",
+      "destination": "/api/auth/google.js"
+    },
+    {
+      "source": "/api/auth/apple",
+      "destination": "/api/auth/apple.js"
     }
   ]
 }
