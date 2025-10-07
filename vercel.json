@@ -20,7 +20,7 @@
       "maxDuration": 30,
       "memory": 1024
     },
-    "api/onboarding/index.js": {
+    "api/onboarding.js": {
       "maxDuration": 30,
       "memory": 1024
     }
@@ -77,7 +77,7 @@
     },
     {
       "source": "/api/onboarding",
-      "destination": "/api/onboarding/index.js"
+      "destination": "/api/onboarding.js"
     }
   ]
 }
