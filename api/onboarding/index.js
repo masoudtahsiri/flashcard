@@ -62,19 +62,25 @@ function isValidTopics(topics) {
 }
 
 export default async function handler(req, res) {
+  console.log('🔍 DEBUG BACKEND: API endpoint called');
+  console.log('🔍 DEBUG BACKEND: Method:', req.method);
+  console.log('🔍 DEBUG BACKEND: URL:', req.url);
+  
   const { method } = req;
 
   // Add CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
+
   if (method === 'OPTIONS') {
+    console.log('🔍 DEBUG BACKEND: Handling OPTIONS request');
     res.status(200).end();
     return;
   }
 
   try {
+    console.log('🔍 DEBUG BACKEND: Starting request processing');
     const { db } = await connectToDatabase();
     const usersCollection = db.collection(USERS_COLLECTION_NAME);
     const onboardingCollection = db.collection(ONBOARDING_COLLECTION_NAME);
@@ -408,7 +414,8 @@ export default async function handler(req, res) {
         res.status(405).end(`Method ${method} Not Allowed`);
     }
   } catch (error) {
-    console.error('Onboarding API Error:', error);
+    console.error('🔍 DEBUG BACKEND: Error occurred:', error);
+    console.error('🔍 DEBUG BACKEND: Error stack:', error.stack);
     res.status(500).json({ 
       success: false,
       error: 'Internal server error',
