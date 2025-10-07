@@ -56,7 +56,8 @@ function isValidTopics(topics) {
   ];
   
   return Array.isArray(topics) && 
-         topics.length === 3 && 
+         topics.length >= 3 && 
+         topics.length <= 6 && 
          topics.every(topic => validTopics.includes(topic));
 }
 
@@ -132,7 +133,7 @@ export default async function handler(req, res) {
           if (!isValidTopics(topicsOfInterest)) {
             return res.status(400).json({ 
               success: false, 
-              error: 'Exactly 3 valid topics of interest are required' 
+              error: '3 to 6 valid topics of interest are required' 
             });
           }
 
