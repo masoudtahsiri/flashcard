@@ -294,29 +294,33 @@ export default async function handler(req, res) {
           });
         }
 
-        // Get user profile
-        console.log('🔍 DEBUG AUTH: About to query user with userId:', decoded.userId);
-        console.log('🔍 DEBUG AUTH: ObjectId constructor:', typeof ObjectId);
-        console.log('🔍 DEBUG AUTH: Creating ObjectId...');
+        // Get user profile - COMPLETELY REWRITTEN FOR DEPLOYMENT v4.0
+        console.log('🔍 AUTH API v4.0: Starting user profile query');
+        console.log('🔍 AUTH API v4.0: UserId from token:', decoded.userId);
+        console.log('🔍 AUTH API v4.0: ObjectId import status:', typeof ObjectId);
         
         let user;
         try {
-          const objectId = new ObjectId(decoded.userId);
-          console.log('🔍 DEBUG AUTH: ObjectId created successfully:', objectId);
+          // Create ObjectId using the imported constructor
+          const userObjectId = new ObjectId(decoded.userId);
+          console.log('🔍 AUTH API v4.0: ObjectId created successfully:', userObjectId.toString());
           
+          // Query user with the ObjectId
           user = await usersCollection.findOne({ 
-            _id: objectId 
+            _id: userObjectId 
           });
           
-          console.log('🔍 DEBUG AUTH: User query result:', user ? 'User found' : 'User not found');
+          console.log('🔍 AUTH API v4.0: Database query completed, user found:', !!user);
         } catch (objectIdError) {
-          console.error('🔍 DEBUG AUTH: ObjectId creation error:', objectIdError);
+          console.error('🔍 AUTH API v4.0: CRITICAL ERROR - ObjectId creation failed:', objectIdError);
           return res.status(400).json({ 
             success: false, 
             error: 'Invalid user ID format',
+            version: '4.0 - ObjectId Error',
             debug: {
               userId: decoded.userId,
-              error: objectIdError.message
+              error: objectIdError.message,
+              stack: objectIdError.stack
             }
           });
         }
@@ -330,7 +334,7 @@ export default async function handler(req, res) {
 
         res.status(200).json({
           success: true,
-          version: "3.0 - ObjectId Fixed",
+          version: "4.0 - ObjectId COMPLETELY REWRITTEN",
           user: {
             id: user._id.toString(),
             email: user.email,
