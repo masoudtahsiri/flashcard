@@ -293,9 +293,31 @@ export default async function handler(req, res) {
         }
 
         // Get user profile
-        const user = await usersCollection.findOne({ 
-          _id: new ObjectId(decoded.userId) 
-        });
+        console.log('🔍 DEBUG AUTH: About to query user with userId:', decoded.userId);
+        console.log('🔍 DEBUG AUTH: ObjectId constructor:', typeof ObjectId);
+        console.log('🔍 DEBUG AUTH: Creating ObjectId...');
+        
+        let user;
+        try {
+          const objectId = new ObjectId(decoded.userId);
+          console.log('🔍 DEBUG AUTH: ObjectId created successfully:', objectId);
+          
+          user = await usersCollection.findOne({ 
+            _id: objectId 
+          });
+          
+          console.log('🔍 DEBUG AUTH: User query result:', user ? 'User found' : 'User not found');
+        } catch (objectIdError) {
+          console.error('🔍 DEBUG AUTH: ObjectId creation error:', objectIdError);
+          return res.status(400).json({ 
+            success: false, 
+            error: 'Invalid user ID format',
+            debug: {
+              userId: decoded.userId,
+              error: objectIdError.message
+            }
+          });
+        }
         
         if (!user) {
           return res.status(404).json({ 
