@@ -74,7 +74,7 @@ function isValidPassword(password) {
 }
 
 export default async function handler(req, res) {
-  // Force redeploy - ObjectId fix applied
+  // Force redeploy - ObjectId fix applied - Version 2.0
   const { method } = req;
 
   // Add CORS headers
