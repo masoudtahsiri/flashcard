@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import jwt from 'jsonwebtoken';
 
 // Load environment variables for local development
@@ -184,7 +184,7 @@ export default async function handler(req, res) {
 
           // Save basic info
           const basicInfo = {
-            userId: new db.ObjectId(userId),
+            userId: new ObjectId(userId),
             age,
             gender,
             topicsOfInterest,
@@ -196,7 +196,7 @@ export default async function handler(req, res) {
 
           // Upsert basic info
           await onboardingCollection.updateOne(
-            { userId: new db.ObjectId(userId) },
+            { userId: new ObjectId(userId) },
             { 
               $set: { 
                 ...basicInfo,
@@ -260,7 +260,7 @@ export default async function handler(req, res) {
           };
 
           await onboardingCollection.updateOne(
-            { userId: new db.ObjectId(userId) },
+            { userId: new ObjectId(userId) },
             { 
               $set: { 
                 ...vocabularyAssessment,
@@ -271,7 +271,7 @@ export default async function handler(req, res) {
 
           // Update user level
           await usersCollection.updateOne(
-            { _id: new db.ObjectId(userId) },
+            { _id: new ObjectId(userId) },
             { 
               $set: { 
                 level: proficiencyLevel,
@@ -333,7 +333,7 @@ export default async function handler(req, res) {
           };
 
           await onboardingCollection.updateOne(
-            { userId: new db.ObjectId(userId) },
+            { userId: new ObjectId(userId) },
             { 
               $set: { 
                 ...recommendations,
@@ -364,7 +364,7 @@ export default async function handler(req, res) {
       case 'GET':
         // Get onboarding progress
         const onboardingData = await onboardingCollection.findOne({ 
-          userId: new db.ObjectId(userId) 
+          userId: new ObjectId(userId) 
         });
         
         if (!onboardingData) {
@@ -410,12 +410,12 @@ export default async function handler(req, res) {
       case 'DELETE':
         // Reset onboarding data
         await onboardingCollection.deleteOne({ 
-          userId: new db.ObjectId(userId) 
+          userId: new ObjectId(userId) 
         });
 
         // Reset user level
         await usersCollection.updateOne(
-          { _id: new db.ObjectId(userId) },
+          { _id: new ObjectId(userId) },
           { 
             $set: { 
               level: null,
