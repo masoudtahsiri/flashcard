@@ -19,6 +19,10 @@
     "api/auth/apple.js": {
       "maxDuration": 30,
       "memory": 1024
+    },
+    "api/onboarding/index.js": {
+      "maxDuration": 30,
+      "memory": 1024
     }
   },
   "headers": [
@@ -33,6 +37,15 @@
     },
     {
       "source": "/api/auth",
+      "headers": [
+        {
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
+        }
+      ]
+    },
+    {
+      "source": "/api/onboarding",
       "headers": [
         {
           "key": "Access-Control-Max-Age",
@@ -61,6 +74,10 @@
     {
       "source": "/api/auth/apple",
       "destination": "/api/auth/apple.js"
+    },
+    {
+      "source": "/api/onboarding",
+      "destination": "/api/onboarding/index.js"
     }
   ]
 }
