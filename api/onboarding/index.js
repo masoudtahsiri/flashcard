@@ -122,7 +122,7 @@ export default async function handler(req, res) {
             });
           }
 
-          if (!gender || !['Male', 'Female', 'Non-binary', 'Prefer not to say'].includes(gender)) {
+          if (!gender || !['Male', 'Female'].includes(gender)) {
             return res.status(400).json({ 
               success: false, 
               error: 'Valid gender is required' 
