@@ -62,25 +62,37 @@ function isValidTopics(topics) {
 }
 
 export default async function handler(req, res) {
-  console.log('🔍 DEBUG BACKEND: API endpoint called');
-  console.log('🔍 DEBUG BACKEND: Method:', req.method);
-  console.log('🔍 DEBUG BACKEND: URL:', req.url);
+  // TEST ENDPOINT - Verify API is accessible
+  console.log('🔍 ONBOARDING API: Handler called - TEST ENDPOINT');
+  console.log('🔍 ONBOARDING API: Method:', req.method);
+  console.log('🔍 ONBOARDING API: URL:', req.url);
   
-  const { method } = req;
-
   // Add CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (method === 'OPTIONS') {
-    console.log('🔍 DEBUG BACKEND: Handling OPTIONS request');
+  if (req.method === 'OPTIONS') {
+    console.log('🔍 ONBOARDING API: Handling OPTIONS request');
     res.status(200).end();
     return;
   }
 
+  // Simple test response
+  if (req.method === 'GET') {
+    console.log('🔍 ONBOARDING API: Handling GET request - TEST');
+    res.status(200).json({
+      success: true,
+      message: 'Onboarding API is working!',
+      version: 'TEST ENDPOINT',
+      method: req.method,
+      timestamp: new Date().toISOString()
+    });
+    return;
+  }
+
   try {
-    console.log('🔍 DEBUG BACKEND: Starting request processing');
+    console.log('🔍 ONBOARDING API: Starting request processing');
     const { db } = await connectToDatabase();
     const usersCollection = db.collection(USERS_COLLECTION_NAME);
     const onboardingCollection = db.collection(ONBOARDING_COLLECTION_NAME);
