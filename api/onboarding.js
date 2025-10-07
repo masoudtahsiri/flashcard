@@ -94,6 +94,7 @@ export default async function handler(req, res) {
 
   try {
     console.log('🔍 ONBOARDING API: Starting request processing');
+    const { method } = req;
     const { db } = await connectToDatabase();
     const usersCollection = db.collection(USERS_COLLECTION_NAME);
     const onboardingCollection = db.collection(ONBOARDING_COLLECTION_NAME);
