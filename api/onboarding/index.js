@@ -103,9 +103,16 @@ export default async function handler(req, res) {
 
     switch (method) {
       case 'POST':
+        console.log('🔍 DEBUG BACKEND: Received request body:', JSON.stringify(req.body, null, 2));
+        console.log('🔍 DEBUG BACKEND: Request headers:', JSON.stringify(req.headers, null, 2));
+        
         const { step, data } = req.body;
         
+        console.log('🔍 DEBUG BACKEND: Extracted step:', step);
+        console.log('🔍 DEBUG BACKEND: Extracted data:', JSON.stringify(data, null, 2));
+        
         if (!step || !data) {
+          console.log('🔍 DEBUG BACKEND: Missing step or data');
           return res.status(400).json({ 
             success: false, 
             error: 'Step and data are required' 
@@ -116,7 +123,13 @@ export default async function handler(req, res) {
           // Step 1: Basic Information Collection
           const { age, gender, topicsOfInterest } = data;
           
+          console.log('🔍 DEBUG BACKEND: Basic info validation:');
+          console.log('🔍 Age:', age, 'Type:', typeof age);
+          console.log('🔍 Gender:', gender, 'Type:', typeof gender);
+          console.log('🔍 Topics:', topicsOfInterest, 'Type:', typeof topicsOfInterest, 'Length:', Array.isArray(topicsOfInterest) ? topicsOfInterest.length : 'Not an array');
+          
           if (!isValidAge(age)) {
+            console.log('🔍 DEBUG BACKEND: Age validation failed');
             return res.status(400).json({ 
               success: false, 
               error: 'Age must be between 5 and 120' 
@@ -124,6 +137,7 @@ export default async function handler(req, res) {
           }
 
           if (!gender || !['Male', 'Female'].includes(gender)) {
+            console.log('🔍 DEBUG BACKEND: Gender validation failed');
             return res.status(400).json({ 
               success: false, 
               error: 'Valid gender is required' 
@@ -131,6 +145,10 @@ export default async function handler(req, res) {
           }
 
           if (!isValidTopics(topicsOfInterest)) {
+            console.log('🔍 DEBUG BACKEND: Topics validation failed');
+            console.log('🔍 Topics array:', topicsOfInterest);
+            console.log('🔍 Is array:', Array.isArray(topicsOfInterest));
+            console.log('🔍 Length:', Array.isArray(topicsOfInterest) ? topicsOfInterest.length : 'N/A');
             return res.status(400).json({ 
               success: false, 
               error: '3 to 6 valid topics of interest are required' 
