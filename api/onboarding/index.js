@@ -138,7 +138,12 @@ export default async function handler(req, res) {
             console.log('🔍 DEBUG BACKEND: Age validation failed');
             return res.status(400).json({ 
               success: false, 
-              error: 'Age must be between 5 and 120' 
+              error: 'Age must be between 5 and 120',
+              debug: {
+                age: age,
+                ageType: typeof age,
+                isValidAge: isValidAge(age)
+              }
             });
           }
 
@@ -146,7 +151,12 @@ export default async function handler(req, res) {
             console.log('🔍 DEBUG BACKEND: Gender validation failed');
             return res.status(400).json({ 
               success: false, 
-              error: 'Valid gender is required' 
+              error: 'Valid gender is required',
+              debug: {
+                gender: gender,
+                genderType: typeof gender,
+                validGenders: ['Male', 'Female']
+              }
             });
           }
 
@@ -157,7 +167,18 @@ export default async function handler(req, res) {
             console.log('🔍 Length:', Array.isArray(topicsOfInterest) ? topicsOfInterest.length : 'N/A');
             return res.status(400).json({ 
               success: false, 
-              error: '3 to 6 valid topics of interest are required' 
+              error: '3 to 6 valid topics of interest are required',
+              debug: {
+                topics: topicsOfInterest,
+                isArray: Array.isArray(topicsOfInterest),
+                length: Array.isArray(topicsOfInterest) ? topicsOfInterest.length : 'N/A',
+                validTopics: [
+                  'Technology', 'Sports', 'Travel', 'Food & Cooking', 'Music', 
+                  'Art & Design', 'Business', 'Health & Fitness', 'Education', 
+                  'Entertainment', 'Science', 'Nature & Environment', 'Fashion', 
+                  'History', 'Literature'
+                ]
+              }
             });
           }
 
@@ -419,7 +440,12 @@ export default async function handler(req, res) {
     res.status(500).json({ 
       success: false,
       error: 'Internal server error',
-      details: error.message 
+      details: error.message,
+      debug: {
+        errorName: error.name,
+        errorMessage: error.message,
+        errorStack: error.stack
+      }
     });
   }
 }
