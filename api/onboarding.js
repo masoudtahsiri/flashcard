@@ -204,7 +204,6 @@ export default async function handler(req, res) {
             topicsOfInterest,
             step: 1,
             completedAt: new Date(),
-            createdAt: new Date(),
             updatedAt: new Date()
           };
 
