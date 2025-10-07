@@ -62,10 +62,10 @@ function isValidTopics(topics) {
 }
 
 export default async function handler(req, res) {
-  // TEST ENDPOINT - Verify API is accessible
-  console.log('🔍 ONBOARDING API: Handler called - TEST ENDPOINT');
-  console.log('🔍 ONBOARDING API: Method:', req.method);
-  console.log('🔍 ONBOARDING API: URL:', req.url);
+  // TEST ENDPOINT - Verify API is accessible - DEPLOYMENT TEST v2.0
+  console.log('🔍 ONBOARDING API v2.0: Handler called - DEPLOYMENT TEST');
+  console.log('🔍 ONBOARDING API v2.0: Method:', req.method);
+  console.log('🔍 ONBOARDING API v2.0: URL:', req.url);
   
   // Add CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -80,13 +80,14 @@ export default async function handler(req, res) {
 
   // Simple test response
   if (req.method === 'GET') {
-    console.log('🔍 ONBOARDING API: Handling GET request - TEST');
+    console.log('🔍 ONBOARDING API v2.0: Handling GET request - DEPLOYMENT TEST');
     res.status(200).json({
       success: true,
-      message: 'Onboarding API is working!',
-      version: 'TEST ENDPOINT',
+      message: 'Onboarding API v2.0 is working! DEPLOYMENT TEST SUCCESSFUL!',
+      version: 'DEPLOYMENT TEST v2.0',
       method: req.method,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      deployment: 'flashcard-6je7oztvd'
     });
     return;
   }
