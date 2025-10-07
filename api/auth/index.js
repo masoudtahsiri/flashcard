@@ -74,7 +74,8 @@ function isValidPassword(password) {
 }
 
 export default async function handler(req, res) {
-  // Force redeploy - ObjectId fix applied - Version 2.0
+  // FORCE REDEPLOY - ObjectId fix applied - Version 3.0 - CRITICAL FIX
+  console.log('🔍 AUTH API: Handler called - Version 3.0 with ObjectId fix');
   const { method } = req;
 
   // Add CORS headers
@@ -329,6 +330,7 @@ export default async function handler(req, res) {
 
         res.status(200).json({
           success: true,
+          version: "3.0 - ObjectId Fixed",
           user: {
             id: user._id.toString(),
             email: user.email,
