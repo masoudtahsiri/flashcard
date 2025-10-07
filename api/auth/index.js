@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -294,7 +294,7 @@ export default async function handler(req, res) {
 
         // Get user profile
         const user = await usersCollection.findOne({ 
-          _id: new db.ObjectId(decoded.userId) 
+          _id: new ObjectId(decoded.userId) 
         });
         
         if (!user) {
